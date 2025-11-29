@@ -93,6 +93,10 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 16),
                 _buildToolbarPositionSelector(context, ref, settings),
+                const SizedBox(height: 16),
+                _buildToolbarScaleSelector(context, ref, settings),
+                const SizedBox(height: 16),
+                _buildToolbarThemeSelector(context, ref, settings),
               ],
             ),
             const SizedBox(height: 32),
@@ -355,28 +359,98 @@ class SettingsScreen extends ConsumerWidget {
               dropdownColor: const Color(0xFF2d2d2d),
               style: const TextStyle(color: Colors.white, fontSize: 16),
               items: const [
-                DropdownMenuItem(
-                  value: ToolbarPosition.top,
-                  child: Text('Haut'),
-                ),
-                DropdownMenuItem(
-                  value: ToolbarPosition.bottom,
-                  child: Text('Bas'),
-                ),
-                DropdownMenuItem(
-                  value: ToolbarPosition.left,
-                  child: Text('Gauche'),
-                ),
-                DropdownMenuItem(
-                  value: ToolbarPosition.right,
-                  child: Text('Droite'),
-                ),
+                DropdownMenuItem(value: ToolbarPosition.top, child: Text('Haut')),
+                DropdownMenuItem(value: ToolbarPosition.bottom, child: Text('Bas')),
+                DropdownMenuItem(value: ToolbarPosition.left, child: Text('Gauche')),
+                DropdownMenuItem(value: ToolbarPosition.right, child: Text('Droite')),
+                DropdownMenuItem(value: ToolbarPosition.topLeft, child: Text('Coin haut gauche')),
+                DropdownMenuItem(value: ToolbarPosition.topRight, child: Text('Coin haut droit')),
+                DropdownMenuItem(value: ToolbarPosition.bottomLeft, child: Text('Coin bas gauche')),
+                DropdownMenuItem(value: ToolbarPosition.bottomRight, child: Text('Coin bas droit')),
               ],
               onChanged: (value) {
                 if (value != null) {
-                  ref.read(settingsProvider.notifier).updateSettings(
-                    settings.copyWith(toolbarPosition: value),
-                  );
+                  ref.read(settingsProvider.notifier).updateToolbarPosition(value);
+                }
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildToolbarScaleSelector(BuildContext context, WidgetRef ref, SettingsModel settings) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(LucideIcons.maximize_2, color: Colors.white70, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              'Taille de la toolbox: ${(settings.toolbarScale * 100).toInt()}%',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        Slider(
+          value: settings.toolbarScale.clamp(0.7, 1.4),
+          min: 0.7,
+          max: 1.4,
+          divisions: 14,
+          activeColor: const Color(0xFF6366F1),
+          onChanged: (value) {
+            ref.read(settingsProvider.notifier).updateToolbarScale(value);
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildToolbarThemeSelector(BuildContext context, WidgetRef ref, SettingsModel settings) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(LucideIcons.palette, color: Colors.white70, size: 20),
+            const SizedBox(width: 8),
+            const Text(
+              'Thème de la toolbox',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<ToolboxTheme>(
+              value: settings.toolboxTheme,
+              isExpanded: true,
+              dropdownColor: const Color(0xFF2d2d2d),
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+              items: const [
+                DropdownMenuItem(value: ToolboxTheme.modern, child: Text('Moderne')),
+                DropdownMenuItem(value: ToolboxTheme.glass, child: Text('Verre brillant')),
+                DropdownMenuItem(value: ToolboxTheme.contrast, child: Text('Contraste fort')),
+              ],
+              onChanged: (value) {
+                if (value != null) {
+                  ref.read(settingsProvider.notifier).updateToolboxTheme(value);
                 }
               },
             ),

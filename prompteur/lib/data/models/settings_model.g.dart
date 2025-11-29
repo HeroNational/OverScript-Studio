@@ -20,6 +20,10 @@ _$SettingsModelImpl _$$SettingsModelImplFromJson(Map<String, dynamic> json) =>
       toolbarPosition: $enumDecodeNullable(
               _$ToolbarPositionEnumMap, json['toolbarPosition']) ??
           ToolbarPosition.bottom,
+      toolbarScale: (json['toolbarScale'] as num?)?.toDouble() ?? 1.0,
+      toolboxTheme:
+          $enumDecodeNullable(_$ToolboxThemeEnumMap, json['toolboxTheme']) ??
+              ToolboxTheme.modern,
       pauseOnMouseMove: json['pauseOnMouseMove'] as bool? ?? true,
       pauseKey: json['pauseKey'] as String? ?? 'Space',
       locale: json['locale'] as String? ?? 'fr',
@@ -39,6 +43,8 @@ Map<String, dynamic> _$$SettingsModelImplToJson(_$SettingsModelImpl instance) =>
       'fontFamily': instance.fontFamily,
       'fontSize': instance.fontSize,
       'toolbarPosition': _$ToolbarPositionEnumMap[instance.toolbarPosition]!,
+      'toolbarScale': instance.toolbarScale,
+      'toolboxTheme': _$ToolboxThemeEnumMap[instance.toolboxTheme]!,
       'pauseOnMouseMove': instance.pauseOnMouseMove,
       'pauseKey': instance.pauseKey,
       'locale': instance.locale,
@@ -56,4 +62,14 @@ const _$ToolbarPositionEnumMap = {
   ToolbarPosition.bottom: 'bottom',
   ToolbarPosition.left: 'left',
   ToolbarPosition.right: 'right',
+  ToolbarPosition.topLeft: 'topLeft',
+  ToolbarPosition.topRight: 'topRight',
+  ToolbarPosition.bottomLeft: 'bottomLeft',
+  ToolbarPosition.bottomRight: 'bottomRight',
+};
+
+const _$ToolboxThemeEnumMap = {
+  ToolboxTheme.modern: 'modern',
+  ToolboxTheme.glass: 'glass',
+  ToolboxTheme.contrast: 'contrast',
 };

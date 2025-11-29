@@ -14,6 +14,16 @@ enum ToolbarPosition {
   bottom,
   left,
   right,
+  topLeft,
+  topRight,
+  bottomLeft,
+  bottomRight,
+}
+
+enum ToolboxTheme {
+  modern,
+  glass,
+  contrast,
 }
 
 @freezed
@@ -28,6 +38,8 @@ class SettingsModel with _$SettingsModel {
     @Default('System') String fontFamily,
     @Default(48.0) double fontSize,
     @Default(ToolbarPosition.bottom) ToolbarPosition toolbarPosition,
+    @Default(1.0) double toolbarScale,
+    @Default(ToolboxTheme.modern) ToolboxTheme toolboxTheme,
     @Default(true) bool pauseOnMouseMove,
     @Default('Space') String pauseKey,
     @Default('fr') String locale,

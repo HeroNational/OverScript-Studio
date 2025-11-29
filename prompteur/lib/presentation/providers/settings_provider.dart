@@ -51,6 +51,21 @@ class SettingsNotifier extends StateNotifier<SettingsModel> {
     await _storageService.saveSettings(state);
   }
 
+  Future<void> updateToolbarPosition(ToolbarPosition position) async {
+    state = state.copyWith(toolbarPosition: position);
+    await _storageService.saveSettings(state);
+  }
+
+  Future<void> updateToolbarScale(double scale) async {
+    state = state.copyWith(toolbarScale: scale);
+    await _storageService.saveSettings(state);
+  }
+
+  Future<void> updateToolboxTheme(ToolboxTheme theme) async {
+    state = state.copyWith(toolboxTheme: theme);
+    await _storageService.saveSettings(state);
+  }
+
   Future<void> updateSettings(SettingsModel settings) async {
     state = settings;
     await _storageService.saveSettings(state);

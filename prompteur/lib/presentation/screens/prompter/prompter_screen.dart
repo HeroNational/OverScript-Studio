@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
 import '../../providers/playback_provider.dart';
 import '../../providers/settings_provider.dart';
+import '../../../data/models/settings_model.dart';
 import '../../widgets/toolbox/glassmorphic_toolbox.dart';
 import '../settings/settings_screen.dart';
 import '../sources/sources_dialog.dart';
@@ -115,66 +116,115 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
             // Affichage du texte
             const TextDisplay(),
 
-            // Toolbox glassmorphism en bas
-            if (!playbackState.isFullscreen)
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: GlasmorphicToolbox(
-                    onSourcesPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => SourcesDialog(
-                          onSourceSelected: _handleSource,
-                        ),
-                      );
-                    },
-                    onSettingsPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SettingsScreen(),
-                        ),
-                      );
-                    },
-                    onFullscreenPressed: _toggleFullscreen,
-                  ),
-                ),
-              ),
-
-            // Toolbar minimale en mode plein écran
-            if (playbackState.isFullscreen)
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: GlasmorphicToolbox(
-                    onSourcesPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => SourcesDialog(
-                          onSourceSelected: _handleSource,
-                        ),
-                      );
-                    },
-                    onSettingsPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SettingsScreen(),
-                        ),
-                      );
-                    },
-                    onFullscreenPressed: _toggleFullscreen,
-                  ),
-                ),
-              ),
+            _buildPositionedToolbox(playbackState.isFullscreen),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildPositionedToolbox(bool isFullscreen) {
+    final settings = ref.watch(settingsProvider);
+
+    final toolbox = GlasmorphicToolbox(
+      onSourcesPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) => SourcesDialog(
+            onSourceSelected: _handleSource,
+          ),
+        );
+      },
+      onSettingsPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const SettingsScreen(),
+          ),
+        );
+      },
+      onFullscreenPressed: _toggleFullscreen,
+      isVertical: _isVertical(settings.toolbarPosition),
+      scale: settings.toolbarScale,
+      themeStyle: settings.toolboxTheme,
+    );
+
+    switch (settings.toolbarPosition) {
+      case ToolbarPosition.top:
+        return Positioned(
+          top: 16,
+          left: 0,
+          right: 0,
+          child: SafeArea(
+            child: Center(child: toolbox),
+          ),
+        );
+      case ToolbarPosition.bottom:
+        return Positioned(
+          bottom: 16,
+          left: 0,
+          right: 0,
+          child: SafeArea(
+            child: Center(child: toolbox),
+          ),
+        );
+      case ToolbarPosition.left:
+        return Positioned(
+          top: 0,
+          bottom: 0,
+          left: 16,
+          child: SafeArea(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: toolbox,
+            ),
+          ),
+        );
+      case ToolbarPosition.right:
+        return Positioned(
+          top: 0,
+          bottom: 0,
+          right: 16,
+          child: SafeArea(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: toolbox,
+            ),
+          ),
+        );
+      case ToolbarPosition.topLeft:
+        return Positioned(
+          top: 16,
+          left: 16,
+          child: SafeArea(child: toolbox),
+        );
+      case ToolbarPosition.topRight:
+        return Positioned(
+          top: 16,
+          right: 16,
+          child: SafeArea(child: toolbox),
+        );
+      case ToolbarPosition.bottomLeft:
+        return Positioned(
+          bottom: 16,
+          left: 16,
+          child: SafeArea(child: toolbox),
+        );
+      case ToolbarPosition.bottomRight:
+        return Positioned(
+          bottom: 16,
+          right: 16,
+          child: SafeArea(child: toolbox),
+        );
+    }
+  }
+
+  bool _isVertical(ToolbarPosition position) {
+    return position == ToolbarPosition.left ||
+        position == ToolbarPosition.right ||
+        position == ToolbarPosition.topLeft ||
+        position == ToolbarPosition.bottomLeft ||
+        position == ToolbarPosition.topRight ||
+        position == ToolbarPosition.bottomRight;
   }
 }
