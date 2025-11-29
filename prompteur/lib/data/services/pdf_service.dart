@@ -1,0 +1,34 @@
+import 'dart:typed_data';
+import 'package:pdfx/pdfx.dart';
+
+class PdfService {
+  /// Rend chaque page du document en image PNG pour un défilement fluide.
+  Future<List<Uint8List>> renderDocument(String path, {int targetWidth = 1400}) async {
+    final document = await PdfDocument.openFile(path);
+    final pages = <Uint8List>[];
+
+    try {
+      for (var i = 1; i <= document.pagesCount; i++) {
+        final page = await document.getPage(i);
+        final renderWidth = targetWidth.toDouble();
+        final renderHeight = (renderWidth / page.width) * page.height;
+
+        final pageImage = await page.render(
+          width: renderWidth,
+          height: renderHeight,
+          format: PdfPageImageFormat.png,
+          backgroundColor: '#000000',
+        );
+        final bytes = pageImage?.bytes;
+        if (bytes != null) {
+          pages.add(bytes);
+        }
+        await page.close();
+      }
+    } finally {
+      await document.close();
+    }
+
+    return pages;
+  }
+}
