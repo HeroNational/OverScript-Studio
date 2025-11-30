@@ -1,7 +1,7 @@
-# Spécifications du Prompteur Professionnel Flutter Desktop
+# Spécifications du OverScript Studiofessionnel Flutter Desktop
 
 ## Vue d'ensemble
-Application de prompteur professionnel pour macOS/Windows/Linux développée avec Flutter Desktop, offrant une expérience moderne et personnalisable pour la lecture de scripts.
+Application de OverScript Studiofessionnel pour macOS/Windows/Linux développée avec Flutter Desktop, offrant une expérience moderne et personnalisable pour la lecture de scripts.
 
 ---
 
@@ -458,4 +458,4 @@ lib/
 
 **Version du document :** 1.0
 **Date :** 29 Novembre 2025
-**Auteur :** Spécifications Prompteur Pro
+**Auteur :** Spécifications OverScript Studio

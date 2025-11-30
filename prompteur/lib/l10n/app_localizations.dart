@@ -475,6 +475,264 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Toolbar Orientation'**
   String get toolboxOrientation;
+
+  /// No description provided for @playback.
+  ///
+  /// In en, this message translates to:
+  /// **'Playback'**
+  String get playback;
+
+  /// No description provided for @speedUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed Unit'**
+  String get speedUnit;
+
+  /// No description provided for @pixelsPerSecond.
+  ///
+  /// In en, this message translates to:
+  /// **'Pixels per second'**
+  String get pixelsPerSecond;
+
+  /// No description provided for @linesPerMinute.
+  ///
+  /// In en, this message translates to:
+  /// **'Lines per minute'**
+  String get linesPerMinute;
+
+  /// No description provided for @wordsPerMinute.
+  ///
+  /// In en, this message translates to:
+  /// **'Words per minute'**
+  String get wordsPerMinute;
+
+  /// No description provided for @defaultSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Default speed'**
+  String get defaultSpeed;
+
+  /// No description provided for @countdownSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Countdown (seconds)'**
+  String get countdownSeconds;
+
+  /// No description provided for @autoFullscreenOnStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto fullscreen on start'**
+  String get autoFullscreenOnStart;
+
+  /// No description provided for @autoFullscreenDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'The app will go fullscreen when you start the prompter'**
+  String get autoFullscreenDescription;
+
+  /// No description provided for @backgroundColorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Background color'**
+  String get backgroundColorLabel;
+
+  /// No description provided for @textColorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Text color'**
+  String get textColorLabel;
+
+  /// No description provided for @fontSizeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Font size'**
+  String get fontSizeLabel;
+
+  /// No description provided for @toolbarPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Toolbar position'**
+  String get toolbarPosition;
+
+  /// No description provided for @toolbarPositionTop.
+  ///
+  /// In en, this message translates to:
+  /// **'Top'**
+  String get toolbarPositionTop;
+
+  /// No description provided for @toolbarPositionTopCenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Top (center)'**
+  String get toolbarPositionTopCenter;
+
+  /// No description provided for @toolbarPositionBottom.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottom'**
+  String get toolbarPositionBottom;
+
+  /// No description provided for @toolbarPositionBottomCenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottom (center)'**
+  String get toolbarPositionBottomCenter;
+
+  /// No description provided for @toolbarPositionLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Left'**
+  String get toolbarPositionLeft;
+
+  /// No description provided for @toolbarPositionRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Right'**
+  String get toolbarPositionRight;
+
+  /// No description provided for @toolbarPositionTopLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Top left corner'**
+  String get toolbarPositionTopLeft;
+
+  /// No description provided for @toolbarPositionTopRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Top right corner'**
+  String get toolbarPositionTopRight;
+
+  /// No description provided for @toolbarPositionBottomLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottom left corner'**
+  String get toolbarPositionBottomLeft;
+
+  /// No description provided for @toolbarPositionBottomRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottom right corner'**
+  String get toolbarPositionBottomRight;
+
+  /// No description provided for @toolboxOrientationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Toolbox orientation'**
+  String get toolboxOrientationLabel;
+
+  /// No description provided for @toolboxOrientationAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto (by position)'**
+  String get toolboxOrientationAuto;
+
+  /// No description provided for @toolboxSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Toolbox size'**
+  String get toolboxSize;
+
+  /// No description provided for @toolboxThemeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Toolbox theme'**
+  String get toolboxThemeLabel;
+
+  /// No description provided for @toolboxThemeModern.
+  ///
+  /// In en, this message translates to:
+  /// **'Modern'**
+  String get toolboxThemeModern;
+
+  /// No description provided for @toolboxThemeGlass.
+  ///
+  /// In en, this message translates to:
+  /// **'Glass'**
+  String get toolboxThemeGlass;
+
+  /// No description provided for @toolboxThemeContrast.
+  ///
+  /// In en, this message translates to:
+  /// **'High contrast'**
+  String get toolboxThemeContrast;
+
+  /// No description provided for @showTimerAndClock.
+  ///
+  /// In en, this message translates to:
+  /// **'Show timer and clock'**
+  String get showTimerAndClock;
+
+  /// No description provided for @showTimerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Display timer and clock in the toolbox'**
+  String get showTimerDescription;
+
+  /// No description provided for @controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Controls'**
+  String get controls;
+
+  /// No description provided for @pauseOnMouseMove.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause on mouse move'**
+  String get pauseOnMouseMove;
+
+  /// No description provided for @pauseOnMouseMoveDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Scrolling pauses when you move the mouse'**
+  String get pauseOnMouseMoveDescription;
+
+  /// No description provided for @blockNotificationsFocusMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Block notifications (Focus mode)'**
+  String get blockNotificationsFocusMode;
+
+  /// No description provided for @blockNotificationsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Do Not Disturb while the prompter runs'**
+  String get blockNotificationsDescription;
+
+  /// No description provided for @keyboardShortcuts.
+  ///
+  /// In en, this message translates to:
+  /// **'Keyboard shortcuts'**
+  String get keyboardShortcuts;
+
+  /// No description provided for @playPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Play / Pause'**
+  String get playPause;
+
+  /// No description provided for @toggleFullscreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle fullscreen'**
+  String get toggleFullscreen;
+
+  /// No description provided for @exitFullscreenShortcut.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit fullscreen'**
+  String get exitFullscreenShortcut;
+
+  /// No description provided for @increaseSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase speed'**
+  String get increaseSpeed;
+
+  /// No description provided for @decreaseSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease speed'**
+  String get decreaseSpeed;
 }
 
 class _AppLocalizationsDelegate

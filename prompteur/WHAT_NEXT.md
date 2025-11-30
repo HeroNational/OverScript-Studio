@@ -1,4 +1,4 @@
-# What's Next - Prompteur Pro
+# What's Next - OverScript Studio
 
 ## 🎯 Fonctionnalités Planifiées
 
@@ -567,4 +567,4 @@ dependencies:
 ---
 
 **Dernière mise à jour:** 2025-11-29
-**Mainteneur:** Prompteur Pro Team
+**Mainteneur:** OverScript Studio Team

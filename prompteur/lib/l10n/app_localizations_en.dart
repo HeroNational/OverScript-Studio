@@ -197,4 +197,136 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get toolboxOrientation => 'Toolbar Orientation';
+
+  @override
+  String get playback => 'Playback';
+
+  @override
+  String get speedUnit => 'Speed Unit';
+
+  @override
+  String get pixelsPerSecond => 'Pixels per second';
+
+  @override
+  String get linesPerMinute => 'Lines per minute';
+
+  @override
+  String get wordsPerMinute => 'Words per minute';
+
+  @override
+  String get defaultSpeed => 'Default speed';
+
+  @override
+  String get countdownSeconds => 'Countdown (seconds)';
+
+  @override
+  String get autoFullscreenOnStart => 'Auto fullscreen on start';
+
+  @override
+  String get autoFullscreenDescription =>
+      'The app will go fullscreen when you start the prompter';
+
+  @override
+  String get backgroundColorLabel => 'Background color';
+
+  @override
+  String get textColorLabel => 'Text color';
+
+  @override
+  String get fontSizeLabel => 'Font size';
+
+  @override
+  String get toolbarPosition => 'Toolbar position';
+
+  @override
+  String get toolbarPositionTop => 'Top';
+
+  @override
+  String get toolbarPositionTopCenter => 'Top (center)';
+
+  @override
+  String get toolbarPositionBottom => 'Bottom';
+
+  @override
+  String get toolbarPositionBottomCenter => 'Bottom (center)';
+
+  @override
+  String get toolbarPositionLeft => 'Left';
+
+  @override
+  String get toolbarPositionRight => 'Right';
+
+  @override
+  String get toolbarPositionTopLeft => 'Top left corner';
+
+  @override
+  String get toolbarPositionTopRight => 'Top right corner';
+
+  @override
+  String get toolbarPositionBottomLeft => 'Bottom left corner';
+
+  @override
+  String get toolbarPositionBottomRight => 'Bottom right corner';
+
+  @override
+  String get toolboxOrientationLabel => 'Toolbox orientation';
+
+  @override
+  String get toolboxOrientationAuto => 'Auto (by position)';
+
+  @override
+  String get toolboxSize => 'Toolbox size';
+
+  @override
+  String get toolboxThemeLabel => 'Toolbox theme';
+
+  @override
+  String get toolboxThemeModern => 'Modern';
+
+  @override
+  String get toolboxThemeGlass => 'Glass';
+
+  @override
+  String get toolboxThemeContrast => 'High contrast';
+
+  @override
+  String get showTimerAndClock => 'Show timer and clock';
+
+  @override
+  String get showTimerDescription => 'Display timer and clock in the toolbox';
+
+  @override
+  String get controls => 'Controls';
+
+  @override
+  String get pauseOnMouseMove => 'Pause on mouse move';
+
+  @override
+  String get pauseOnMouseMoveDescription =>
+      'Scrolling pauses when you move the mouse';
+
+  @override
+  String get blockNotificationsFocusMode => 'Block notifications (Focus mode)';
+
+  @override
+  String get blockNotificationsDescription =>
+      'Enable Do Not Disturb while the prompter runs';
+
+  @override
+  String get keyboardShortcuts => 'Keyboard shortcuts';
+
+  @override
+  String get playPause => 'Play / Pause';
+
+  @override
+  String get toggleFullscreen => 'Toggle fullscreen';
+
+  @override
+  String get exitFullscreenShortcut => 'Exit fullscreen';
+
+  @override
+  String get increaseSpeed => 'Increase speed';
+
+  @override
+  String get decreaseSpeed => 'Decrease speed';
 }

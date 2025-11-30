@@ -4,8 +4,10 @@ import 'dart:ui';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prompteur/core/utils/subtitle_parser.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
+import 'package:prompteur/l10n/app_localizations.dart';
 import 'dart:convert';
 
 class SourceData {
@@ -19,7 +21,7 @@ class SourceData {
   bool get isRichText => quillJson != null;
 }
 
-class SourcesDialog extends StatelessWidget {
+class SourcesDialog extends ConsumerWidget {
   final Function(SourceData) onSourceSelected;
   final String? initialText;
   final String? initialQuillJson;
@@ -32,7 +34,8 @@ class SourcesDialog extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       backgroundColor: Colors.transparent,
       child: ClipRRect(
@@ -76,9 +79,9 @@ class SourcesDialog extends StatelessWidget {
                       size: 28,
                     ),
                     const SizedBox(width: 12),
-                    const Text(
-                      'Ajouter une source',
-                      style: TextStyle(
+                    Text(
+                      l10n.addSource,
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -86,7 +89,7 @@ class SourcesDialog extends StatelessWidget {
                     ),
                     const Spacer(),
                     Tooltip(
-                      message: 'Fermer',
+                      message: l10n.close,
                       child: IconButton(
                         icon: const Icon(LucideIcons.x, color: Colors.white70),
                         onPressed: () => Navigator.pop(context),
@@ -95,9 +98,9 @@ class SourcesDialog extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'Choisissez comment ajouter votre contenu',
-                  style: TextStyle(
+                Text(
+                  l10n.welcomeSubtitle,
+                  style: const TextStyle(
                     color: Colors.white70,
                     fontSize: 14,
                   ),
@@ -105,8 +108,8 @@ class SourcesDialog extends StatelessWidget {
                 const SizedBox(height: 32),
                 _SourceOption(
                   icon: LucideIcons.file_text,
-                  title: 'Fichier texte',
-                  subtitle: 'Importer TXT, VTT, SRT',
+                  title: l10n.loadFile,
+                  subtitle: l10n.loadFile,
                   gradientColors: const [Color(0xFF6366F1), Color(0xFF8B5CF6)],
                   onTap: () async {
                     final result = await FilePicker.platform.pickFiles(
@@ -131,8 +134,8 @@ class SourcesDialog extends StatelessWidget {
                 const SizedBox(height: 16),
                 _SourceOption(
                   icon: LucideIcons.file,
-                  title: 'Document PDF',
-                  subtitle: 'Importer un fichier PDF',
+                  title: l10n.loadFile,
+                  subtitle: l10n.loadFile,
                   gradientColors: const [Color(0xFFEC4899), Color(0xFFF59E0B)],
                   onTap: () async {
                     final result = await FilePicker.platform.pickFiles(
@@ -148,8 +151,8 @@ class SourcesDialog extends StatelessWidget {
                 const SizedBox(height: 16),
                 _SourceOption(
                   icon: LucideIcons.pen_line,
-                  title: 'Éditer le texte',
-                  subtitle: 'Modifier le texte avec mise en forme',
+                  title: l10n.textEditor,
+                  subtitle: l10n.richTextMode,
                   gradientColors: const [Color(0xFF10B981), Color(0xFF06B6D4)],
                   onTap: () {
                     _showRichEditor(context).then((source) {
@@ -211,9 +214,9 @@ class SourcesDialog extends StatelessWidget {
                     children: [
                       Icon(LucideIcons.pen_line, color: Colors.white, size: 28),
                       const SizedBox(width: 12),
-                      const Text(
-                        'Éditer le texte',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context)!.textEditor,
+                        style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -221,7 +224,7 @@ class SourcesDialog extends StatelessWidget {
                       ),
                       const Spacer(),
                       Tooltip(
-                        message: 'Fermer',
+                        message: AppLocalizations.of(context)!.close,
                         child: IconButton(
                           icon: const Icon(LucideIcons.x, color: Colors.white70),
                           onPressed: () => Navigator.pop(context),
@@ -249,11 +252,11 @@ class SourcesDialog extends StatelessWidget {
                           color: Colors.white,
                           height: 1.5,
                         ),
-                        decoration: const InputDecoration(
-                          hintText: 'Tapez ou collez votre texte ici...',
-                          hintStyle: TextStyle(color: Colors.white38),
+                        decoration: InputDecoration(
+                          hintText: AppLocalizations.of(context)!.pasteYourText,
+                          hintStyle: const TextStyle(color: Colors.white38),
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.all(24),
+                          contentPadding: const EdgeInsets.all(24),
                         ),
                       ),
                     ),
@@ -263,18 +266,18 @@ class SourcesDialog extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Tooltip(
-                        message: 'Annuler',
-                        child: TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text(
-                            'Annuler',
-                            style: TextStyle(color: Colors.white70),
-                          ),
+                      message: AppLocalizations.of(context)!.cancel,
+                      child: TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                          AppLocalizations.of(context)!.cancel,
+                          style: const TextStyle(color: Colors.white70),
                         ),
                       ),
+                    ),
                       const SizedBox(width: 16),
                       Tooltip(
-                        message: 'Valider le texte',
+                        message: AppLocalizations.of(context)!.save,
                         child: ElevatedButton(
                           onPressed: () {
                             onSourceSelected(SourceData(text: textController.text));
@@ -292,7 +295,7 @@ class SourcesDialog extends StatelessWidget {
                             ),
                             elevation: 0,
                           ),
-                          child: const Text('Valider'),
+                          child: Text(AppLocalizations.of(context)!.save),
                         ),
                       ),
                     ],
@@ -370,9 +373,9 @@ class SourcesDialog extends StatelessWidget {
                     children: [
                       Icon(LucideIcons.pen_line, color: Colors.white, size: 28),
                       const SizedBox(width: 12),
-                      const Text(
-                        'Éditer le texte enrichi',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context)!.richTextMode,
+                        style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -380,7 +383,7 @@ class SourcesDialog extends StatelessWidget {
                       ),
                       const Spacer(),
                       Tooltip(
-                        message: 'Fermer',
+                        message: AppLocalizations.of(context)!.close,
                         child: IconButton(
                           icon: const Icon(LucideIcons.x, color: Colors.white70),
                           onPressed: () => Navigator.pop(context),
@@ -438,18 +441,18 @@ class SourcesDialog extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Tooltip(
-                        message: 'Annuler',
+                        message: AppLocalizations.of(context)!.cancel,
                         child: TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text(
-                            'Annuler',
-                            style: TextStyle(color: Colors.white70),
+                          child: Text(
+                            AppLocalizations.of(context)!.cancel,
+                            style: const TextStyle(color: Colors.white70),
                           ),
                         ),
                       ),
                       const SizedBox(width: 16),
                       Tooltip(
-                        message: 'Valider le texte enrichi',
+                        message: AppLocalizations.of(context)!.save,
                         child: ElevatedButton(
                           onPressed: () {
                             final delta = controller.document.toDelta().toJson();
@@ -470,7 +473,7 @@ class SourcesDialog extends StatelessWidget {
                             ),
                             elevation: 0,
                           ),
-                          child: const Text('Valider'),
+                          child: Text(AppLocalizations.of(context)!.save),
                         ),
                       ),
                     ],
