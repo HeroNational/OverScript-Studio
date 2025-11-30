@@ -6,6 +6,14 @@ set(EPHEMERAL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ephemeral")
 # Configuration provided via flutter tool.
 include(${EPHEMERAL_DIR}/generated_config.cmake)
 
+# Provide a no-op fallback for apply_standard_settings for environments
+# where the helper isn't defined (prevents "Unknown CMake command" errors).
+if (NOT COMMAND apply_standard_settings)
+  function(apply_standard_settings target)
+    # Intentionally empty - original Flutter tooling may set extra flags here.
+  endfunction()
+endif()
+
 # TODO: Move the rest of this into files in ephemeral. See
 # https://github.com/flutter/flutter/issues/57146.
 set(WRAPPER_ROOT "${EPHEMERAL_DIR}/cpp_client_wrapper")
@@ -60,7 +68,13 @@ add_library(flutter_wrapper_plugin STATIC
   ${CPP_WRAPPER_SOURCES_CORE}
   ${CPP_WRAPPER_SOURCES_PLUGIN}
 )
-apply_standard_settings(flutter_wrapper_plugin)
+# Apply standard compile settings previously provided by apply_standard_settings().
+target_compile_features(flutter_wrapper_plugin PUBLIC cxx_std_17)
+set_target_properties(flutter_wrapper_plugin PROPERTIES
+  CXX_STANDARD 17
+  CXX_STANDARD_REQUIRED ON
+  CXX_EXTENSIONS OFF
+)
 set_target_properties(flutter_wrapper_plugin PROPERTIES
   POSITION_INDEPENDENT_CODE ON)
 set_target_properties(flutter_wrapper_plugin PROPERTIES
@@ -68,20 +82,29 @@ set_target_properties(flutter_wrapper_plugin PROPERTIES
 target_link_libraries(flutter_wrapper_plugin PUBLIC flutter)
 target_include_directories(flutter_wrapper_plugin PUBLIC
   "${WRAPPER_ROOT}/include"
+  "${EPHEMERAL_DIR}"
 )
 add_dependencies(flutter_wrapper_plugin flutter_assemble)
-
 # Wrapper sources needed for the runner.
 add_library(flutter_wrapper_app STATIC
   ${CPP_WRAPPER_SOURCES_CORE}
   ${CPP_WRAPPER_SOURCES_APP}
 )
-apply_standard_settings(flutter_wrapper_app)
+# Apply standard compile settings previously provided by apply_standard_settings().
+target_compile_features(flutter_wrapper_app PUBLIC cxx_std_17)
+set_target_properties(flutter_wrapper_app PROPERTIES
+  CXX_STANDARD 17
+  CXX_STANDARD_REQUIRED ON
+  CXX_EXTENSIONS OFF
+)
 target_link_libraries(flutter_wrapper_app PUBLIC flutter)
 target_include_directories(flutter_wrapper_app PUBLIC
   "${WRAPPER_ROOT}/include"
 )
 add_dependencies(flutter_wrapper_app flutter_assemble)
+if (COMMAND apply_standard_settings)
+  apply_standard_settings(flutter_wrapper_app)
+endif()
 
 # === Flutter tool backend ===
 # _phony_ is a non-existent file to force this command to run every time,
