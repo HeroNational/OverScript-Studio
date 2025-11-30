@@ -25,6 +25,7 @@ mixin _$PlaybackState {
   List<Uint8List>? get pdfPages => throw _privateConstructorUsedError;
   String? get pdfPath => throw _privateConstructorUsedError;
   String? get pdfError => throw _privateConstructorUsedError;
+  String? get richContentJson => throw _privateConstructorUsedError;
   String? get currentText => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -48,6 +49,7 @@ abstract class $PlaybackStateCopyWith<$Res> {
       List<Uint8List>? pdfPages,
       String? pdfPath,
       String? pdfError,
+      String? richContentJson,
       String? currentText});
 }
 
@@ -73,6 +75,7 @@ class _$PlaybackStateCopyWithImpl<$Res, $Val extends PlaybackState>
     Object? pdfPages = freezed,
     Object? pdfPath = freezed,
     Object? pdfError = freezed,
+    Object? richContentJson = freezed,
     Object? currentText = freezed,
   }) {
     return _then(_value.copyWith(
@@ -112,6 +115,10 @@ class _$PlaybackStateCopyWithImpl<$Res, $Val extends PlaybackState>
           ? _value.pdfError
           : pdfError // ignore: cast_nullable_to_non_nullable
               as String?,
+      richContentJson: freezed == richContentJson
+          ? _value.richContentJson
+          : richContentJson // ignore: cast_nullable_to_non_nullable
+              as String?,
       currentText: freezed == currentText
           ? _value.currentText
           : currentText // ignore: cast_nullable_to_non_nullable
@@ -138,6 +145,7 @@ abstract class _$$PlaybackStateImplCopyWith<$Res>
       List<Uint8List>? pdfPages,
       String? pdfPath,
       String? pdfError,
+      String? richContentJson,
       String? currentText});
 }
 
@@ -161,6 +169,7 @@ class __$$PlaybackStateImplCopyWithImpl<$Res>
     Object? pdfPages = freezed,
     Object? pdfPath = freezed,
     Object? pdfError = freezed,
+    Object? richContentJson = freezed,
     Object? currentText = freezed,
   }) {
     return _then(_$PlaybackStateImpl(
@@ -200,6 +209,10 @@ class __$$PlaybackStateImplCopyWithImpl<$Res>
           ? _value.pdfError
           : pdfError // ignore: cast_nullable_to_non_nullable
               as String?,
+      richContentJson: freezed == richContentJson
+          ? _value.richContentJson
+          : richContentJson // ignore: cast_nullable_to_non_nullable
+              as String?,
       currentText: freezed == currentText
           ? _value.currentText
           : currentText // ignore: cast_nullable_to_non_nullable
@@ -221,6 +234,7 @@ class _$PlaybackStateImpl implements _PlaybackState {
       final List<Uint8List>? pdfPages,
       this.pdfPath,
       this.pdfError,
+      this.richContentJson,
       this.currentText})
       : _pdfPages = pdfPages;
 
@@ -257,11 +271,13 @@ class _$PlaybackStateImpl implements _PlaybackState {
   @override
   final String? pdfError;
   @override
+  final String? richContentJson;
+  @override
   final String? currentText;
 
   @override
   String toString() {
-    return 'PlaybackState(isPlaying: $isPlaying, scrollPosition: $scrollPosition, speed: $speed, isFullscreen: $isFullscreen, contentType: $contentType, isLoadingPdf: $isLoadingPdf, pdfPages: $pdfPages, pdfPath: $pdfPath, pdfError: $pdfError, currentText: $currentText)';
+    return 'PlaybackState(isPlaying: $isPlaying, scrollPosition: $scrollPosition, speed: $speed, isFullscreen: $isFullscreen, contentType: $contentType, isLoadingPdf: $isLoadingPdf, pdfPages: $pdfPages, pdfPath: $pdfPath, pdfError: $pdfError, richContentJson: $richContentJson, currentText: $currentText)';
   }
 
   @override
@@ -284,6 +300,8 @@ class _$PlaybackStateImpl implements _PlaybackState {
             (identical(other.pdfPath, pdfPath) || other.pdfPath == pdfPath) &&
             (identical(other.pdfError, pdfError) ||
                 other.pdfError == pdfError) &&
+            (identical(other.richContentJson, richContentJson) ||
+                other.richContentJson == richContentJson) &&
             (identical(other.currentText, currentText) ||
                 other.currentText == currentText));
   }
@@ -300,6 +318,7 @@ class _$PlaybackStateImpl implements _PlaybackState {
       const DeepCollectionEquality().hash(_pdfPages),
       pdfPath,
       pdfError,
+      richContentJson,
       currentText);
 
   @JsonKey(ignore: true)
@@ -320,6 +339,7 @@ abstract class _PlaybackState implements PlaybackState {
       final List<Uint8List>? pdfPages,
       final String? pdfPath,
       final String? pdfError,
+      final String? richContentJson,
       final String? currentText}) = _$PlaybackStateImpl;
 
   @override
@@ -340,6 +360,8 @@ abstract class _PlaybackState implements PlaybackState {
   String? get pdfPath;
   @override
   String? get pdfError;
+  @override
+  String? get richContentJson;
   @override
   String? get currentText;
   @override

@@ -37,6 +37,21 @@ class PlaybackNotifier extends StateNotifier<PlaybackState> {
     _scrollController?.jumpTo(0);
     state = state.copyWith(
       currentText: text,
+      richContentJson: null,
+      contentType: PlaybackContentType.text,
+      pdfPages: null,
+      pdfPath: null,
+      pdfError: null,
+      isLoadingPdf: false,
+      scrollPosition: 0,
+    );
+  }
+
+  void setRichText(String deltaJson) {
+    _scrollController?.jumpTo(0);
+    state = state.copyWith(
+      currentText: null,
+      richContentJson: deltaJson,
       contentType: PlaybackContentType.text,
       pdfPages: null,
       pdfPath: null,

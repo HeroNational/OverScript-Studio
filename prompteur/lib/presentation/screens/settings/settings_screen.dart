@@ -97,6 +97,17 @@ class SettingsScreen extends ConsumerWidget {
                 _buildToolbarScaleSelector(context, ref, settings),
                 const SizedBox(height: 16),
                 _buildToolbarThemeSelector(context, ref, settings),
+                const SizedBox(height: 16),
+                _buildSwitchTile(
+                  context,
+                  'Bloquer les notifications (mode Focus)',
+                  'Active le mode Ne pas déranger pendant le prompteur',
+                  settings.enableFocusMode,
+                  (value) => ref.read(settingsProvider.notifier).updateSettings(
+                        settings.copyWith(enableFocusMode: value),
+                      ),
+                  LucideIcons.bell_off,
+                ),
               ],
             ),
             const SizedBox(height: 32),

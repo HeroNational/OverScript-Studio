@@ -5,22 +5,30 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:prompteur/core/utils/subtitle_parser.dart';
+import 'package:flutter_quill/flutter_quill.dart' as quill;
+import 'dart:convert';
 
 class SourceData {
   final String? text;
   final String? pdfPath;
+  final String? quillJson;
 
-  const SourceData({this.text, this.pdfPath});
+  const SourceData({this.text, this.pdfPath, this.quillJson});
 
   bool get isPdf => pdfPath != null;
+  bool get isRichText => quillJson != null;
 }
 
 class SourcesDialog extends StatelessWidget {
   final Function(SourceData) onSourceSelected;
+  final String? initialText;
+  final String? initialQuillJson;
 
   const SourcesDialog({
     super.key,
     required this.onSourceSelected,
+    this.initialText,
+    this.initialQuillJson,
   });
 
   @override
@@ -143,11 +151,11 @@ class SourcesDialog extends StatelessWidget {
                 _SourceOption(
                   icon: LucideIcons.pen_line,
                   title: 'Éditer le texte',
-                  subtitle: 'Modifier le texte actuel',
+                  subtitle: 'Modifier le texte avec mise en forme',
                   gradientColors: const [Color(0xFF10B981), Color(0xFF06B6D4)],
                   onTap: () {
                     Navigator.pop(context);
-                    _showTextEditor(context, onSourceSelected);
+                    _showRichEditor(context, onSourceSelected);
                   },
                 ),
               ],
@@ -269,6 +277,172 @@ class SourcesDialog extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () {
                             onSourceSelected(SourceData(text: textController.text));
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF6366F1),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 32,
+                              vertical: 16,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: const Text('Valider'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showRichEditor(BuildContext context, Function(SourceData) onSourceSelected) {
+    final controller = initialQuillJson != null
+        ? quill.QuillController(
+            document: quill.Document.fromJson(jsonDecode(initialQuillJson!)),
+            selection: const TextSelection.collapsed(offset: 0),
+          )
+        : quill.QuillController.basic();
+
+    if (initialText != null && initialQuillJson == null) {
+      controller.document.replace(0, controller.document.length, initialText!);
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(
+              width: 780,
+              height: 540,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.white.withOpacity(0.15),
+                    Colors.white.withOpacity(0.05),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.2),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 22,
+                    offset: const Offset(0, 14),
+                  ),
+                ],
+              ),
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(LucideIcons.pen_line, color: Colors.white, size: 28),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Éditer le texte enrichi',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const Spacer(),
+                      Tooltip(
+                        message: 'Fermer',
+                        child: IconButton(
+                          icon: const Icon(LucideIcons.x, color: Colors.white70),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.05),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.1),
+                          width: 1,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          quill.QuillSimpleToolbar(
+                            controller: controller,
+                            config: const quill.QuillSimpleToolbarConfig(
+                              axis: Axis.horizontal,
+                              multiRowsDisplay: true,
+                              showAlignmentButtons: true,
+                              showBackgroundColorButton: false,
+                              showUndo: true,
+                              showRedo: true,
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: quill.QuillEditor(
+                                controller: controller,
+                                focusNode: FocusNode(),
+                                scrollController: ScrollController(),
+                                config: const quill.QuillEditorConfig(
+                                  scrollable: true,
+                                  autoFocus: true,
+                                  expands: true,
+                                  padding: EdgeInsets.all(12),
+                                  showCursor: true,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Tooltip(
+                        message: 'Annuler',
+                        child: TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text(
+                            'Annuler',
+                            style: TextStyle(color: Colors.white70),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Tooltip(
+                        message: 'Valider le texte enrichi',
+                        child: ElevatedButton(
+                          onPressed: () {
+                            final delta = controller.document.toDelta().toJson();
+                            final plain = controller.document.toPlainText();
+                            onSourceSelected(SourceData(quillJson: jsonEncode(delta), text: plain));
                             Navigator.pop(context);
                           },
                           style: ElevatedButton.styleFrom(

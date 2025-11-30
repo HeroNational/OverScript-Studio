@@ -9,6 +9,7 @@ import '../../widgets/toolbox/glassmorphic_toolbox.dart';
 import '../settings/settings_screen.dart';
 import '../sources/sources_dialog.dart';
 import 'widgets/text_display.dart';
+import '../../../data/services/focus_mode_service.dart';
 
 class PrompterScreen extends ConsumerStatefulWidget {
   const PrompterScreen({super.key});
@@ -19,6 +20,7 @@ class PrompterScreen extends ConsumerStatefulWidget {
 
 class _PrompterScreenState extends ConsumerState<PrompterScreen> {
   final FocusNode _focusNode = FocusNode();
+  final FocusModeService _focusService = FocusModeService();
 
   @override
   void initState() {
@@ -31,11 +33,18 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
       if (settings.autoFullscreen) {
         _toggleFullscreen();
       }
+      if (settings.enableFocusMode) {
+        _focusService.enable();
+      }
     });
   }
 
   @override
   void dispose() {
+    final settings = ref.read(settingsProvider);
+    if (settings.enableFocusMode) {
+      _focusService.disable();
+    }
     _focusNode.dispose();
     super.dispose();
   }
@@ -46,9 +55,13 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
       return;
     }
 
-    final text = source.text ?? '';
-    if (text.isNotEmpty) {
-      ref.read(playbackProvider.notifier).setText(text);
+    if (source.isRichText && source.quillJson != null) {
+      ref.read(playbackProvider.notifier).setRichText(source.quillJson!);
+    } else {
+      final text = source.text ?? '';
+      if (text.isNotEmpty) {
+        ref.read(playbackProvider.notifier).setText(text);
+      }
     }
   }
 
@@ -125,6 +138,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
 
   Widget _buildPositionedToolbox(bool isFullscreen) {
     final settings = ref.watch(settingsProvider);
+    final playback = ref.watch(playbackProvider);
 
     final toolbox = GlasmorphicToolbox(
       onSourcesPressed: () {
@@ -132,6 +146,8 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
           context: context,
           builder: (context) => SourcesDialog(
             onSourceSelected: _handleSource,
+            initialText: playback.currentText,
+            initialQuillJson: playback.richContentJson,
           ),
         );
       },

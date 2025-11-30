@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:window_manager/window_manager.dart';
+import 'dart:convert';
 import 'data/services/storage_service.dart';
 import 'presentation/screens/prompter/prompter_screen.dart';
 import 'presentation/providers/playback_provider.dart';
@@ -57,6 +60,16 @@ class PrompterApp extends StatelessWidget {
           overlayColor: const Color(0xFF6366F1).withOpacity(0.2),
         ),
       ),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        quill.FlutterQuillLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('fr'),
+      ],
       home: const PrompterHome(),
     );
   }
@@ -71,6 +84,7 @@ class PrompterHome extends ConsumerStatefulWidget {
 
 class _PrompterHomeState extends ConsumerState<PrompterHome> {
   final TextEditingController _textController = TextEditingController();
+  final quill.QuillController _quillController = quill.QuillController.basic();
 
   @override
   void initState() {
@@ -89,6 +103,7 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
   @override
   void dispose() {
     _textController.dispose();
+    _quillController.dispose();
     super.dispose();
   }
 
@@ -99,15 +114,19 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
       return;
     }
 
-    final text = source.text ?? _textController.text;
-    if (text.isEmpty) return;
+    if (source.isRichText && source.quillJson != null) {
+      ref.read(playbackProvider.notifier).setRichText(source.quillJson!);
+    } else {
+      final text = source.text ?? _textController.text;
+      if (text.isEmpty) return;
+      _textController.text = text;
+      _quillController.document.replace(0, _quillController.document.length, text);
 
-    _textController.text = text;
+      final storageService = StorageService();
+      await storageService.saveLastText(text);
 
-    final storageService = StorageService();
-    await storageService.saveLastText(text);
-
-    ref.read(playbackProvider.notifier).setText(text);
+      ref.read(playbackProvider.notifier).setText(text);
+    }
     _navigateToPrompter();
   }
 
@@ -167,7 +186,7 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
                 ),
                 const SizedBox(height: 48),
                 Container(
-                  height: 300,
+                  height: 380,
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(16),
@@ -176,27 +195,47 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
                       width: 1,
                     ),
                   ),
-                  child: TextField(
-                    controller: _textController,
-                    maxLines: null,
-                    expands: true,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
-                    decoration: const InputDecoration(
-                      hintText: 'Collez votre texte ici...',
-                      hintStyle: TextStyle(color: Colors.white38),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.all(24),
-                    ),
+                  child: Column(
+                    children: [
+                      quill.QuillSimpleToolbar(
+                        controller: _quillController,
+                        config: const quill.QuillSimpleToolbarConfig(
+                          axis: Axis.horizontal,
+                          multiRowsDisplay: true, // évite le scroll/arrow bug
+                          showAlignmentButtons: true,
+                          showBackgroundColorButton: false,
+                          showUndo: true,
+                          showRedo: true,
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: quill.QuillEditor(
+                            controller: _quillController,
+                            focusNode: FocusNode(),
+                            scrollController: ScrollController(),
+                            config: const quill.QuillEditorConfig(
+                              scrollable: true,
+                              autoFocus: false,
+                              expands: true,
+                              padding: EdgeInsets.all(12),
+                              showCursor: true,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 32),
                 Tooltip(
                   message: 'Lancer le prompteur avec ce texte',
                   child: ElevatedButton(
-                    onPressed: () => _handleSource(SourceData(text: _textController.text)),
+                    onPressed: () {
+                      final json = _quillController.document.toDelta().toJson();
+                      _handleSource(SourceData(quillJson: jsonEncode(json), text: _quillController.document.toPlainText()));
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF6366F1),
                       foregroundColor: Colors.white,

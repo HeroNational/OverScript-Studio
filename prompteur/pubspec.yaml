@@ -15,7 +15,7 @@ dependencies:
   flutter_riverpod: ^2.4.9
 
   # File Handling
-  file_picker: ^6.1.1
+  file_picker: ^10.3.3
   path_provider: ^2.1.1
 
   # PDF (open source)

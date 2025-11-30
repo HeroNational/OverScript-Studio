@@ -20,6 +20,7 @@ class PlaybackState with _$PlaybackState {
     List<Uint8List>? pdfPages,
     String? pdfPath,
     String? pdfError,
+    String? richContentJson,
     String? currentText,
   }) = _PlaybackState;
 }

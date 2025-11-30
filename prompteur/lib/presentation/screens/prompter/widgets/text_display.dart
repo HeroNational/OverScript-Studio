@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_quill/flutter_quill.dart' as quill;
 import '../../../../data/models/playback_state.dart';
 import '../../../../data/models/settings_model.dart';
 import '../../../providers/playback_provider.dart';
 import '../../../providers/settings_provider.dart';
+import 'dart:convert';
 
 class TextDisplay extends ConsumerStatefulWidget {
   const TextDisplay({super.key});
@@ -112,6 +114,33 @@ class _TextDisplayState extends ConsumerState<TextDisplay> {
   }
 
   Widget _buildTextContent(PlaybackState playbackState, SettingsModel settings) {
+    if (playbackState.richContentJson != null) {
+      try {
+        final document = quill.Document.fromJson(jsonDecode(playbackState.richContentJson!));
+        final controller = quill.QuillController(
+          document: document,
+          selection: const TextSelection.collapsed(offset: 0),
+          readOnly: true,
+        );
+        return quill.QuillEditor(
+          controller: controller,
+          focusNode: FocusNode(),
+          scrollController: _scrollController,
+          config: quill.QuillEditorConfig(
+            scrollable: true,
+            autoFocus: false,
+            expands: false,
+            padding: const EdgeInsets.symmetric(horizontal: 48.0, vertical: 64),
+            showCursor: false,
+            enableInteractiveSelection: false,
+            customStyles: _quillStyles(settings),
+          ),
+        );
+      } catch (_) {
+        // Fallback plain text si parsing échoue
+      }
+    }
+
     return SingleChildScrollView(
       controller: _scrollController,
       padding: const EdgeInsets.symmetric(horizontal: 48.0, vertical: 64),
@@ -131,6 +160,48 @@ class _TextDisplayState extends ConsumerState<TextDisplay> {
           ),
         ),
       ),
+    );
+  }
+
+  quill.DefaultStyles _quillStyles(SettingsModel settings) {
+    final base = quill.DefaultStyles.getInstance(context);
+    final textStyle = TextStyle(
+      fontSize: settings.fontSize,
+      color: _parseColor(settings.textColor),
+      height: 1.5,
+      fontFamily: settings.fontFamily == 'System' ? null : settings.fontFamily,
+    );
+
+    return quill.DefaultStyles(
+      h1: base.h1?.copyWith(style: textStyle.copyWith(fontSize: settings.fontSize * 1.6)),
+      h2: base.h2?.copyWith(style: textStyle.copyWith(fontSize: settings.fontSize * 1.4)),
+      h3: base.h3?.copyWith(style: textStyle.copyWith(fontSize: settings.fontSize * 1.2)),
+      h4: base.h4,
+      h5: base.h5,
+      h6: base.h6,
+      paragraph: base.paragraph?.copyWith(style: textStyle),
+      lineHeightNormal: base.lineHeightNormal,
+      lineHeightTight: base.lineHeightTight,
+      lineHeightOneAndHalf: base.lineHeightOneAndHalf,
+      lineHeightDouble: base.lineHeightDouble,
+      bold: base.bold?.copyWith(fontSize: textStyle.fontSize),
+      italic: base.italic?.copyWith(fontSize: textStyle.fontSize),
+      underline: base.underline?.copyWith(fontSize: textStyle.fontSize),
+      strikeThrough: base.strikeThrough?.copyWith(fontSize: textStyle.fontSize),
+      inlineCode: base.inlineCode,
+      link: base.link,
+      color: base.color,
+      placeHolder: base.placeHolder?.copyWith(style: textStyle.copyWith(color: Colors.white54)),
+      lists: base.lists,
+      quote: base.quote,
+      code: base.code,
+      indent: base.indent,
+      align: base.align,
+      leading: base.leading,
+      sizeSmall: textStyle.copyWith(fontSize: settings.fontSize * 0.85),
+      sizeLarge: base.sizeLarge,
+      sizeHuge: base.sizeHuge,
+      palette: base.palette,
     );
   }
 
