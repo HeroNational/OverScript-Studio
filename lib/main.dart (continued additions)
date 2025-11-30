@@ -1,0 +1,76 @@
+}
+
+class _TrialBanner extends StatelessWidget {
+  final bool expired;
+  final int daysLeft;
+  final DateTime? expiry;
+
+  const _TrialBanner({
+    required this.expired,
+    required this.daysLeft,
+    required this.expiry,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final expiryStr = expiry != null ? DateFormat.yMMMd().format(expiry!) : '';
+    final gradientColors = expired
+        ? [Colors.redAccent.withOpacity(0.8), Colors.red.withOpacity(0.7)]
+        : [const Color(0xFF10B981), const Color(0xFF3B82F6)];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: gradientColors,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.25),
+            blurRadius: 12,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(
+            expired ? Icons.lock_clock : Icons.timer,
+            color: Colors.white,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  expired ? l10n.trialExpiredTitle : l10n.trialActiveTitle,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  expired
+                      ? l10n.trialExpiredMessage
+                      : l10n.trialActiveLabel(daysLeft.toString()),
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                ),
+                if (!expired && expiryStr.isNotEmpty)
+                  Text(
+                    l10n.trialExpiresOn(expiryStr),
+                    style: const TextStyle(color: Colors.white70, fontSize: 12),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }

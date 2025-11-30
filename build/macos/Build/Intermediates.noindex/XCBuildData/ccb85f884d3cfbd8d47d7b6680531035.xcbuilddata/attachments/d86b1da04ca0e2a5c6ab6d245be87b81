@@ -1,0 +1,5 @@
+
+module pdfx.Swift {
+  header "pdfx-Swift.h"
+  requires objc
+}

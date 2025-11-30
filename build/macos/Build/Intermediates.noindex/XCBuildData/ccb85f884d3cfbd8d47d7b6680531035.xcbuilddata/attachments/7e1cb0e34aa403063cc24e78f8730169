@@ -1,0 +1,49 @@
+{
+  "" : {
+    "diagnostics" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/pdfx-primary.dia",
+    "emit-module-dependencies" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/pdfx-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/pdfx-primary-emit-module.dia",
+    "pch" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/pdfx-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/pdfx-primary.swiftdeps"
+  },
+  "/Users/heronational/.pub-cache/hosted/pub.dev/pdfx-2.9.2/macos/Classes/Document.swift" : {
+    "const-values" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Document.swiftconstvalues",
+    "dependencies" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Document.d",
+    "diagnostics" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Document.dia",
+    "index-unit-output-path" : "/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Document.o",
+    "llvm-bc" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Document.bc",
+    "object" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Document.o",
+    "swift-dependencies" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Document.swiftdeps",
+    "swiftmodule" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Document~partial.swiftmodule"
+  },
+  "/Users/heronational/.pub-cache/hosted/pub.dev/pdfx-2.9.2/macos/Classes/Hooks.swift" : {
+    "const-values" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Hooks.swiftconstvalues",
+    "dependencies" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Hooks.d",
+    "diagnostics" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Hooks.dia",
+    "index-unit-output-path" : "/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Hooks.o",
+    "llvm-bc" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Hooks.bc",
+    "object" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Hooks.o",
+    "swift-dependencies" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Hooks.swiftdeps",
+    "swiftmodule" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Hooks~partial.swiftmodule"
+  },
+  "/Users/heronational/.pub-cache/hosted/pub.dev/pdfx-2.9.2/macos/Classes/Resources.swift" : {
+    "const-values" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Resources.swiftconstvalues",
+    "dependencies" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Resources.d",
+    "diagnostics" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Resources.dia",
+    "index-unit-output-path" : "/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Resources.o",
+    "llvm-bc" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Resources.bc",
+    "object" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Resources.o",
+    "swift-dependencies" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Resources.swiftdeps",
+    "swiftmodule" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/Resources~partial.swiftmodule"
+  },
+  "/Users/heronational/.pub-cache/hosted/pub.dev/pdfx-2.9.2/macos/Classes/SwiftPdfxPlugin.swift" : {
+    "const-values" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/SwiftPdfxPlugin.swiftconstvalues",
+    "dependencies" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/SwiftPdfxPlugin.d",
+    "diagnostics" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/SwiftPdfxPlugin.dia",
+    "index-unit-output-path" : "/Pods.build/Debug/pdfx.build/Objects-normal/arm64/SwiftPdfxPlugin.o",
+    "llvm-bc" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/SwiftPdfxPlugin.bc",
+    "object" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/SwiftPdfxPlugin.o",
+    "swift-dependencies" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/SwiftPdfxPlugin.swiftdeps",
+    "swiftmodule" : "/Users/heronational/Projets/Desktop/Prompteur/build/macos/Build/Intermediates.noindex/Pods.build/Debug/pdfx.build/Objects-normal/arm64/SwiftPdfxPlugin~partial.swiftmodule"
+  }
+}

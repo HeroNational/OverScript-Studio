@@ -1,0 +1,5 @@
+
+module quill_native_bridge_macos.Swift {
+  header "quill_native_bridge_macos-Swift.h"
+  requires objc
+}

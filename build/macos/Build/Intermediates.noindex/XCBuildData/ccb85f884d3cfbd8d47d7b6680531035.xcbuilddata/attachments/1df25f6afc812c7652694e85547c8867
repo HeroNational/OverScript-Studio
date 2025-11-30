@@ -1,0 +1,4 @@
+
+module quill_native_bridge_macos.__Swift {
+  exclude header "quill_native_bridge_macos-Swift.h"
+}
