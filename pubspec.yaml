@@ -1,0 +1,78 @@
+name: prompteur
+description: "Application de OverScript Studiofessionnel pour Desktop"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  flutter_riverpod: ^2.4.9
+
+  # File Handling
+  file_picker: ^10.3.3
+  path_provider: ^2.1.1
+  youtube_explode_dart: ^2.5.3
+  youtube_caption_scraper: ^0.2.1
+  http: ^1.1.0
+  flutter_markdown: ^0.6.20
+
+  # PDF (open source)
+  pdfx: ^2.6.0
+
+  # Persistence
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  shared_preferences: ^2.2.2
+
+  # Platform Integration
+  window_manager: ^0.3.7
+  screen_retriever: ^0.1.9
+
+  # Models
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.8.1
+
+  # UI
+  google_fonts: ^6.1.0
+  flutter_lucide: ^1.1.0
+  flutter_colorpicker: ^1.1.0
+
+  # Éditeur riche WYSIWYG
+  flutter_quill: ^11.5.0
+
+  # Internationalisation
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+
+  # Icons
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+  flutter_launcher_icons: ^0.13.1
+  # Code Generation
+  build_runner: ^2.4.7
+  freezed: ^2.4.6
+  json_serializable: ^6.7.1
+  hive_generator: ^2.0.1
+
+flutter:
+  uses-material-design: true
+
+  # Generate localization files
+  generate: true
+  assets:
+    - assets/banner_texture.jpg
+    - assets/banner_texture_2.jpg
+    - assets/banner_texture_3.jpg
+    - assets/cgu.md
