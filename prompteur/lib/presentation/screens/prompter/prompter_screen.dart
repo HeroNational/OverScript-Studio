@@ -66,6 +66,11 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
   }
 
   void _handleKeyEvent(KeyEvent event) {
+    // Ignore repeated keydown events to avoid pressed-key assertion
+    if (event is KeyRepeatEvent) {
+      return;
+    }
+
     final settings = ref.read(settingsProvider);
 
     if (event is KeyDownEvent) {
@@ -160,7 +165,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
         );
       },
       onFullscreenPressed: _toggleFullscreen,
-      isVertical: _isVertical(settings.toolbarPosition),
+      isVertical: _isVertical(settings.toolbarPosition, settings.toolbarOrientation),
       scale: settings.toolbarScale,
       themeStyle: settings.toolboxTheme,
     );
@@ -175,7 +180,25 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
             child: Center(child: toolbox),
           ),
         );
+      case ToolbarPosition.topCenter:
+        return Positioned(
+          top: 16,
+          left: 0,
+          right: 0,
+          child: SafeArea(
+            child: Center(child: toolbox),
+          ),
+        );
       case ToolbarPosition.bottom:
+        return Positioned(
+          bottom: 16,
+          left: 0,
+          right: 0,
+          child: SafeArea(
+            child: Center(child: toolbox),
+          ),
+        );
+      case ToolbarPosition.bottomCenter:
         return Positioned(
           bottom: 16,
           left: 0,
@@ -235,12 +258,17 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
     }
   }
 
-  bool _isVertical(ToolbarPosition position) {
+  bool _isVertical(ToolbarPosition position, ToolbarOrientation orientation) {
+    if (orientation == ToolbarOrientation.horizontal) return false;
+    if (orientation == ToolbarOrientation.vertical) return true;
+    // auto : vertical si latéral ou coin ou centre haut/bas
     return position == ToolbarPosition.left ||
         position == ToolbarPosition.right ||
         position == ToolbarPosition.topLeft ||
         position == ToolbarPosition.bottomLeft ||
         position == ToolbarPosition.topRight ||
-        position == ToolbarPosition.bottomRight;
+        position == ToolbarPosition.bottomRight ||
+        position == ToolbarPosition.topCenter ||
+        position == ToolbarPosition.bottomCenter;
   }
 }

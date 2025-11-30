@@ -31,6 +31,8 @@ mixin _$SettingsModel {
   ToolbarPosition get toolbarPosition => throw _privateConstructorUsedError;
   double get toolbarScale => throw _privateConstructorUsedError;
   ToolboxTheme get toolboxTheme => throw _privateConstructorUsedError;
+  ToolbarOrientation get toolbarOrientation =>
+      throw _privateConstructorUsedError;
   bool get pauseOnMouseMove => throw _privateConstructorUsedError;
   String get pauseKey => throw _privateConstructorUsedError;
   String get locale => throw _privateConstructorUsedError;
@@ -61,6 +63,7 @@ abstract class $SettingsModelCopyWith<$Res> {
       ToolbarPosition toolbarPosition,
       double toolbarScale,
       ToolboxTheme toolboxTheme,
+      ToolbarOrientation toolbarOrientation,
       bool pauseOnMouseMove,
       String pauseKey,
       String locale,
@@ -91,6 +94,7 @@ class _$SettingsModelCopyWithImpl<$Res, $Val extends SettingsModel>
     Object? toolbarPosition = null,
     Object? toolbarScale = null,
     Object? toolboxTheme = null,
+    Object? toolbarOrientation = null,
     Object? pauseOnMouseMove = null,
     Object? pauseKey = null,
     Object? locale = null,
@@ -141,6 +145,10 @@ class _$SettingsModelCopyWithImpl<$Res, $Val extends SettingsModel>
           ? _value.toolboxTheme
           : toolboxTheme // ignore: cast_nullable_to_non_nullable
               as ToolboxTheme,
+      toolbarOrientation: null == toolbarOrientation
+          ? _value.toolbarOrientation
+          : toolbarOrientation // ignore: cast_nullable_to_non_nullable
+              as ToolbarOrientation,
       pauseOnMouseMove: null == pauseOnMouseMove
           ? _value.pauseOnMouseMove
           : pauseOnMouseMove // ignore: cast_nullable_to_non_nullable
@@ -181,6 +189,7 @@ abstract class _$$SettingsModelImplCopyWith<$Res>
       ToolbarPosition toolbarPosition,
       double toolbarScale,
       ToolboxTheme toolboxTheme,
+      ToolbarOrientation toolbarOrientation,
       bool pauseOnMouseMove,
       String pauseKey,
       String locale,
@@ -209,6 +218,7 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
     Object? toolbarPosition = null,
     Object? toolbarScale = null,
     Object? toolboxTheme = null,
+    Object? toolbarOrientation = null,
     Object? pauseOnMouseMove = null,
     Object? pauseKey = null,
     Object? locale = null,
@@ -259,6 +269,10 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
           ? _value.toolboxTheme
           : toolboxTheme // ignore: cast_nullable_to_non_nullable
               as ToolboxTheme,
+      toolbarOrientation: null == toolbarOrientation
+          ? _value.toolbarOrientation
+          : toolbarOrientation // ignore: cast_nullable_to_non_nullable
+              as ToolbarOrientation,
       pauseOnMouseMove: null == pauseOnMouseMove
           ? _value.pauseOnMouseMove
           : pauseOnMouseMove // ignore: cast_nullable_to_non_nullable
@@ -294,6 +308,7 @@ class _$SettingsModelImpl implements _SettingsModel {
       this.toolbarPosition = ToolbarPosition.bottom,
       this.toolbarScale = 1.0,
       this.toolboxTheme = ToolboxTheme.modern,
+      this.toolbarOrientation = ToolbarOrientation.auto,
       this.pauseOnMouseMove = true,
       this.pauseKey = 'Space',
       this.locale = 'fr',
@@ -338,6 +353,9 @@ class _$SettingsModelImpl implements _SettingsModel {
   final ToolboxTheme toolboxTheme;
   @override
   @JsonKey()
+  final ToolbarOrientation toolbarOrientation;
+  @override
+  @JsonKey()
   final bool pauseOnMouseMove;
   @override
   @JsonKey()
@@ -357,7 +375,7 @@ class _$SettingsModelImpl implements _SettingsModel {
 
   @override
   String toString() {
-    return 'SettingsModel(defaultSpeed: $defaultSpeed, speedUnit: $speedUnit, autoFullscreen: $autoFullscreen, enableFocusMode: $enableFocusMode, backgroundColor: $backgroundColor, textColor: $textColor, fontFamily: $fontFamily, fontSize: $fontSize, toolbarPosition: $toolbarPosition, toolbarScale: $toolbarScale, toolboxTheme: $toolboxTheme, pauseOnMouseMove: $pauseOnMouseMove, pauseKey: $pauseKey, locale: $locale, customShortcuts: $customShortcuts)';
+    return 'SettingsModel(defaultSpeed: $defaultSpeed, speedUnit: $speedUnit, autoFullscreen: $autoFullscreen, enableFocusMode: $enableFocusMode, backgroundColor: $backgroundColor, textColor: $textColor, fontFamily: $fontFamily, fontSize: $fontSize, toolbarPosition: $toolbarPosition, toolbarScale: $toolbarScale, toolboxTheme: $toolboxTheme, toolbarOrientation: $toolbarOrientation, pauseOnMouseMove: $pauseOnMouseMove, pauseKey: $pauseKey, locale: $locale, customShortcuts: $customShortcuts)';
   }
 
   @override
@@ -387,6 +405,8 @@ class _$SettingsModelImpl implements _SettingsModel {
                 other.toolbarScale == toolbarScale) &&
             (identical(other.toolboxTheme, toolboxTheme) ||
                 other.toolboxTheme == toolboxTheme) &&
+            (identical(other.toolbarOrientation, toolbarOrientation) ||
+                other.toolbarOrientation == toolbarOrientation) &&
             (identical(other.pauseOnMouseMove, pauseOnMouseMove) ||
                 other.pauseOnMouseMove == pauseOnMouseMove) &&
             (identical(other.pauseKey, pauseKey) ||
@@ -411,6 +431,7 @@ class _$SettingsModelImpl implements _SettingsModel {
       toolbarPosition,
       toolbarScale,
       toolboxTheme,
+      toolbarOrientation,
       pauseOnMouseMove,
       pauseKey,
       locale,
@@ -443,6 +464,7 @@ abstract class _SettingsModel implements SettingsModel {
       final ToolbarPosition toolbarPosition,
       final double toolbarScale,
       final ToolboxTheme toolboxTheme,
+      final ToolbarOrientation toolbarOrientation,
       final bool pauseOnMouseMove,
       final String pauseKey,
       final String locale,
@@ -473,6 +495,8 @@ abstract class _SettingsModel implements SettingsModel {
   double get toolbarScale;
   @override
   ToolboxTheme get toolboxTheme;
+  @override
+  ToolbarOrientation get toolbarOrientation;
   @override
   bool get pauseOnMouseMove;
   @override

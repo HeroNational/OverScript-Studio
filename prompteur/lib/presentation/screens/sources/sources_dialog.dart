@@ -109,7 +109,6 @@ class SourcesDialog extends StatelessWidget {
                   subtitle: 'Importer TXT, VTT, SRT',
                   gradientColors: const [Color(0xFF6366F1), Color(0xFF8B5CF6)],
                   onTap: () async {
-                    Navigator.pop(context);
                     final result = await FilePicker.platform.pickFiles(
                       type: FileType.custom,
                       allowedExtensions: ['txt', 'vtt', 'srt'],
@@ -127,6 +126,7 @@ class SourcesDialog extends StatelessWidget {
 
                       onSourceSelected(SourceData(text: content));
                     }
+                    if (context.mounted) Navigator.pop(context);
                   },
                 ),
                 const SizedBox(height: 16),
@@ -136,7 +136,6 @@ class SourcesDialog extends StatelessWidget {
                   subtitle: 'Importer un fichier PDF',
                   gradientColors: const [Color(0xFFEC4899), Color(0xFFF59E0B)],
                   onTap: () async {
-                    Navigator.pop(context);
                     final result = await FilePicker.platform.pickFiles(
                       type: FileType.custom,
                       allowedExtensions: ['pdf'],
@@ -145,6 +144,7 @@ class SourcesDialog extends StatelessWidget {
                     if (result != null && result.files.single.path != null) {
                       onSourceSelected(SourceData(pdfPath: result.files.single.path!));
                     }
+                    if (context.mounted) Navigator.pop(context);
                   },
                 ),
                 const SizedBox(height: 16),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import '../../../data/models/settings_model.dart';
+import '../../../core/utils/speed_converter.dart';
 import '../../providers/settings_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -14,7 +15,7 @@ class SettingsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Paramètres'),
+        title: Text(_tr(settings, 'Paramètres', 'Settings')),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -34,7 +35,7 @@ class SettingsScreen extends ConsumerWidget {
           children: [
             _buildSection(
               context,
-              'Lecture',
+              _tr(settings, 'Lecture', 'Playback'),
               [
                 _buildSpeedUnitSelector(context, ref, settings),
                 const SizedBox(height: 16),
@@ -42,8 +43,9 @@ class SettingsScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
                 _buildSwitchTile(
                   context,
-                  'Plein écran automatique au démarrage',
-                  'L\'application passera en plein écran quand vous lancez le prompteur',
+                  _tr(settings, 'Plein écran automatique au démarrage', 'Auto fullscreen on start'),
+                  _tr(settings, 'L\'application passera en plein écran quand vous lancez le prompteur',
+                      'The app will go fullscreen when you start the prompter'),
                   settings.autoFullscreen,
                   (value) => ref.read(settingsProvider.notifier).updateAutoFullscreen(value),
                   LucideIcons.maximize,
@@ -53,12 +55,12 @@ class SettingsScreen extends ConsumerWidget {
             const SizedBox(height: 32),
             _buildSection(
               context,
-              'Apparence',
+              _tr(settings, 'Apparence', 'Appearance'),
               [
                 _buildColorPicker(
                   context,
                   ref,
-                  'Couleur de fond',
+                  _tr(settings, 'Couleur de fond', 'Background color'),
                   settings.backgroundColor,
                   (color) => ref.read(settingsProvider.notifier).updateBackgroundColor(_colorToHex(color)),
                   LucideIcons.palette,
@@ -67,7 +69,7 @@ class SettingsScreen extends ConsumerWidget {
                 _buildColorPicker(
                   context,
                   ref,
-                  'Couleur du texte',
+                  _tr(settings, 'Couleur du texte', 'Text color'),
                   settings.textColor,
                   (color) => ref.read(settingsProvider.notifier).updateTextColor(_colorToHex(color)),
                   LucideIcons.type,
@@ -79,29 +81,39 @@ class SettingsScreen extends ConsumerWidget {
             const SizedBox(height: 32),
             _buildSection(
               context,
-              'Contrôles',
+              _tr(settings, 'Toolbox', 'Toolbox'),
               [
-                _buildSwitchTile(
-                  context,
-                  'Pause sur mouvement de souris',
-                  'Le défilement se met en pause quand vous bougez la souris',
-                  settings.pauseOnMouseMove,
-                  (value) => ref.read(settingsProvider.notifier).updateSettings(
-                    settings.copyWith(pauseOnMouseMove: value),
-                  ),
-                  LucideIcons.mouse,
-                ),
-                const SizedBox(height: 16),
                 _buildToolbarPositionSelector(context, ref, settings),
+                const SizedBox(height: 16),
+                _buildToolbarOrientationSelector(context, ref, settings),
                 const SizedBox(height: 16),
                 _buildToolbarScaleSelector(context, ref, settings),
                 const SizedBox(height: 16),
                 _buildToolbarThemeSelector(context, ref, settings),
+              ],
+            ),
+            const SizedBox(height: 32),
+            _buildSection(
+              context,
+              _tr(settings, 'Contrôles', 'Controls'),
+              [
+                _buildSwitchTile(
+                  context,
+                  _tr(settings, 'Pause sur mouvement de souris', 'Pause on mouse move'),
+                  _tr(settings, 'Le défilement se met en pause quand vous bougez la souris',
+                      'Scrolling pauses when you move the mouse'),
+                  settings.pauseOnMouseMove,
+                  (value) => ref.read(settingsProvider.notifier).updateSettings(
+                        settings.copyWith(pauseOnMouseMove: value),
+                      ),
+                  LucideIcons.mouse,
+                ),
                 const SizedBox(height: 16),
                 _buildSwitchTile(
                   context,
-                  'Bloquer les notifications (mode Focus)',
-                  'Active le mode Ne pas déranger pendant le prompteur',
+                  _tr(settings, 'Bloquer les notifications (mode Focus)', 'Block notifications (Focus mode)'),
+                  _tr(settings, 'Active le mode Ne pas déranger pendant le prompteur',
+                      'Enable Do Not Disturb while the prompter runs'),
                   settings.enableFocusMode,
                   (value) => ref.read(settingsProvider.notifier).updateSettings(
                         settings.copyWith(enableFocusMode: value),
@@ -113,20 +125,24 @@ class SettingsScreen extends ConsumerWidget {
             const SizedBox(height: 32),
             _buildSection(
               context,
-              'Raccourcis clavier',
+              _tr(settings, 'Raccourcis clavier', 'Keyboard shortcuts'),
               [
-                _buildShortcutInfo('Espace', 'Play / Pause'),
-                _buildShortcutInfo('F', 'Basculer plein écran'),
-                _buildShortcutInfo('Échap', 'Sortir du plein écran'),
-                _buildShortcutInfo('↑', 'Augmenter la vitesse'),
-                _buildShortcutInfo('↓', 'Diminuer la vitesse'),
-                _buildShortcutInfo('R', 'Réinitialiser'),
+                _buildShortcutInfo('Espace', _tr(settings, 'Play / Pause', 'Play / Pause')),
+                _buildShortcutInfo('F', _tr(settings, 'Basculer plein écran', 'Toggle fullscreen')),
+                _buildShortcutInfo('Échap', _tr(settings, 'Sortir du plein écran', 'Exit fullscreen')),
+                _buildShortcutInfo('↑', _tr(settings, 'Augmenter la vitesse', 'Increase speed')),
+                _buildShortcutInfo('↓', _tr(settings, 'Diminuer la vitesse', 'Decrease speed')),
+                _buildShortcutInfo('R', _tr(settings, 'Réinitialiser', 'Reset')),
               ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  String _tr(SettingsModel settings, String fr, String en) {
+    return settings.locale.toLowerCase().startsWith('en') ? en : fr;
   }
 
   Widget _buildSection(BuildContext context, String title, List<Widget> children) {
@@ -217,21 +233,34 @@ class SettingsScreen extends ConsumerWidget {
     final minSpeed = _getMinSpeed(settings.speedUnit);
     final maxSpeed = _getMaxSpeed(settings.speedUnit);
 
+    // Convert defaultSpeed (px/s) to display unit
+    final displaySpeed = SpeedConverter.fromPixelsPerSecond(
+      settings.defaultSpeed,
+      settings.speedUnit,
+      fontSize: settings.fontSize,
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Vitesse par défaut: ${settings.defaultSpeed.toInt()}',
+          'Vitesse par défaut: ${displaySpeed.toInt()} ${SpeedConverter.getUnitLabel(settings.speedUnit)}',
           style: const TextStyle(color: Colors.white, fontSize: 16),
         ),
         Slider(
-          value: settings.defaultSpeed.clamp(minSpeed, maxSpeed),
+          value: displaySpeed.clamp(minSpeed, maxSpeed),
           min: minSpeed,
           max: maxSpeed,
           divisions: 100,
           activeColor: const Color(0xFF6366F1),
           onChanged: (value) {
-            ref.read(settingsProvider.notifier).updateSpeed(value);
+            // Convert display value back to px/s before saving
+            final pixelsPerSecond = SpeedConverter.toPixelsPerSecond(
+              value,
+              settings.speedUnit,
+              fontSize: settings.fontSize,
+            );
+            ref.read(settingsProvider.notifier).updateSpeed(pixelsPerSecond);
           },
         ),
       ],
@@ -347,8 +376,8 @@ class SettingsScreen extends ConsumerWidget {
             Icon(LucideIcons.layout_grid, color: Colors.white70, size: 20),
             const SizedBox(width: 8),
             Text(
-              'Position de la toolbar',
-              style: TextStyle(
+              _tr(settings, 'Position de la toolbar', 'Toolbar position'),
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
@@ -371,7 +400,9 @@ class SettingsScreen extends ConsumerWidget {
               style: const TextStyle(color: Colors.white, fontSize: 16),
               items: const [
                 DropdownMenuItem(value: ToolbarPosition.top, child: Text('Haut')),
+                DropdownMenuItem(value: ToolbarPosition.topCenter, child: Text('Haut (centre)')),
                 DropdownMenuItem(value: ToolbarPosition.bottom, child: Text('Bas')),
+                DropdownMenuItem(value: ToolbarPosition.bottomCenter, child: Text('Bas (centre)')),
                 DropdownMenuItem(value: ToolbarPosition.left, child: Text('Gauche')),
                 DropdownMenuItem(value: ToolbarPosition.right, child: Text('Droite')),
                 DropdownMenuItem(value: ToolbarPosition.topLeft, child: Text('Coin haut gauche')),
@@ -400,7 +431,8 @@ class SettingsScreen extends ConsumerWidget {
             Icon(LucideIcons.maximize_2, color: Colors.white70, size: 20),
             const SizedBox(width: 8),
             Text(
-              'Taille de la toolbox: ${(settings.toolbarScale * 100).toInt()}%',
+              _tr(settings, 'Taille de la toolbox: ${(settings.toolbarScale * 100).toInt()}%',
+                  'Toolbox size: ${(settings.toolbarScale * 100).toInt()}%'),
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
@@ -431,9 +463,9 @@ class SettingsScreen extends ConsumerWidget {
           children: [
             Icon(LucideIcons.palette, color: Colors.white70, size: 20),
             const SizedBox(width: 8),
-            const Text(
-              'Thème de la toolbox',
-              style: TextStyle(
+            Text(
+              _tr(settings, 'Thème de la toolbox', 'Toolbox theme'),
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
@@ -454,14 +486,72 @@ class SettingsScreen extends ConsumerWidget {
               isExpanded: true,
               dropdownColor: const Color(0xFF2d2d2d),
               style: const TextStyle(color: Colors.white, fontSize: 16),
-              items: const [
-                DropdownMenuItem(value: ToolboxTheme.modern, child: Text('Moderne')),
-                DropdownMenuItem(value: ToolboxTheme.glass, child: Text('Verre brillant')),
-                DropdownMenuItem(value: ToolboxTheme.contrast, child: Text('Contraste fort')),
+              items: [
+                DropdownMenuItem(value: ToolboxTheme.modern, child: Text(_tr(settings, 'Moderne', 'Modern'))),
+                DropdownMenuItem(value: ToolboxTheme.glass, child: Text(_tr(settings, 'Verre brillant', 'Glass'))),
+                DropdownMenuItem(
+                    value: ToolboxTheme.contrast, child: Text(_tr(settings, 'Contraste fort', 'High contrast'))),
               ],
               onChanged: (value) {
                 if (value != null) {
                   ref.read(settingsProvider.notifier).updateToolboxTheme(value);
+                }
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildToolbarOrientationSelector(BuildContext context, WidgetRef ref, SettingsModel settings) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(LucideIcons.panel_top, color: Colors.white70, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              _tr(settings, 'Orientation de la toolbox', 'Toolbox orientation'),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<ToolbarOrientation>(
+              value: settings.toolbarOrientation,
+              isExpanded: true,
+              dropdownColor: const Color(0xFF2d2d2d),
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+              items: const [
+                DropdownMenuItem(
+                  value: ToolbarOrientation.auto,
+                  child: Text('Auto (selon position)'),
+                ),
+                DropdownMenuItem(
+                  value: ToolbarOrientation.horizontal,
+                  child: Text('Horizontal'),
+                ),
+                DropdownMenuItem(
+                  value: ToolbarOrientation.vertical,
+                  child: Text('Vertical'),
+                ),
+              ],
+              onChanged: (value) {
+                if (value != null) {
+                  ref.read(settingsProvider.notifier).updateToolbarOrientation(value);
                 }
               },
             ),

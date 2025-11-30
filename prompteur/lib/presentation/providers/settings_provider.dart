@@ -66,6 +66,11 @@ class SettingsNotifier extends StateNotifier<SettingsModel> {
     await _storageService.saveSettings(state);
   }
 
+  Future<void> updateToolbarOrientation(ToolbarOrientation orientation) async {
+    state = state.copyWith(toolbarOrientation: orientation);
+    await _storageService.saveSettings(state);
+  }
+
   Future<void> updateSettings(SettingsModel settings) async {
     state = settings;
     await _storageService.saveSettings(state);

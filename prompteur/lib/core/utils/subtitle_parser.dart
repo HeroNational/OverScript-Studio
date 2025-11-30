@@ -3,6 +3,7 @@ class SubtitleParser {
     r'^(?:\d{1,2}:)?\d{2}:\d{2}(?:[.,]\d{3})?\s+-->\s+(?:\d{1,2}:)?\d{2}:\d{2}(?:[.,]\d{3})?',
   );
   static final _numericCue = RegExp(r'^\d+$');
+  static final _speakerLine = RegExp(r'^[A-Za-zÀ-ÿ0-9 ,._-]+:$');
   static final _metadataPrefixes = <String>[
     'WEBVTT',
     'NOTE',
@@ -36,6 +37,7 @@ class SubtitleParser {
       if (_metadataPrefixes.any((prefix) => trimmed.startsWith(prefix))) {
         continue;
       }
+      if (_speakerLine.hasMatch(trimmed)) continue;
 
       cleanedLines.add(trimmed);
     }
