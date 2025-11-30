@@ -3,7 +3,7 @@
 Dernière mise à jour : 2025-11-29
 
 ## 1. Objet
-Ces Conditions Générales d'Utilisation (CGU) régissent l'utilisation de l'application OverScript Studio exploitée par OverLimits Digital Enterprise.
+Ces Conditions Générales d'Utilisation (CGU) régissent l'utilisation de l'application Prompteur Pro exploitée par OverLimits Digital Enterprise.
 
 ## 2. Accès et compte
 L'application est fournie sans création de compte. L'accès peut être restreint en cas de non-respect des CGU.

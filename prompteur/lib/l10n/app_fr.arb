@@ -206,7 +206,7 @@
     "description": "Placeholder pour le texte à prompter"
   },
 
-  "welcomeMessage": "Bienvenue dans le OverScript Studiofessionnel",
+  "welcomeMessage": "Bienvenue dans le Prompteur Professionnel",
   "@welcomeMessage": {
     "description": "Message de bienvenue"
   },
@@ -314,49 +314,5 @@
   "toolboxOrientation": "Orientation de la barre d'outils",
   "@toolboxOrientation": {
     "description": "Orientation de la barre d'outils"
-  },
-
-  "playback": "Lecture",
-  "speedUnit": "Unité de vitesse",
-  "pixelsPerSecond": "Pixels par seconde",
-  "linesPerMinute": "Lignes par minute",
-  "wordsPerMinute": "Mots par minute",
-  "defaultSpeed": "Vitesse par défaut",
-  "countdownSeconds": "Compte à rebours (secondes)",
-  "autoFullscreenOnStart": "Plein écran automatique au démarrage",
-  "autoFullscreenDescription": "L'application passera en plein écran quand vous lancez le prompteur",
-  "backgroundColorLabel": "Couleur de fond",
-  "textColorLabel": "Couleur du texte",
-  "fontSizeLabel": "Taille de police",
-  "toolbarPosition": "Position de la toolbar",
-  "toolbarPositionTop": "Haut",
-  "toolbarPositionTopCenter": "Haut (centre)",
-  "toolbarPositionBottom": "Bas",
-  "toolbarPositionBottomCenter": "Bas (centre)",
-  "toolbarPositionLeft": "Gauche",
-  "toolbarPositionRight": "Droite",
-  "toolbarPositionTopLeft": "Coin haut gauche",
-  "toolbarPositionTopRight": "Coin haut droit",
-  "toolbarPositionBottomLeft": "Coin bas gauche",
-  "toolbarPositionBottomRight": "Coin bas droit",
-  "toolboxOrientationLabel": "Orientation de la toolbox",
-  "toolboxOrientationAuto": "Auto (selon position)",
-  "toolboxSize": "Taille de la toolbox",
-  "toolboxThemeLabel": "Thème de la toolbox",
-  "toolboxThemeModern": "Moderne",
-  "toolboxThemeGlass": "Verre brillant",
-  "toolboxThemeContrast": "Contraste fort",
-  "showTimerAndClock": "Afficher chrono et heure",
-  "showTimerDescription": "Affiche le chronomètre et l'horloge dans la toolbox",
-  "controls": "Contrôles",
-  "pauseOnMouseMove": "Pause sur mouvement de souris",
-  "pauseOnMouseMoveDescription": "Le défilement se met en pause quand vous bougez la souris",
-  "blockNotificationsFocusMode": "Bloquer les notifications (mode Focus)",
-  "blockNotificationsDescription": "Active le mode Ne pas déranger pendant le prompteur",
-  "keyboardShortcuts": "Raccourcis clavier",
-  "playPause": "Play / Pause",
-  "toggleFullscreen": "Basculer plein écran",
-  "exitFullscreenShortcut": "Sortir du plein écran",
-  "increaseSpeed": "Augmenter la vitesse",
-  "decreaseSpeed": "Diminuer la vitesse"
+  }
 }

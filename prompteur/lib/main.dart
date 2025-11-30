@@ -32,7 +32,7 @@ void main() async {
     backgroundColor: Colors.transparent,
     skipTaskbar: false,
     titleBarStyle: TitleBarStyle.normal,
-    title: 'OverScript Studio',
+    title: 'Prompteur Pro',
   );
 
   await windowManager.waitUntilReadyToShow(windowOptions, () async {
@@ -61,7 +61,7 @@ class PrompterApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
     return MaterialApp(
-      title: 'OverScript Studio',
+      title: 'Prompteur Pro',
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
       locale: Locale(settings.locale),
@@ -247,7 +247,7 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'OverScript Studio',
+                  'Prompteur Pro',
                   style: Theme.of(context).textTheme.displayLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Colors.white,

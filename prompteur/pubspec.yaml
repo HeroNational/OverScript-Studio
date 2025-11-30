@@ -1,5 +1,5 @@
 name: prompteur
-description: "Application de OverScript Studiofessionnel pour Desktop"
+description: "Application de prompteur professionnel pour Desktop"
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -59,7 +59,6 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^5.0.0
 
-  flutter_launcher_icons: ^0.13.1
   # Code Generation
   build_runner: ^2.4.7
   freezed: ^2.4.6

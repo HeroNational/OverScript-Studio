@@ -4,10 +4,8 @@ import 'dart:ui';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prompteur/core/utils/subtitle_parser.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
-import 'package:prompteur/l10n/app_localizations.dart';
 import 'dart:convert';
 
 class SourceData {
@@ -21,7 +19,7 @@ class SourceData {
   bool get isRichText => quillJson != null;
 }
 
-class SourcesDialog extends ConsumerWidget {
+class SourcesDialog extends StatelessWidget {
   final Function(SourceData) onSourceSelected;
   final String? initialText;
   final String? initialQuillJson;
@@ -34,8 +32,7 @@ class SourcesDialog extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+  Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Colors.transparent,
       child: ClipRRect(
@@ -79,9 +76,9 @@ class SourcesDialog extends ConsumerWidget {
                       size: 28,
                     ),
                     const SizedBox(width: 12),
-                    Text(
-                      l10n.addSource,
-                      style: const TextStyle(
+                    const Text(
+                      'Ajouter une source',
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -89,7 +86,7 @@ class SourcesDialog extends ConsumerWidget {
                     ),
                     const Spacer(),
                     Tooltip(
-                      message: l10n.close,
+                      message: 'Fermer',
                       child: IconButton(
                         icon: const Icon(LucideIcons.x, color: Colors.white70),
                         onPressed: () => Navigator.pop(context),
@@ -98,9 +95,9 @@ class SourcesDialog extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: 24),
-                Text(
-                  l10n.welcomeSubtitle,
-                  style: const TextStyle(
+                const Text(
+                  'Choisissez comment ajouter votre contenu',
+                  style: TextStyle(
                     color: Colors.white70,
                     fontSize: 14,
                   ),
@@ -108,8 +105,8 @@ class SourcesDialog extends ConsumerWidget {
                 const SizedBox(height: 32),
                 _SourceOption(
                   icon: LucideIcons.file_text,
-                  title: l10n.loadFile,
-                  subtitle: l10n.loadFile,
+                  title: 'Fichier texte',
+                  subtitle: 'Importer TXT, VTT, SRT',
                   gradientColors: const [Color(0xFF6366F1), Color(0xFF8B5CF6)],
                   onTap: () async {
                     final result = await FilePicker.platform.pickFiles(
@@ -134,8 +131,8 @@ class SourcesDialog extends ConsumerWidget {
                 const SizedBox(height: 16),
                 _SourceOption(
                   icon: LucideIcons.file,
-                  title: l10n.loadFile,
-                  subtitle: l10n.loadFile,
+                  title: 'Document PDF',
+                  subtitle: 'Importer un fichier PDF',
                   gradientColors: const [Color(0xFFEC4899), Color(0xFFF59E0B)],
                   onTap: () async {
                     final result = await FilePicker.platform.pickFiles(
@@ -151,8 +148,8 @@ class SourcesDialog extends ConsumerWidget {
                 const SizedBox(height: 16),
                 _SourceOption(
                   icon: LucideIcons.pen_line,
-                  title: l10n.textEditor,
-                  subtitle: l10n.richTextMode,
+                  title: 'Éditer le texte',
+                  subtitle: 'Modifier le texte avec mise en forme',
                   gradientColors: const [Color(0xFF10B981), Color(0xFF06B6D4)],
                   onTap: () {
                     _showRichEditor(context).then((source) {
@@ -214,9 +211,9 @@ class SourcesDialog extends ConsumerWidget {
                     children: [
                       Icon(LucideIcons.pen_line, color: Colors.white, size: 28),
                       const SizedBox(width: 12),
-                      Text(
-                        AppLocalizations.of(context)!.textEditor,
-                        style: const TextStyle(
+                      const Text(
+                        'Éditer le texte',
+                        style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -224,7 +221,7 @@ class SourcesDialog extends ConsumerWidget {
                       ),
                       const Spacer(),
                       Tooltip(
-                        message: AppLocalizations.of(context)!.close,
+                        message: 'Fermer',
                         child: IconButton(
                           icon: const Icon(LucideIcons.x, color: Colors.white70),
                           onPressed: () => Navigator.pop(context),
@@ -252,11 +249,11 @@ class SourcesDialog extends ConsumerWidget {
                           color: Colors.white,
                           height: 1.5,
                         ),
-                        decoration: InputDecoration(
-                          hintText: AppLocalizations.of(context)!.pasteYourText,
-                          hintStyle: const TextStyle(color: Colors.white38),
+                        decoration: const InputDecoration(
+                          hintText: 'Tapez ou collez votre texte ici...',
+                          hintStyle: TextStyle(color: Colors.white38),
                           border: InputBorder.none,
-                          contentPadding: const EdgeInsets.all(24),
+                          contentPadding: EdgeInsets.all(24),
                         ),
                       ),
                     ),
@@ -266,18 +263,18 @@ class SourcesDialog extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Tooltip(
-                      message: AppLocalizations.of(context)!.cancel,
-                      child: TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(
-                          AppLocalizations.of(context)!.cancel,
-                          style: const TextStyle(color: Colors.white70),
+                        message: 'Annuler',
+                        child: TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text(
+                            'Annuler',
+                            style: TextStyle(color: Colors.white70),
+                          ),
                         ),
                       ),
-                    ),
                       const SizedBox(width: 16),
                       Tooltip(
-                        message: AppLocalizations.of(context)!.save,
+                        message: 'Valider le texte',
                         child: ElevatedButton(
                           onPressed: () {
                             onSourceSelected(SourceData(text: textController.text));
@@ -295,7 +292,7 @@ class SourcesDialog extends ConsumerWidget {
                             ),
                             elevation: 0,
                           ),
-                          child: Text(AppLocalizations.of(context)!.save),
+                          child: const Text('Valider'),
                         ),
                       ),
                     ],
@@ -373,9 +370,9 @@ class SourcesDialog extends ConsumerWidget {
                     children: [
                       Icon(LucideIcons.pen_line, color: Colors.white, size: 28),
                       const SizedBox(width: 12),
-                      Text(
-                        AppLocalizations.of(context)!.richTextMode,
-                        style: const TextStyle(
+                      const Text(
+                        'Éditer le texte enrichi',
+                        style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -383,7 +380,7 @@ class SourcesDialog extends ConsumerWidget {
                       ),
                       const Spacer(),
                       Tooltip(
-                        message: AppLocalizations.of(context)!.close,
+                        message: 'Fermer',
                         child: IconButton(
                           icon: const Icon(LucideIcons.x, color: Colors.white70),
                           onPressed: () => Navigator.pop(context),
@@ -441,18 +438,18 @@ class SourcesDialog extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Tooltip(
-                        message: AppLocalizations.of(context)!.cancel,
+                        message: 'Annuler',
                         child: TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: Text(
-                            AppLocalizations.of(context)!.cancel,
-                            style: const TextStyle(color: Colors.white70),
+                          child: const Text(
+                            'Annuler',
+                            style: TextStyle(color: Colors.white70),
                           ),
                         ),
                       ),
                       const SizedBox(width: 16),
                       Tooltip(
-                        message: AppLocalizations.of(context)!.save,
+                        message: 'Valider le texte enrichi',
                         child: ElevatedButton(
                           onPressed: () {
                             final delta = controller.document.toDelta().toJson();
@@ -473,7 +470,7 @@ class SourcesDialog extends ConsumerWidget {
                             ),
                             elevation: 0,
                           ),
-                          child: Text(AppLocalizations.of(context)!.save),
+                          child: const Text('Valider'),
                         ),
                       ),
                     ],
