@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
+import 'package:prompteur/l10n/app_localizations.dart';
 import '../../providers/playback_provider.dart';
 
 class PlaybackControls extends ConsumerWidget {
@@ -9,6 +10,7 @@ class PlaybackControls extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final playbackState = ref.watch(playbackProvider);
+    final l10n = AppLocalizations.of(context);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -20,7 +22,7 @@ class PlaybackControls extends ConsumerWidget {
           onPressed: () {
             ref.read(playbackProvider.notifier).reset();
           },
-          tooltip: 'Réinitialiser',
+          tooltip: l10n?.reset ?? 'Réinitialiser',
         ),
         const SizedBox(width: 16),
         // Play/Pause button
@@ -32,7 +34,9 @@ class PlaybackControls extends ConsumerWidget {
           onPressed: () {
             ref.read(playbackProvider.notifier).togglePlayPause();
           },
-          tooltip: playbackState.isPlaying ? 'Pause' : 'Lecture',
+          tooltip: playbackState.isPlaying
+              ? (l10n?.pause ?? 'Pause')
+              : (l10n?.play ?? 'Lecture'),
         ),
       ],
     );

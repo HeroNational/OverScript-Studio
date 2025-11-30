@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
+import 'package:prompteur/l10n/app_localizations.dart';
 import '../../../data/models/playback_state.dart';
 import '../../../data/models/settings_model.dart';
 import '../../providers/playback_provider.dart';
@@ -29,6 +30,7 @@ class GlasmorphicToolbox extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final playbackState = ref.watch(playbackProvider);
+    final l10n = AppLocalizations.of(context);
     final palette = _paletteFor(themeStyle);
     final baseRadius = 24.0 * scale;
 
@@ -86,6 +88,7 @@ class GlasmorphicToolbox extends ConsumerWidget {
                           children: [
                             _PlaybackPanel(
                               playbackState: playbackState,
+                              l10n: l10n,
                               palette: palette,
                               scale: scale,
                               isVertical: isVertical,
@@ -100,6 +103,7 @@ class GlasmorphicToolbox extends ConsumerWidget {
                               onSettingsPressed: onSettingsPressed,
                               onFullscreenPressed: onFullscreenPressed,
                               isFullscreen: playbackState.isFullscreen,
+                              l10n: l10n,
                               palette: palette,
                               scale: scale,
                               isVertical: isVertical,
@@ -111,6 +115,7 @@ class GlasmorphicToolbox extends ConsumerWidget {
                           children: [
                             _PlaybackPanel(
                               playbackState: playbackState,
+                              l10n: l10n,
                               palette: palette,
                               scale: scale,
                               isVertical: isVertical,
@@ -125,6 +130,7 @@ class GlasmorphicToolbox extends ConsumerWidget {
                               onSettingsPressed: onSettingsPressed,
                               onFullscreenPressed: onFullscreenPressed,
                               isFullscreen: playbackState.isFullscreen,
+                              l10n: l10n,
                               palette: palette,
                               scale: scale,
                               isVertical: isVertical,
@@ -143,13 +149,15 @@ class GlasmorphicToolbox extends ConsumerWidget {
 
 class _PlaybackPanel extends ConsumerWidget {
   final PlaybackState playbackState;
-   final _ToolboxPalette palette;
-   final double scale;
-   final bool isVertical;
-   final bool showTimers;
+  final _ToolboxPalette palette;
+  final double scale;
+  final bool isVertical;
+  final bool showTimers;
+  final AppLocalizations? l10n;
 
   const _PlaybackPanel({
     required this.playbackState,
+    required this.l10n,
     required this.palette,
     required this.scale,
     required this.isVertical,
@@ -193,14 +201,14 @@ class _PlaybackPanel extends ConsumerWidget {
       _GlassButton(
         icon: LucideIcons.skip_back,
         onPressed: () => ref.read(playbackProvider.notifier).reset(),
-        tooltip: 'Réinitialiser',
+        tooltip: l10n?.reset ?? 'Réinitialiser',
         size: 20 * scale,
       ),
       spacing,
       _GlassButton(
         icon: playbackState.isPlaying ? LucideIcons.pause : LucideIcons.play,
         onPressed: () => ref.read(playbackProvider.notifier).togglePlayPause(),
-        tooltip: playbackState.isPlaying ? 'Pause' : 'Lecture',
+        tooltip: playbackState.isPlaying ? (l10n?.pause ?? 'Pause') : (l10n?.play ?? 'Lecture'),
         size: 28 * scale,
         primary: true,
       ),
@@ -288,6 +296,7 @@ class _ActionsPanel extends StatelessWidget {
   final VoidCallback onSettingsPressed;
   final VoidCallback onFullscreenPressed;
   final bool isFullscreen;
+  final AppLocalizations? l10n;
   final _ToolboxPalette palette;
   final double scale;
   final bool isVertical;
@@ -298,6 +307,7 @@ class _ActionsPanel extends StatelessWidget {
     required this.onSettingsPressed,
     required this.onFullscreenPressed,
     required this.isFullscreen,
+    required this.l10n,
     required this.palette,
     required this.scale,
     required this.isVertical,
@@ -340,28 +350,30 @@ class _ActionsPanel extends StatelessWidget {
       _GlassButton(
         icon: LucideIcons.house,
         onPressed: onHomePressed,
-        tooltip: 'Accueil',
+        tooltip: l10n?.home ?? 'Accueil',
         size: 22 * scale,
       ),
       spacing,
       _GlassButton(
         icon: LucideIcons.circle_plus,
         onPressed: onSourcesPressed,
-        tooltip: 'Ajouter une source',
+        tooltip: l10n?.addSource ?? 'Ajouter une source',
         size: 24 * scale,
       ),
       spacing,
       _GlassButton(
         icon: isFullscreen ? LucideIcons.minimize_2 : LucideIcons.maximize_2,
         onPressed: onFullscreenPressed,
-        tooltip: isFullscreen ? 'Quitter le plein écran' : 'Plein écran',
+        tooltip: isFullscreen
+            ? (l10n?.exitFullscreen ?? 'Quitter le plein écran')
+            : (l10n?.fullscreen ?? 'Plein écran'),
         size: 24 * scale,
       ),
       spacing,
       _GlassButton(
         icon: LucideIcons.settings,
         onPressed: onSettingsPressed,
-        tooltip: 'Paramètres',
+        tooltip: l10n?.settings ?? 'Paramètres',
         size: 24 * scale,
       ),
     ];

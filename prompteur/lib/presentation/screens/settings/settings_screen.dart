@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
+import 'package:prompteur/l10n/app_localizations.dart';
 import '../../../data/models/settings_model.dart';
 import '../../../core/utils/speed_converter.dart';
 import '../../providers/settings_provider.dart';
@@ -12,10 +13,11 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_tr(settings, 'Paramètres', 'Settings')),
+        title: Text(l10n.settings),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -35,19 +37,18 @@ class SettingsScreen extends ConsumerWidget {
           children: [
             _buildSection(
               context,
-              _tr(settings, 'Lecture', 'Playback'),
+              l10n.playback,
               [
-                _buildSpeedUnitSelector(context, ref, settings),
+                _buildSpeedUnitSelector(context, ref, settings, l10n),
                 const SizedBox(height: 16),
-                _buildSpeedSlider(context, ref, settings),
+                _buildSpeedSlider(context, ref, settings, l10n),
                 const SizedBox(height: 16),
-                _buildCountdownSlider(context, ref, settings),
+                _buildCountdownSlider(context, ref, settings, l10n),
                 const SizedBox(height: 16),
                 _buildSwitchTile(
                   context,
-                  _tr(settings, 'Plein écran automatique au démarrage', 'Auto fullscreen on start'),
-                  _tr(settings, 'L\'application passera en plein écran quand vous lancez le prompteur',
-                      'The app will go fullscreen when you start the prompter'),
+                  l10n.autoFullscreenOnStart,
+                  l10n.autoFullscreenDescription,
                   settings.autoFullscreen,
                   (value) => ref.read(settingsProvider.notifier).updateAutoFullscreen(value),
                   LucideIcons.maximize,
@@ -152,7 +153,12 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildCountdownSlider(BuildContext context, WidgetRef ref, SettingsModel settings) {
+  Widget _buildCountdownSlider(
+    BuildContext context,
+    WidgetRef ref,
+    SettingsModel settings,
+    AppLocalizations l10n,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -161,7 +167,7 @@ class SettingsScreen extends ConsumerWidget {
             Icon(LucideIcons.timer, color: Colors.white70, size: 20),
             const SizedBox(width: 8),
             Text(
-              _tr(settings, 'Compte à rebours (secondes)', 'Countdown (seconds)'),
+              l10n.countdownSeconds,
               style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
             ),
             const Spacer(),
@@ -214,7 +220,12 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSpeedUnitSelector(BuildContext context, WidgetRef ref, SettingsModel settings) {
+  Widget _buildSpeedUnitSelector(
+    BuildContext context,
+    WidgetRef ref,
+    SettingsModel settings,
+    AppLocalizations l10n,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -223,8 +234,8 @@ class SettingsScreen extends ConsumerWidget {
             Icon(LucideIcons.gauge, color: Colors.white70, size: 20),
             const SizedBox(width: 8),
             Text(
-              'Unité de vitesse',
-              style: TextStyle(
+              l10n.speedUnit,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
@@ -245,18 +256,18 @@ class SettingsScreen extends ConsumerWidget {
               isExpanded: true,
               dropdownColor: const Color(0xFF2d2d2d),
               style: const TextStyle(color: Colors.white, fontSize: 16),
-              items: const [
+              items: [
                 DropdownMenuItem(
                   value: SpeedUnit.pixelsPerSecond,
-                  child: Text('Pixels par seconde'),
+                  child: Text(l10n.speedUnitPixels),
                 ),
                 DropdownMenuItem(
                   value: SpeedUnit.linesPerMinute,
-                  child: Text('Lignes par minute'),
+                  child: Text(l10n.speedUnitLines),
                 ),
                 DropdownMenuItem(
                   value: SpeedUnit.wordsPerMinute,
-                  child: Text('Mots par minute'),
+                  child: Text(l10n.speedUnitWords),
                 ),
               ],
               onChanged: (value) {
@@ -271,7 +282,12 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSpeedSlider(BuildContext context, WidgetRef ref, SettingsModel settings) {
+  Widget _buildSpeedSlider(
+    BuildContext context,
+    WidgetRef ref,
+    SettingsModel settings,
+    AppLocalizations l10n,
+  ) {
     final minSpeed = _getMinSpeed(settings.speedUnit);
     final maxSpeed = _getMaxSpeed(settings.speedUnit);
 
@@ -286,7 +302,7 @@ class SettingsScreen extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Vitesse par défaut: ${displaySpeed.toInt()} ${SpeedConverter.getUnitLabel(settings.speedUnit)}',
+          '${l10n.defaultSpeed}: ${displaySpeed.toInt()} ${SpeedConverter.getUnitLabel(settings.speedUnit)}',
           style: const TextStyle(color: Colors.white, fontSize: 16),
         ),
         Slider(

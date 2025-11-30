@@ -9,7 +9,7 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
-  String get appTitle => 'Prompteur';
+  String get appTitle => 'OverScript Studio';
 
   @override
   String get home => 'Accueil';
@@ -84,7 +84,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get themeModern => 'Moderne';
 
   @override
-  String get themeContrast => 'Contraste';
+  String get themeContrast => 'Contraste élevé';
 
   @override
   String get loadFile => 'Charger un fichier';
@@ -132,11 +132,32 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pasteYourText => 'Collez votre texte ici...';
 
   @override
-  String get welcomeMessage => 'Bienvenue dans le Prompteur Professionnel';
+  String get welcomeMessage => 'Bienvenue dans OverScript Studio';
 
   @override
   String get welcomeSubtitle =>
-      'Chargez un fichier, entrez votre texte ou importez des sous-titres YouTube pour commencer';
+      'Chargez un fichier ou entrez votre texte pour commencer';
+
+  @override
+  String get homeHeadline => 'OverScript Studio';
+
+  @override
+  String get homeSubtitle => 'Imports rapides : fichiers ou PDF';
+
+  @override
+  String footerCopyright(Object year) {
+    return '© $year OverLimits Digital Enterprise';
+  }
+
+  @override
+  String get footerBy =>
+      'Réalisé par Jacobin Fokou pour OverLimits Digital Enterprise';
+
+  @override
+  String get footerGithub => 'GitHub : github.com/HeroNational';
+
+  @override
+  String get legalCgu => 'CGU';
 
   @override
   String get appearance => 'Apparence';
@@ -197,4 +218,32 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get toolboxOrientation => 'Orientation de la barre d\'outils';
+
+  @override
+  String get playback => 'Lecture';
+
+  @override
+  String get speedUnit => 'Unité de vitesse';
+
+  @override
+  String get speedUnitPixels => 'Pixels par seconde';
+
+  @override
+  String get speedUnitLines => 'Lignes par minute';
+
+  @override
+  String get speedUnitWords => 'Mots par minute';
+
+  @override
+  String get defaultSpeed => 'Vitesse par défaut';
+
+  @override
+  String get countdownSeconds => 'Compte à rebours (secondes)';
+
+  @override
+  String get autoFullscreenOnStart => 'Plein écran au démarrage';
+
+  @override
+  String get autoFullscreenDescription =>
+      'Passer automatiquement en plein écran au lancement du prompteur';
 }

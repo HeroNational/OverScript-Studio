@@ -1,318 +1,273 @@
 {
   "@@locale": "fr",
-
-  "appTitle": "Prompteur",
+  "appTitle": "OverScript Studio",
   "@appTitle": {
     "description": "Titre de l'application"
   },
-
   "home": "Accueil",
   "@home": {
     "description": "Bouton accueil"
   },
-
   "settings": "Paramètres",
   "@settings": {
     "description": "Bouton paramètres"
   },
-
   "addSource": "Ajouter une source",
   "@addSource": {
     "description": "Bouton pour ajouter une source"
   },
-
   "fullscreen": "Plein écran",
   "@fullscreen": {
     "description": "Bouton plein écran"
   },
-
   "exitFullscreen": "Quitter le plein écran",
   "@exitFullscreen": {
     "description": "Bouton quitter le plein écran"
   },
-
   "play": "Lecture",
   "@play": {
     "description": "Bouton lecture"
   },
-
   "pause": "Pause",
   "@pause": {
     "description": "Bouton pause"
   },
-
   "reset": "Réinitialiser",
   "@reset": {
     "description": "Bouton réinitialiser"
   },
-
   "speed": "Vitesse",
   "@speed": {
     "description": "Vitesse de défilement"
   },
-
   "fontSize": "Taille de police",
   "@fontSize": {
     "description": "Taille de la police"
   },
-
   "fontColor": "Couleur de police",
   "@fontColor": {
     "description": "Couleur de la police"
   },
-
   "backgroundColor": "Couleur de fond",
   "@backgroundColor": {
     "description": "Couleur de fond"
   },
-
   "textAlignment": "Alignement du texte",
   "@textAlignment": {
     "description": "Alignement du texte"
   },
-
   "left": "Gauche",
   "@left": {
     "description": "Alignement gauche"
   },
-
   "center": "Centre",
   "@center": {
     "description": "Alignement centre"
   },
-
   "right": "Droite",
   "@right": {
     "description": "Alignement droite"
   },
-
   "justify": "Justifié",
   "@justify": {
     "description": "Alignement justifié"
   },
-
   "lineSpacing": "Interligne",
   "@lineSpacing": {
     "description": "Espacement entre les lignes"
   },
-
   "mirrorMode": "Mode miroir",
   "@mirrorMode": {
     "description": "Mode miroir pour téléprompteur"
   },
-
   "focusMode": "Mode focus",
   "@focusMode": {
     "description": "Mode focus"
   },
-
   "toolboxScale": "Échelle de la barre d'outils",
   "@toolboxScale": {
     "description": "Échelle de la barre d'outils"
   },
-
   "toolboxTheme": "Thème de la barre d'outils",
   "@toolboxTheme": {
     "description": "Thème de la barre d'outils"
   },
-
   "themeGlass": "Verre",
   "@themeGlass": {
     "description": "Thème verre"
   },
-
   "themeModern": "Moderne",
   "@themeModern": {
     "description": "Thème moderne"
   },
-
-  "themeContrast": "Contraste",
+  "themeContrast": "Contraste élevé",
   "@themeContrast": {
     "description": "Thème contraste élevé"
   },
-
   "loadFile": "Charger un fichier",
   "@loadFile": {
     "description": "Charger un fichier texte ou PDF"
   },
-
   "loadFromYoutube": "Charger depuis YouTube",
   "@loadFromYoutube": {
     "description": "Charger les sous-titres d'une vidéo YouTube"
   },
-
   "enterYoutubeUrl": "Entrez l'URL YouTube",
   "@enterYoutubeUrl": {
     "description": "Placeholder pour l'URL YouTube"
   },
-
   "youtubeUrlHint": "https://www.youtube.com/watch?v=...",
   "@youtubeUrlHint": {
     "description": "Exemple d'URL YouTube"
   },
-
   "language": "Langue",
   "@language": {
     "description": "Langue des sous-titres"
   },
-
   "french": "Français",
   "@french": {
     "description": "Langue française"
   },
-
   "english": "Anglais",
   "@english": {
     "description": "Langue anglaise"
   },
-
   "load": "Charger",
   "@load": {
     "description": "Bouton charger"
   },
-
   "cancel": "Annuler",
   "@cancel": {
     "description": "Bouton annuler"
   },
-
   "loading": "Chargement...",
   "@loading": {
     "description": "Message de chargement"
   },
-
   "error": "Erreur",
   "@error": {
     "description": "Titre d'erreur"
   },
-
   "success": "Succès",
   "@success": {
     "description": "Message de succès"
   },
-
   "subtitlesLoadedSuccessfully": "Sous-titres chargés avec succès !",
   "@subtitlesLoadedSuccessfully": {
     "description": "Message de succès de chargement des sous-titres"
   },
-
   "failedToLoadSubtitles": "Impossible de récupérer les sous-titres",
   "@failedToLoadSubtitles": {
     "description": "Message d'erreur de chargement des sous-titres"
   },
-
   "pasteYourText": "Collez votre texte ici...",
   "@pasteYourText": {
     "description": "Placeholder pour le texte à prompter"
   },
-
-  "welcomeMessage": "Bienvenue dans le Prompteur Professionnel",
+  "welcomeMessage": "Bienvenue dans OverScript Studio",
   "@welcomeMessage": {
     "description": "Message de bienvenue"
   },
-
-  "welcomeSubtitle": "Chargez un fichier, entrez votre texte ou importez des sous-titres YouTube pour commencer",
+  "welcomeSubtitle": "Chargez un fichier ou entrez votre texte pour commencer",
   "@welcomeSubtitle": {
     "description": "Sous-titre de bienvenue"
   },
-
   "appearance": "Apparence",
   "@appearance": {
     "description": "Section apparence"
   },
-
   "behavior": "Comportement",
   "@behavior": {
     "description": "Section comportement"
   },
-
   "toolbox": "Barre d'outils",
   "@toolbox": {
     "description": "Section barre d'outils"
   },
-
   "advanced": "Avancé",
   "@advanced": {
     "description": "Section avancée"
   },
-
   "close": "Fermer",
   "@close": {
     "description": "Bouton fermer"
   },
-
   "save": "Enregistrer",
   "@save": {
     "description": "Bouton enregistrer"
   },
-
   "fontFamily": "Police",
   "@fontFamily": {
     "description": "Famille de police"
   },
-
   "bold": "Gras",
   "@bold": {
     "description": "Texte en gras"
   },
-
   "italic": "Italique",
   "@italic": {
     "description": "Texte en italique"
   },
-
   "underline": "Souligné",
   "@underline": {
     "description": "Texte souligné"
   },
-
   "textEditor": "Éditeur de texte",
   "@textEditor": {
     "description": "Éditeur de texte"
   },
-
   "richTextMode": "Mode texte enrichi",
   "@richTextMode": {
     "description": "Mode d'édition de texte enrichi"
   },
-
   "plainTextMode": "Mode texte simple",
   "@plainTextMode": {
     "description": "Mode texte simple"
   },
-
   "youtubeSubtitles": "Sous-titres YouTube",
   "@youtubeSubtitles": {
     "description": "Sous-titres YouTube"
   },
-
   "noVideoIdFound": "Aucun ID de vidéo trouvé dans l'URL",
   "@noVideoIdFound": {
     "description": "Erreur: pas d'ID de vidéo"
   },
-
   "invalidUrl": "URL invalide",
   "@invalidUrl": {
     "description": "Erreur: URL invalide"
   },
-
   "fetchingSubtitles": "Récupération des sous-titres...",
   "@fetchingSubtitles": {
     "description": "Message de récupération des sous-titres"
   },
-
   "vertical": "Vertical",
   "@vertical": {
     "description": "Orientation verticale"
   },
-
   "horizontal": "Horizontal",
   "@horizontal": {
     "description": "Orientation horizontale"
   },
-
   "toolboxOrientation": "Orientation de la barre d'outils",
   "@toolboxOrientation": {
     "description": "Orientation de la barre d'outils"
-  }
+  },
+  "homeHeadline": "OverScript Studio",
+  "homeSubtitle": "Imports rapides : fichiers ou PDF",
+  "footerCopyright": "© {year} OverLimits Digital Enterprise",
+  "footerBy": "Réalisé par Jacobin Fokou pour OverLimits Digital Enterprise",
+  "footerGithub": "GitHub : github.com/HeroNational",
+  "legalCgu": "CGU",
+  "playback": "Lecture",
+  "@playback": {
+    "description": "Section lecture"
+  },
+  "speedUnit": "Unité de vitesse",
+  "speedUnitPixels": "Pixels par seconde",
+  "speedUnitLines": "Lignes par minute",
+  "speedUnitWords": "Mots par minute",
+  "defaultSpeed": "Vitesse par défaut",
+  "countdownSeconds": "Compte à rebours (secondes)",
+  "autoFullscreenOnStart": "Plein écran au démarrage",
+  "autoFullscreenDescription": "Passer automatiquement en plein écran au lancement du prompteur"
 }

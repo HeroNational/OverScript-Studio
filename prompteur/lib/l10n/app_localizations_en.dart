@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Teleprompter';
+  String get appTitle => 'OverScript Studio';
 
   @override
   String get home => 'Home';
@@ -139,6 +139,27 @@ class AppLocalizationsEn extends AppLocalizations {
       'Load a file, enter your text, or import YouTube subtitles to get started';
 
   @override
+  String get homeHeadline => 'OverScript Studio';
+
+  @override
+  String get homeSubtitle => 'Quick imports: files or PDF';
+
+  @override
+  String footerCopyright(Object year) {
+    return '© $year OverLimits Digital Enterprise';
+  }
+
+  @override
+  String get footerBy =>
+      'Built by Jacobin Fokou for OverLimits Digital Enterprise';
+
+  @override
+  String get footerGithub => 'GitHub: github.com/HeroNational';
+
+  @override
+  String get legalCgu => 'Terms of Use';
+
+  @override
   String get appearance => 'Appearance';
 
   @override
@@ -197,4 +218,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get toolboxOrientation => 'Toolbar Orientation';
+
+  @override
+  String get playback => 'Playback';
+
+  @override
+  String get speedUnit => 'Speed unit';
+
+  @override
+  String get speedUnitPixels => 'Pixels per second';
+
+  @override
+  String get speedUnitLines => 'Lines per minute';
+
+  @override
+  String get speedUnitWords => 'Words per minute';
+
+  @override
+  String get defaultSpeed => 'Default speed';
+
+  @override
+  String get countdownSeconds => 'Countdown (seconds)';
+
+  @override
+  String get autoFullscreenOnStart => 'Auto fullscreen on start';
+
+  @override
+  String get autoFullscreenDescription =>
+      'Switch to fullscreen automatically when starting the prompter';
 }

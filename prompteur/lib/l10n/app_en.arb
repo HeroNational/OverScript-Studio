@@ -1,7 +1,7 @@
 {
   "@@locale": "en",
 
-  "appTitle": "Teleprompter",
+  "appTitle": "OverScript Studio",
   "home": "Home",
   "settings": "Settings",
   "addSource": "Add Source",
@@ -44,6 +44,12 @@
   "pasteYourText": "Paste your text here...",
   "welcomeMessage": "Welcome to Professional Teleprompter",
   "welcomeSubtitle": "Load a file, enter your text, or import YouTube subtitles to get started",
+  "homeHeadline": "OverScript Studio",
+  "homeSubtitle": "Quick imports: files or PDF",
+  "footerCopyright": "© {year} OverLimits Digital Enterprise",
+  "footerBy": "Built by Jacobin Fokou for OverLimits Digital Enterprise",
+  "footerGithub": "GitHub: github.com/HeroNational",
+  "legalCgu": "Terms of Use",
   "appearance": "Appearance",
   "behavior": "Behavior",
   "toolbox": "Toolbar",
@@ -63,5 +69,14 @@
   "fetchingSubtitles": "Fetching subtitles...",
   "vertical": "Vertical",
   "horizontal": "Horizontal",
-  "toolboxOrientation": "Toolbar Orientation"
+  "toolboxOrientation": "Toolbar Orientation",
+  "playback": "Playback",
+  "speedUnit": "Speed unit",
+  "speedUnitPixels": "Pixels per second",
+  "speedUnitLines": "Lines per minute",
+  "speedUnitWords": "Words per minute",
+  "defaultSpeed": "Default speed",
+  "countdownSeconds": "Countdown (seconds)",
+  "autoFullscreenOnStart": "Auto fullscreen on start",
+  "autoFullscreenDescription": "Switch to fullscreen automatically when starting the prompter"
 }

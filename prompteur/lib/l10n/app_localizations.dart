@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Teleprompter'**
+  /// **'OverScript Studio'**
   String get appTitle;
 
   /// No description provided for @home.
@@ -356,6 +356,42 @@ abstract class AppLocalizations {
   /// **'Load a file, enter your text, or import YouTube subtitles to get started'**
   String get welcomeSubtitle;
 
+  /// No description provided for @homeHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'OverScript Studio'**
+  String get homeHeadline;
+
+  /// No description provided for @homeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick imports: files or PDF'**
+  String get homeSubtitle;
+
+  /// No description provided for @footerCopyright.
+  ///
+  /// In en, this message translates to:
+  /// **'© {year} OverLimits Digital Enterprise'**
+  String footerCopyright(Object year);
+
+  /// No description provided for @footerBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Built by Jacobin Fokou for OverLimits Digital Enterprise'**
+  String get footerBy;
+
+  /// No description provided for @footerGithub.
+  ///
+  /// In en, this message translates to:
+  /// **'GitHub: github.com/HeroNational'**
+  String get footerGithub;
+
+  /// No description provided for @legalCgu.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Use'**
+  String get legalCgu;
+
   /// No description provided for @appearance.
   ///
   /// In en, this message translates to:
@@ -475,6 +511,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Toolbar Orientation'**
   String get toolboxOrientation;
+
+  /// No description provided for @playback.
+  ///
+  /// In en, this message translates to:
+  /// **'Playback'**
+  String get playback;
+
+  /// No description provided for @speedUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed unit'**
+  String get speedUnit;
+
+  /// No description provided for @speedUnitPixels.
+  ///
+  /// In en, this message translates to:
+  /// **'Pixels per second'**
+  String get speedUnitPixels;
+
+  /// No description provided for @speedUnitLines.
+  ///
+  /// In en, this message translates to:
+  /// **'Lines per minute'**
+  String get speedUnitLines;
+
+  /// No description provided for @speedUnitWords.
+  ///
+  /// In en, this message translates to:
+  /// **'Words per minute'**
+  String get speedUnitWords;
+
+  /// No description provided for @defaultSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Default speed'**
+  String get defaultSpeed;
+
+  /// No description provided for @countdownSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Countdown (seconds)'**
+  String get countdownSeconds;
+
+  /// No description provided for @autoFullscreenOnStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto fullscreen on start'**
+  String get autoFullscreenOnStart;
+
+  /// No description provided for @autoFullscreenDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to fullscreen automatically when starting the prompter'**
+  String get autoFullscreenDescription;
 }
 
 class _AppLocalizationsDelegate

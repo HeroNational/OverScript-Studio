@@ -32,7 +32,7 @@ void main() async {
     backgroundColor: Colors.transparent,
     skipTaskbar: false,
     titleBarStyle: TitleBarStyle.normal,
-    title: 'Prompteur Pro',
+    title: 'OverScript Studio',
   );
 
   await windowManager.waitUntilReadyToShow(windowOptions, () async {
@@ -60,8 +60,9 @@ class PrompterApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
+    final l10n = AppLocalizations.of(context);
     return MaterialApp(
-      title: 'Prompteur Pro',
+      title: l10n?.appTitle ?? 'OverScript Studio',
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
       locale: Locale(settings.locale),
@@ -247,7 +248,7 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Prompteur Pro',
+                  AppLocalizations.of(context)!.homeHeadline,
                   style: Theme.of(context).textTheme.displayLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -256,7 +257,7 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  AppLocalizations.of(context)!.welcomeSubtitle,
+                  AppLocalizations.of(context)!.homeSubtitle,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Colors.white70,
                       ),
@@ -344,7 +345,7 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: Tooltip(
-                    message: AppLocalizations.of(context)!.settings,
+                        message: AppLocalizations.of(context)!.settings,
                     child: OutlinedButton(
                       onPressed: () {
                         print('[UI] Open settings');
@@ -371,7 +372,7 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '© ${DateTime.now().year} OverLimits Digital Enterprise',
+                            AppLocalizations.of(context)!.footerCopyright(DateTime.now().year),
                             style: const TextStyle(color: Colors.white70, fontSize: 12),
                           ),
                           const SizedBox(width: 8),
@@ -385,25 +386,25 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
                                 MaterialPageRoute(builder: (_) => const CguPage()),
                               );
                             },
-                            child: const Text(
-                              'CGU',
-                              style: TextStyle(color: Color(0xFF8B5CF6), fontWeight: FontWeight.w600),
+                            child: Text(
+                              AppLocalizations.of(context)!.legalCgu,
+                              style: const TextStyle(color: Color(0xFF8B5CF6), fontWeight: FontWeight.w600),
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 4),
                       Column(
-                        children: const [
+                        children: [
                           Text(
-                            'Réalisé par Jacobin Fokou pour OverLimits Digital Enterprise',
-                            style: TextStyle(color: Colors.white54, fontSize: 12),
+                            AppLocalizations.of(context)!.footerBy,
+                            style: const TextStyle(color: Colors.white54, fontSize: 12),
                             textAlign: TextAlign.center,
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Text(
-                            'GitHub: github.com/HeroNational',
-                            style: TextStyle(color: Colors.white54, fontSize: 12),
+                            AppLocalizations.of(context)!.footerGithub,
+                            style: const TextStyle(color: Colors.white54, fontSize: 12),
                             textAlign: TextAlign.center,
                           ),
                         ],
