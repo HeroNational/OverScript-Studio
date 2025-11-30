@@ -10,6 +10,7 @@ class GlasmorphicToolbox extends ConsumerWidget {
   final VoidCallback onSourcesPressed;
   final VoidCallback onSettingsPressed;
   final VoidCallback onFullscreenPressed;
+  final VoidCallback onHomePressed;
   final bool isVertical;
   final double scale;
   final ToolboxTheme themeStyle;
@@ -19,6 +20,7 @@ class GlasmorphicToolbox extends ConsumerWidget {
     required this.onSourcesPressed,
     required this.onSettingsPressed,
     required this.onFullscreenPressed,
+    required this.onHomePressed,
     required this.isVertical,
     required this.scale,
     required this.themeStyle,
@@ -80,6 +82,7 @@ class GlasmorphicToolbox extends ConsumerWidget {
                         _Divider(isVertical: true, palette: palette, scale: scale),
                         SizedBox(height: 12 * scale),
                         _ActionsPanel(
+                          onHomePressed: onHomePressed,
                           onSourcesPressed: onSourcesPressed,
                           onSettingsPressed: onSettingsPressed,
                           onFullscreenPressed: onFullscreenPressed,
@@ -98,6 +101,7 @@ class GlasmorphicToolbox extends ConsumerWidget {
                         _Divider(isVertical: false, palette: palette, scale: scale),
                         SizedBox(width: 16 * scale),
                         _ActionsPanel(
+                          onHomePressed: onHomePressed,
                           onSourcesPressed: onSourcesPressed,
                           onSettingsPressed: onSettingsPressed,
                           onFullscreenPressed: onFullscreenPressed,
@@ -202,6 +206,7 @@ class _PlaybackPanel extends ConsumerWidget {
 }
 
 class _ActionsPanel extends StatelessWidget {
+  final VoidCallback onHomePressed;
   final VoidCallback onSourcesPressed;
   final VoidCallback onSettingsPressed;
   final VoidCallback onFullscreenPressed;
@@ -211,6 +216,7 @@ class _ActionsPanel extends StatelessWidget {
   final bool isVertical;
 
   const _ActionsPanel({
+    required this.onHomePressed,
     required this.onSourcesPressed,
     required this.onSettingsPressed,
     required this.onFullscreenPressed,
@@ -254,6 +260,13 @@ class _ActionsPanel extends StatelessWidget {
   List<Widget> _buildButtons() {
     final spacing = SizedBox(width: isVertical ? 0 : 16 * scale, height: isVertical ? 12 * scale : 0);
     return [
+      _GlassButton(
+        icon: LucideIcons.house,
+        onPressed: onHomePressed,
+        tooltip: 'Accueil',
+        size: 22 * scale,
+      ),
+      spacing,
       _GlassButton(
         icon: LucideIcons.circle_plus,
         onPressed: onSourcesPressed,

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,11 +22,14 @@ class PrompterScreen extends ConsumerStatefulWidget {
 class _PrompterScreenState extends ConsumerState<PrompterScreen> {
   final FocusNode _focusNode = FocusNode();
   final FocusModeService _focusService = FocusModeService();
+  Timer? _countdownTimer;
+  int? _countdown = 3;
 
   @override
   void initState() {
     super.initState();
     _focusNode.requestFocus();
+    _startCountdown();
 
     // Activer le plein écran automatique si configuré
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -42,6 +46,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
   @override
   void dispose() {
     final settings = ref.read(settingsProvider);
+    _countdownTimer?.cancel();
     if (settings.enableFocusMode) {
       _focusService.disable();
     }
@@ -130,9 +135,23 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
       onKeyEvent: _handleKeyEvent,
       child: Scaffold(
         body: Stack(
+          fit: StackFit.expand,
           children: [
             // Affichage du texte
-            const TextDisplay(),
+            const Positioned.fill(child: TextDisplay()),
+            if (_countdown != null)
+              Container(
+                color: Colors.black.withOpacity(0.55),
+                alignment: Alignment.center,
+                child: Text(
+                  _countdown.toString(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 96,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
 
             _buildPositionedToolbox(playbackState.isFullscreen),
           ],
@@ -141,11 +160,31 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
     );
   }
 
+  void _startCountdown() {
+    _countdown = 3;
+    _countdownTimer?.cancel();
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+      setState(() {
+        if (_countdown != null && _countdown! > 1) {
+          _countdown = _countdown! - 1;
+        } else {
+          _countdown = null;
+          _countdownTimer?.cancel();
+          ref.read(playbackProvider.notifier).play();
+        }
+      });
+    });
+  }
+
   Widget _buildPositionedToolbox(bool isFullscreen) {
     final settings = ref.watch(settingsProvider);
     final playback = ref.watch(playbackProvider);
 
     final toolbox = GlasmorphicToolbox(
+      onHomePressed: () {
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      },
       onSourcesPressed: () {
         showDialog(
           context: context,
