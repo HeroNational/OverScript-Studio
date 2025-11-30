@@ -124,9 +124,8 @@ class SourcesDialog extends StatelessWidget {
                         content = SubtitleParser.cleanSubtitleContent(content);
                       }
 
-                      onSourceSelected(SourceData(text: content));
+                      Navigator.of(context, rootNavigator: true).pop(SourceData(text: content));
                     }
-                    if (context.mounted) Navigator.pop(context);
                   },
                 ),
                 const SizedBox(height: 16),
@@ -142,9 +141,8 @@ class SourcesDialog extends StatelessWidget {
                     );
 
                     if (result != null && result.files.single.path != null) {
-                      onSourceSelected(SourceData(pdfPath: result.files.single.path!));
+                      Navigator.of(context, rootNavigator: true).pop(SourceData(pdfPath: result.files.single.path!));
                     }
-                    if (context.mounted) Navigator.pop(context);
                   },
                 ),
                 const SizedBox(height: 16),
@@ -154,8 +152,11 @@ class SourcesDialog extends StatelessWidget {
                   subtitle: 'Modifier le texte avec mise en forme',
                   gradientColors: const [Color(0xFF10B981), Color(0xFF06B6D4)],
                   onTap: () {
-                    Navigator.pop(context);
-                    _showRichEditor(context, onSourceSelected);
+                    _showRichEditor(context).then((source) {
+                      if (source != null) {
+                        Navigator.of(context, rootNavigator: true).pop(source);
+                      }
+                    });
                   },
                 ),
               ],
@@ -305,20 +306,31 @@ class SourcesDialog extends StatelessWidget {
     );
   }
 
-  void _showRichEditor(BuildContext context, Function(SourceData) onSourceSelected) {
-    final controller = initialQuillJson != null
-        ? quill.QuillController(
-            document: quill.Document.fromJson(jsonDecode(initialQuillJson!)),
-            selection: const TextSelection.collapsed(offset: 0),
-          )
-        : quill.QuillController.basic();
+  Future<SourceData?> _showRichEditor(BuildContext context) {
+    quill.QuillController controller;
 
-    if (initialText != null && initialQuillJson == null) {
-      controller.document.replace(0, controller.document.length, initialText!);
+    try {
+      controller = initialQuillJson != null
+          ? quill.QuillController(
+              document: quill.Document.fromJson(jsonDecode(initialQuillJson!)),
+              selection: const TextSelection.collapsed(offset: 0),
+            )
+          : quill.QuillController.basic();
+
+      if (initialText != null && initialQuillJson == null && initialText!.isNotEmpty) {
+        final replaceLen = controller.document.length - 1;
+        if (replaceLen >= 0) {
+          controller.document.replace(0, replaceLen, initialText!);
+        }
+      }
+    } catch (e) {
+      print('[ERROR] Failed to initialize Quill controller: $e');
+      controller = quill.QuillController.basic();
     }
 
-    showDialog(
+    return showDialog<SourceData>(
       context: context,
+      useRootNavigator: true,
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,
         child: ClipRRect(
@@ -442,8 +454,9 @@ class SourcesDialog extends StatelessWidget {
                           onPressed: () {
                             final delta = controller.document.toDelta().toJson();
                             final plain = controller.document.toPlainText();
-                            onSourceSelected(SourceData(quillJson: jsonEncode(delta), text: plain));
-                            Navigator.pop(context);
+                            Navigator.of(context, rootNavigator: true).pop(
+                              SourceData(quillJson: jsonEncode(delta), text: plain),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF6366F1),

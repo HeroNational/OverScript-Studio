@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'l10n/app_localizations.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:convert';
 import 'dart:math' as math;
 import 'data/services/storage_service.dart';
-import 'data/services/youtube_subtitle_service.dart';
 import 'data/models/settings_model.dart';
 import 'presentation/screens/prompter/prompter_screen.dart';
 import 'presentation/providers/playback_provider.dart';
@@ -39,20 +41,30 @@ void main() async {
   });
 
   runApp(
-    const ProviderScope(
-      child: PrompterApp(),
+    ProviderScope(
+      child: PrompterApp(
+        navigatorKey: _appNavigatorKey,
+      ),
     ),
   );
 }
 
-class PrompterApp extends StatelessWidget {
-  const PrompterApp({super.key});
+// Navigator global pour éviter l'accès à un context désactivé
+final GlobalKey<NavigatorState> _appNavigatorKey = GlobalKey<NavigatorState>();
+
+class PrompterApp extends ConsumerWidget {
+  const PrompterApp({super.key, required this.navigatorKey});
+
+  final GlobalKey<NavigatorState> navigatorKey;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
     return MaterialApp(
       title: 'Prompteur Pro',
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
+      locale: Locale(settings.locale),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF6366F1),
@@ -66,6 +78,7 @@ class PrompterApp extends StatelessWidget {
         ),
       ),
       localizationsDelegates: const [
+        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
@@ -90,15 +103,12 @@ class PrompterHome extends ConsumerStatefulWidget {
 class _PrompterHomeState extends ConsumerState<PrompterHome> {
   final TextEditingController _textController = TextEditingController();
   final quill.QuillController _quillController = quill.QuillController.basic();
-  final TextEditingController _youtubeController = TextEditingController();
-  final YoutubeSubtitleService _youtubeService = YoutubeSubtitleService();
   final List<String> _bannerAssets = const [
     'assets/banner_texture.jpg',
     'assets/banner_texture_2.jpg',
     'assets/banner_texture_3.jpg',
   ];
   late final String _bannerAsset;
-  bool _isLoadingYoutube = false;
   bool _hasPromptedSource = false;
 
   @override
@@ -121,38 +131,44 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
   void dispose() {
     _textController.dispose();
     _quillController.dispose();
-    _youtubeController.dispose();
-    _youtubeService.dispose();
     super.dispose();
   }
 
   void _promptSourceDialog({bool force = false}) {
     if (!force && (_hasPromptedSource || !mounted)) return;
     _hasPromptedSource = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      showDialog(
-        context: context,
-        builder: (context) => SourcesDialog(
-          onSourceSelected: (source) {
-            Navigator.pop(context);
-            _handleSource(source);
-          },
-          initialText: _quillController.document.toPlainText(),
-          initialQuillJson: jsonEncode(_quillController.document.toDelta().toJson()),
-        ),
-      );
+    final navigator = _appNavigatorKey.currentState;
+    print('[UI] Open source dialog');
+    showDialog<SourceData>(
+      context: context,
+      useRootNavigator: true,
+      builder: (context) => SourcesDialog(
+        onSourceSelected: (source) {
+          print('[UI] Source selected: $source');
+          navigator?.pop(source);
+        },
+        initialText: _quillController.document.toPlainText(),
+        initialQuillJson: jsonEncode(_quillController.document.toDelta().toJson()),
+      ),
+    ).then((source) {
+      if (source != null) {
+        _handleSource(source);
+      }
     });
   }
 
   Future<void> _handleSource(SourceData source) async {
+    print('[UI] Handle source: pdf=${source.isPdf} rich=${source.isRichText}');
     if (source.isPdf && source.pdfPath != null) {
       await ref.read(playbackProvider.notifier).loadPdf(source.pdfPath!);
+      print('[UI] PDF chargé, navigation prompteur');
       _navigateToPrompter();
       return;
     }
 
     if (source.isRichText && source.quillJson != null) {
       ref.read(playbackProvider.notifier).setRichText(source.quillJson!);
+      print('[UI] Rich text chargé');
       // Mettre à jour l'éditeur local avec le texte brut pour cohérence visuelle
       _textController.text = source.text ?? _textController.text;
     } else {
@@ -165,6 +181,7 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
       await storageService.saveLastText(text);
 
       ref.read(playbackProvider.notifier).setText(text);
+      print('[UI] Texte simple chargé (${text.length} chars)');
     }
     _navigateToPrompter();
   }
@@ -176,6 +193,7 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
 
   void _navigateToPrompter() {
     if (!mounted) return;
+    print('[UI] Navigation vers PrompterScreen');
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -192,6 +210,7 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
 
   @override
   Widget build(BuildContext context) {
+    final settings = ref.watch(settingsProvider);
     final primaryButton = ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFF6366F1),
       foregroundColor: Colors.white,
@@ -237,141 +256,160 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Imports rapides : Fichiers, PDF ou sous-titres YouTube',
+                  AppLocalizations.of(context)!.welcomeSubtitle,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Colors.white70,
                       ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
-                // Bannière illustrative
-                Container(
-                  height: 200,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(_bannerAsset),
-                      fit: BoxFit.cover,
-                      opacity: 0.35,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    DropdownButton<String>(
+                      value: settings.locale,
+                      dropdownColor: const Color(0xFF1f2937),
+                      style: const TextStyle(color: Colors.white),
+                      underline: const SizedBox(),
+                      items: [
+                        DropdownMenuItem(value: 'fr', child: Text(AppLocalizations.of(context)!.french)),
+                        DropdownMenuItem(value: 'en', child: Text(AppLocalizations.of(context)!.english)),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                          print('[UI] Change locale -> $value');
+                          ref.read(settingsProvider.notifier).updateLocale(value);
+                        }
+                      },
                     ),
-                    borderRadius: BorderRadius.circular(20),
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFF1F2937),
-                        Color(0xFF111827),
+                  ],
+                ),
+                // Bannière illustrative
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    print('[UI] Tap banner add source');
+                    _promptSourceDialog(force: true);
+                  },
+                  child: Container(
+                    height: 200,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(_bannerAsset),
+                        fit: BoxFit.cover,
+                        opacity: 0.35,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFF1F2937),
+                          Color(0xFF111827),
+                        ],
+                      ),
+                      border: Border.all(color: Colors.white.withOpacity(0.08), width: 1),
+                    ),
+                    alignment: Alignment.center,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withOpacity(0.15),
+                            border: Border.all(color: Colors.white.withOpacity(0.45), width: 1.5),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.35),
+                                blurRadius: 18,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(Icons.add, color: Colors.white, size: 42),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          AppLocalizations.of(context)!.addSource,
+                          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                        ),
                       ],
                     ),
-                    border: Border.all(color: Colors.white.withOpacity(0.08), width: 1),
-                  ),
-                  alignment: Alignment.center,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.tv, color: Colors.white, size: 48),
-                      SizedBox(height: 12),
-                      Text(
-                        'Diffusez vos prompts sans distraction',
-                        style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                    ],
                   ),
                 ),
                 const SizedBox(height: 24),
-                // Bloc YouTube
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: Colors.white.withOpacity(0.08), width: 1),
+                // Boutons d’action (paramètres uniquement)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Tooltip(
+                    message: AppLocalizations.of(context)!.settings,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        print('[UI] Open settings');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SettingsScreen(),
+                          ),
+                        );
+                      },
+                      style: subtleButton,
+                      child: const Icon(Icons.settings, color: Colors.white),
+                    ),
                   ),
+                ),
+                const SizedBox(height: 24),
+                const Divider(color: Colors.white24, height: 32),
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Importer depuis YouTube',
-                        style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: 12),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _youtubeController,
-                              style: const TextStyle(color: Colors.white),
-                              decoration: InputDecoration(
-                                hintText: 'URL de la vidéo YouTube',
-                                hintStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
-                                filled: true,
-                                fillColor: Colors.white.withOpacity(0.06),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(color: Color(0xFF6366F1)),
-                                ),
-                              ),
+                          Text(
+                            '© ${DateTime.now().year} OverLimits Digital Enterprise',
+                            style: const TextStyle(color: Colors.white70, fontSize: 12),
+                          ),
+                          const SizedBox(width: 8),
+                          const Text('|', style: TextStyle(color: Colors.white38)),
+                          const SizedBox(width: 8),
+                          TextButton(
+                            onPressed: () {
+                              print('[UI] Open CGU');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => const CguPage()),
+                              );
+                            },
+                            child: const Text(
+                              'CGU',
+                              style: TextStyle(color: Color(0xFF8B5CF6), fontWeight: FontWeight.w600),
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          ElevatedButton.icon(
-                            onPressed: _isLoadingYoutube ? null : _importFromYoutube,
-                            icon: _isLoadingYoutube
-                                ? const SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                                  )
-                                : const Icon(Icons.cloud_download, size: 18),
-                            label: const Text('Importer'),
-                            style: primaryButton.copyWith(
-                              padding: MaterialStateProperty.all(const EdgeInsets.symmetric(horizontal: 16, vertical: 14)),
-                              minimumSize: MaterialStateProperty.all(const Size(0, 56)),
-                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Column(
+                        children: const [
+                          Text(
+                            'Réalisé par Jacobin Fokou pour OverLimits Digital Enterprise',
+                            style: TextStyle(color: Colors.white54, fontSize: 12),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'GitHub: github.com/HeroNational',
+                            style: TextStyle(color: Colors.white54, fontSize: 12),
+                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 24),
-                // Boutons d’action
-                Row(
-                  children: [
-                    Expanded(
-                      child: Tooltip(
-                        message: 'Choisir une source (fichier, PDF, éditeur)',
-                        child: ElevatedButton.icon(
-                          onPressed: () => _promptSourceDialog(force: true),
-                          icon: const Icon(Icons.add_circle_outline, color: Colors.white),
-                          label: const Text(
-                            'Choisir une source',
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-                          ),
-                          style: primaryButton,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Tooltip(
-                      message: 'Paramètres',
-                      child: OutlinedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const SettingsScreen(),
-                            ),
-                          );
-                        },
-                        style: subtleButton,
-                        child: const Icon(Icons.settings, color: Colors.white),
-                      ),
-                    ),
-                  ],
                 ),
               ],
             ),
@@ -381,37 +419,54 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
     );
   }
 
-  Future<void> _importFromYoutube() async {
-    final url = _youtubeController.text.trim();
-    if (url.isEmpty) return;
-    setState(() {
-      _isLoadingYoutube = true;
-    });
-    try {
-      final settings = ref.read(settingsProvider);
-      final lang = settings.locale.startsWith('en') ? 'en' : 'fr';
-      final text = await _youtubeService.fetchPlainSubtitles(url, languageCode: lang);
-      _textController.text = text;
-      _setQuillPlainText(text);
-      _handleSource(SourceData(text: text));
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Impossible de récupérer les sous-titres : $e'),
-          backgroundColor: Colors.redAccent,
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoadingYoutube = false;
-        });
-      }
-    }
-  }
-
   String _tr(SettingsModel settings, String fr, String en) {
     return settings.locale.toLowerCase().startsWith('en') ? en : fr;
+  }
+}
+
+class CguPage extends StatelessWidget {
+  const CguPage({super.key});
+
+  Future<String> _loadCgu() async {
+    return rootBundle.loadString('assets/cgu.md');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('CGU'),
+        backgroundColor: const Color(0xFF111827),
+      ),
+      body: FutureBuilder<String>(
+        future: _loadCgu(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Impossible de charger les CGU.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.redAccent),
+              ),
+            );
+          }
+          final data = snapshot.data ?? '';
+          return Markdown(
+            data: data,
+            styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
+              p: const TextStyle(color: Colors.white),
+              h1: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+              h2: const TextStyle(color: Colors.white70, fontSize: 20, fontWeight: FontWeight.w600),
+              h3: const TextStyle(color: Colors.white70, fontSize: 18, fontWeight: FontWeight.w600),
+              listBullet: const TextStyle(color: Colors.white70),
+            ),
+            padding: const EdgeInsets.all(16),
+          );
+        },
+      ),
+      backgroundColor: const Color(0xFF0F172A),
+    );
   }
 }

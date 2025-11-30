@@ -15,6 +15,7 @@ class PlaybackState with _$PlaybackState {
     @Default(0.0) double scrollPosition,
     @Default(120.0) double speed,
     @Default(false) bool isFullscreen,
+    @Default(0) int elapsedSeconds,
     @Default(PlaybackContentType.text) PlaybackContentType contentType,
     @Default(false) bool isLoadingPdf,
     List<Uint8List>? pdfPages,

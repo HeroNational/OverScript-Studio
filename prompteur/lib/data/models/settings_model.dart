@@ -47,12 +47,14 @@ class SettingsModel with _$SettingsModel {
     @Default(48.0) double fontSize,
     @Default(ToolbarPosition.bottom) ToolbarPosition toolbarPosition,
     @Default(1.0) double toolbarScale,
-    @Default(ToolboxTheme.modern) ToolboxTheme toolboxTheme,
-    @Default(ToolbarOrientation.auto) ToolbarOrientation toolbarOrientation,
-    @Default(true) bool pauseOnMouseMove,
-    @Default('Space') String pauseKey,
-    @Default('fr') String locale,
-    Map<String, String>? customShortcuts,
+  @Default(ToolboxTheme.modern) ToolboxTheme toolboxTheme,
+  @Default(ToolbarOrientation.auto) ToolbarOrientation toolbarOrientation,
+  @Default(true) bool pauseOnMouseMove,
+  @Default('Space') String pauseKey,
+  @Default('fr') String locale,
+  @Default(true) bool showTimers,
+  @Default(5) int countdownDuration,
+  Map<String, String>? customShortcuts,
   }) = _SettingsModel;
 
   factory SettingsModel.fromJson(Map<String, dynamic> json) =>

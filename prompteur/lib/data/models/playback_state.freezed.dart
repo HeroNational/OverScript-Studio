@@ -20,6 +20,7 @@ mixin _$PlaybackState {
   double get scrollPosition => throw _privateConstructorUsedError;
   double get speed => throw _privateConstructorUsedError;
   bool get isFullscreen => throw _privateConstructorUsedError;
+  int get elapsedSeconds => throw _privateConstructorUsedError;
   PlaybackContentType get contentType => throw _privateConstructorUsedError;
   bool get isLoadingPdf => throw _privateConstructorUsedError;
   List<Uint8List>? get pdfPages => throw _privateConstructorUsedError;
@@ -44,6 +45,7 @@ abstract class $PlaybackStateCopyWith<$Res> {
       double scrollPosition,
       double speed,
       bool isFullscreen,
+      int elapsedSeconds,
       PlaybackContentType contentType,
       bool isLoadingPdf,
       List<Uint8List>? pdfPages,
@@ -70,6 +72,7 @@ class _$PlaybackStateCopyWithImpl<$Res, $Val extends PlaybackState>
     Object? scrollPosition = null,
     Object? speed = null,
     Object? isFullscreen = null,
+    Object? elapsedSeconds = null,
     Object? contentType = null,
     Object? isLoadingPdf = null,
     Object? pdfPages = freezed,
@@ -95,6 +98,10 @@ class _$PlaybackStateCopyWithImpl<$Res, $Val extends PlaybackState>
           ? _value.isFullscreen
           : isFullscreen // ignore: cast_nullable_to_non_nullable
               as bool,
+      elapsedSeconds: null == elapsedSeconds
+          ? _value.elapsedSeconds
+          : elapsedSeconds // ignore: cast_nullable_to_non_nullable
+              as int,
       contentType: null == contentType
           ? _value.contentType
           : contentType // ignore: cast_nullable_to_non_nullable
@@ -140,6 +147,7 @@ abstract class _$$PlaybackStateImplCopyWith<$Res>
       double scrollPosition,
       double speed,
       bool isFullscreen,
+      int elapsedSeconds,
       PlaybackContentType contentType,
       bool isLoadingPdf,
       List<Uint8List>? pdfPages,
@@ -164,6 +172,7 @@ class __$$PlaybackStateImplCopyWithImpl<$Res>
     Object? scrollPosition = null,
     Object? speed = null,
     Object? isFullscreen = null,
+    Object? elapsedSeconds = null,
     Object? contentType = null,
     Object? isLoadingPdf = null,
     Object? pdfPages = freezed,
@@ -189,6 +198,10 @@ class __$$PlaybackStateImplCopyWithImpl<$Res>
           ? _value.isFullscreen
           : isFullscreen // ignore: cast_nullable_to_non_nullable
               as bool,
+      elapsedSeconds: null == elapsedSeconds
+          ? _value.elapsedSeconds
+          : elapsedSeconds // ignore: cast_nullable_to_non_nullable
+              as int,
       contentType: null == contentType
           ? _value.contentType
           : contentType // ignore: cast_nullable_to_non_nullable
@@ -229,6 +242,7 @@ class _$PlaybackStateImpl implements _PlaybackState {
       this.scrollPosition = 0.0,
       this.speed = 120.0,
       this.isFullscreen = false,
+      this.elapsedSeconds = 0,
       this.contentType = PlaybackContentType.text,
       this.isLoadingPdf = false,
       final List<Uint8List>? pdfPages,
@@ -250,6 +264,9 @@ class _$PlaybackStateImpl implements _PlaybackState {
   @override
   @JsonKey()
   final bool isFullscreen;
+  @override
+  @JsonKey()
+  final int elapsedSeconds;
   @override
   @JsonKey()
   final PlaybackContentType contentType;
@@ -277,7 +294,7 @@ class _$PlaybackStateImpl implements _PlaybackState {
 
   @override
   String toString() {
-    return 'PlaybackState(isPlaying: $isPlaying, scrollPosition: $scrollPosition, speed: $speed, isFullscreen: $isFullscreen, contentType: $contentType, isLoadingPdf: $isLoadingPdf, pdfPages: $pdfPages, pdfPath: $pdfPath, pdfError: $pdfError, richContentJson: $richContentJson, currentText: $currentText)';
+    return 'PlaybackState(isPlaying: $isPlaying, scrollPosition: $scrollPosition, speed: $speed, isFullscreen: $isFullscreen, elapsedSeconds: $elapsedSeconds, contentType: $contentType, isLoadingPdf: $isLoadingPdf, pdfPages: $pdfPages, pdfPath: $pdfPath, pdfError: $pdfError, richContentJson: $richContentJson, currentText: $currentText)';
   }
 
   @override
@@ -292,6 +309,8 @@ class _$PlaybackStateImpl implements _PlaybackState {
             (identical(other.speed, speed) || other.speed == speed) &&
             (identical(other.isFullscreen, isFullscreen) ||
                 other.isFullscreen == isFullscreen) &&
+            (identical(other.elapsedSeconds, elapsedSeconds) ||
+                other.elapsedSeconds == elapsedSeconds) &&
             (identical(other.contentType, contentType) ||
                 other.contentType == contentType) &&
             (identical(other.isLoadingPdf, isLoadingPdf) ||
@@ -313,6 +332,7 @@ class _$PlaybackStateImpl implements _PlaybackState {
       scrollPosition,
       speed,
       isFullscreen,
+      elapsedSeconds,
       contentType,
       isLoadingPdf,
       const DeepCollectionEquality().hash(_pdfPages),
@@ -334,6 +354,7 @@ abstract class _PlaybackState implements PlaybackState {
       final double scrollPosition,
       final double speed,
       final bool isFullscreen,
+      final int elapsedSeconds,
       final PlaybackContentType contentType,
       final bool isLoadingPdf,
       final List<Uint8List>? pdfPages,
@@ -350,6 +371,8 @@ abstract class _PlaybackState implements PlaybackState {
   double get speed;
   @override
   bool get isFullscreen;
+  @override
+  int get elapsedSeconds;
   @override
   PlaybackContentType get contentType;
   @override

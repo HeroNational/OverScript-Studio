@@ -41,6 +41,8 @@ class SettingsScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
                 _buildSpeedSlider(context, ref, settings),
                 const SizedBox(height: 16),
+                _buildCountdownSlider(context, ref, settings),
+                const SizedBox(height: 16),
                 _buildSwitchTile(
                   context,
                   _tr(settings, 'Plein écran automatique au démarrage', 'Auto fullscreen on start'),
@@ -90,6 +92,15 @@ class SettingsScreen extends ConsumerWidget {
                 _buildToolbarScaleSelector(context, ref, settings),
                 const SizedBox(height: 16),
                 _buildToolbarThemeSelector(context, ref, settings),
+                const SizedBox(height: 16),
+                _buildSwitchTile(
+                  context,
+                  _tr(settings, 'Afficher chrono et heure', 'Show timer and clock'),
+                  _tr(settings, 'Affiche le chronomètre et l\'horloge dans la toolbox', 'Display timer and clock in the toolbox'),
+                  settings.showTimers,
+                  (value) => ref.read(settingsProvider.notifier).updateShowTimers(value),
+                  LucideIcons.timer,
+                ),
               ],
             ),
             const SizedBox(height: 32),
@@ -138,6 +149,37 @@ class SettingsScreen extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildCountdownSlider(BuildContext context, WidgetRef ref, SettingsModel settings) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(LucideIcons.timer, color: Colors.white70, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              _tr(settings, 'Compte à rebours (secondes)', 'Countdown (seconds)'),
+              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+            const Spacer(),
+            Text(
+              '${settings.countdownDuration}s',
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+          ],
+        ),
+        Slider(
+          value: settings.countdownDuration.toDouble(),
+          min: 0,
+          max: 10,
+          divisions: 10,
+          label: '${settings.countdownDuration}s',
+          onChanged: (v) => ref.read(settingsProvider.notifier).updateCountdownDuration(v.round()),
+        ),
+      ],
     );
   }
 

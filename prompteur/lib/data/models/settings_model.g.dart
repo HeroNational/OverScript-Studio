@@ -30,6 +30,8 @@ _$SettingsModelImpl _$$SettingsModelImplFromJson(Map<String, dynamic> json) =>
       pauseOnMouseMove: json['pauseOnMouseMove'] as bool? ?? true,
       pauseKey: json['pauseKey'] as String? ?? 'Space',
       locale: json['locale'] as String? ?? 'fr',
+      showTimers: json['showTimers'] as bool? ?? true,
+      countdownDuration: (json['countdownDuration'] as num?)?.toInt() ?? 5,
       customShortcuts: (json['customShortcuts'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ),
@@ -53,6 +55,8 @@ Map<String, dynamic> _$$SettingsModelImplToJson(_$SettingsModelImpl instance) =>
       'pauseOnMouseMove': instance.pauseOnMouseMove,
       'pauseKey': instance.pauseKey,
       'locale': instance.locale,
+      'showTimers': instance.showTimers,
+      'countdownDuration': instance.countdownDuration,
       'customShortcuts': instance.customShortcuts,
     };
 

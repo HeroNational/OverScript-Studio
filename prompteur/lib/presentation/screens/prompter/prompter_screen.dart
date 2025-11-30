@@ -23,21 +23,25 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
   final FocusNode _focusNode = FocusNode();
   final FocusModeService _focusService = FocusModeService();
   Timer? _countdownTimer;
-  int? _countdown = 3;
+  int? _countdown;
+  bool _focusModeEnabled = false;
+  int _countdownStart = 0;
 
   @override
   void initState() {
     super.initState();
     _focusNode.requestFocus();
-    _startCountdown();
 
     // Activer le plein écran automatique si configuré
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final settings = ref.read(settingsProvider);
+      _focusModeEnabled = settings.enableFocusMode;
+      _countdownStart = settings.countdownDuration;
+      _startCountdown();
       if (settings.autoFullscreen) {
         _toggleFullscreen();
       }
-      if (settings.enableFocusMode) {
+      if (_focusModeEnabled) {
         _focusService.enable();
       }
     });
@@ -45,9 +49,8 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
 
   @override
   void dispose() {
-    final settings = ref.read(settingsProvider);
     _countdownTimer?.cancel();
-    if (settings.enableFocusMode) {
+    if (_focusModeEnabled) {
       _focusService.disable();
     }
     _focusNode.dispose();
@@ -161,7 +164,13 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
   }
 
   void _startCountdown() {
-    _countdown = 3;
+    final settings = ref.read(settingsProvider);
+    _countdown = settings.countdownDuration;
+    if (_countdown != null && _countdown! <= 0) {
+      _countdown = null;
+      ref.read(playbackProvider.notifier).play();
+      return;
+    }
     _countdownTimer?.cancel();
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted) return;
@@ -183,19 +192,35 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
 
     final toolbox = GlasmorphicToolbox(
       onHomePressed: () {
-        Navigator.of(context).popUntil((route) => route.isFirst);
+        print('[UI] Home (toolbar)');
+        _countdownTimer?.cancel();
+        ref.read(playbackProvider.notifier).pause();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            Navigator.of(context, rootNavigator: true).popUntil((route) => route.isFirst);
+          }
+        });
       },
       onSourcesPressed: () {
-        showDialog(
+        print('[UI] Sources (toolbar)');
+        showDialog<SourceData>(
           context: context,
+          useRootNavigator: true,
           builder: (context) => SourcesDialog(
-            onSourceSelected: _handleSource,
+            onSourceSelected: (source) {
+              Navigator.of(context, rootNavigator: true).pop(source);
+            },
             initialText: playback.currentText,
             initialQuillJson: playback.richContentJson,
           ),
-        );
+        ).then((source) {
+          if (source != null) {
+            _handleSource(source);
+          }
+        });
       },
       onSettingsPressed: () {
+        print('[UI] Settings (toolbar)');
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -203,7 +228,10 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
           ),
         );
       },
-      onFullscreenPressed: _toggleFullscreen,
+      onFullscreenPressed: () {
+        print('[UI] Fullscreen toggle (toolbar)');
+        _toggleFullscreen();
+      },
       isVertical: _isVertical(settings.toolbarPosition, settings.toolbarOrientation),
       scale: settings.toolbarScale,
       themeStyle: settings.toolboxTheme,

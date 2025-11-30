@@ -71,6 +71,21 @@ class SettingsNotifier extends StateNotifier<SettingsModel> {
     await _storageService.saveSettings(state);
   }
 
+  Future<void> updateShowTimers(bool value) async {
+    state = state.copyWith(showTimers: value);
+    await _storageService.saveSettings(state);
+  }
+
+  Future<void> updateCountdownDuration(int seconds) async {
+    state = state.copyWith(countdownDuration: seconds);
+    await _storageService.saveSettings(state);
+  }
+
+  Future<void> updateLocale(String locale) async {
+    state = state.copyWith(locale: locale);
+    await _storageService.saveSettings(state);
+  }
+
   Future<void> updateSettings(SettingsModel settings) async {
     state = settings;
     await _storageService.saveSettings(state);

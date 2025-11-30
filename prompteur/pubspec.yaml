@@ -20,6 +20,7 @@ dependencies:
   youtube_explode_dart: ^2.5.3
   youtube_caption_scraper: ^0.2.1
   http: ^1.1.0
+  flutter_markdown: ^0.6.20
 
   # PDF (open source)
   pdfx: ^2.6.0
@@ -73,3 +74,4 @@ flutter:
     - assets/banner_texture.jpg
     - assets/banner_texture_2.jpg
     - assets/banner_texture_3.jpg
+    - assets/cgu.md

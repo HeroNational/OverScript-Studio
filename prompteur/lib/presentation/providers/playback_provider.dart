@@ -26,6 +26,7 @@ class PlaybackNotifier extends StateNotifier<PlaybackState> {
   final Ref _ref;
   final PdfService _pdfService;
   Timer? _scrollTimer;
+  Timer? _elapsedTimer;
   ScrollController? _scrollController;
   late final ProviderSubscription<SettingsModel> _settingsSub;
 
@@ -34,7 +35,9 @@ class PlaybackNotifier extends StateNotifier<PlaybackState> {
   }
 
   void setText(String text) {
-    _scrollController?.jumpTo(0);
+    if (_scrollController != null && _scrollController!.hasClients) {
+      _scrollController!.jumpTo(0);
+    }
     state = state.copyWith(
       currentText: text,
       richContentJson: null,
@@ -48,7 +51,9 @@ class PlaybackNotifier extends StateNotifier<PlaybackState> {
   }
 
   void setRichText(String deltaJson) {
-    _scrollController?.jumpTo(0);
+    if (_scrollController != null && _scrollController!.hasClients) {
+      _scrollController!.jumpTo(0);
+    }
     state = state.copyWith(
       currentText: null,
       richContentJson: deltaJson,
@@ -62,7 +67,9 @@ class PlaybackNotifier extends StateNotifier<PlaybackState> {
   }
 
   Future<void> loadPdf(String path) async {
-    _scrollController?.jumpTo(0);
+    if (_scrollController != null && _scrollController!.hasClients) {
+      _scrollController!.jumpTo(0);
+    }
     state = state.copyWith(
       contentType: PlaybackContentType.pdf,
       isLoadingPdf: true,
@@ -95,12 +102,14 @@ class PlaybackNotifier extends StateNotifier<PlaybackState> {
     if (state.isPlaying) return;
     state = state.copyWith(isPlaying: true);
     _startScrolling();
+    _startElapsed();
   }
 
   void pause() {
     if (!state.isPlaying) return;
     state = state.copyWith(isPlaying: false);
     _stopScrolling();
+    _stopElapsed();
   }
 
   void togglePlayPause() {
@@ -121,8 +130,10 @@ class PlaybackNotifier extends StateNotifier<PlaybackState> {
 
   void reset() {
     pause();
-    _scrollController?.jumpTo(0);
-    state = state.copyWith(scrollPosition: 0);
+    if (_scrollController != null && _scrollController!.hasClients) {
+      _scrollController!.jumpTo(0);
+    }
+    state = state.copyWith(scrollPosition: 0, elapsedSeconds: 0);
   }
 
   void _startScrolling() {
@@ -158,6 +169,17 @@ class PlaybackNotifier extends StateNotifier<PlaybackState> {
     _scrollTimer = null;
   }
 
+  void _startElapsed() {
+    _elapsedTimer ??= Timer.periodic(const Duration(seconds: 1), (_) {
+      state = state.copyWith(elapsedSeconds: state.elapsedSeconds + 1);
+    });
+  }
+
+  void _stopElapsed() {
+    _elapsedTimer?.cancel();
+    _elapsedTimer = null;
+  }
+
   void toggleFullscreen() {
     state = state.copyWith(isFullscreen: !state.isFullscreen);
   }
@@ -165,6 +187,7 @@ class PlaybackNotifier extends StateNotifier<PlaybackState> {
   @override
   void dispose() {
     _stopScrolling();
+    _stopElapsed();
     _settingsSub.close();
     super.dispose();
   }

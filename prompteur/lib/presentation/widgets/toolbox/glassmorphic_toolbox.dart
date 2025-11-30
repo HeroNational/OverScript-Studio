@@ -21,8 +21,8 @@ class GlasmorphicToolbox extends ConsumerWidget {
     required this.onSettingsPressed,
     required this.onFullscreenPressed,
     required this.onHomePressed,
-    required this.isVertical,
     required this.scale,
+    required this.isVertical,
     required this.themeStyle,
   });
 
@@ -41,9 +41,9 @@ class GlasmorphicToolbox extends ConsumerWidget {
           borderRadius: BorderRadius.circular(baseRadius),
           boxShadow: [
             BoxShadow(
-              color: palette.shadowColor,
-              blurRadius: 26 * scale,
-              offset: Offset(0, 16 * scale),
+              color: palette.shadowColor.withOpacity(0.7),
+              blurRadius: 14 * scale,
+              offset: Offset(0, 10 * scale),
             ),
           ],
           border: Border.all(
@@ -57,6 +57,9 @@ class GlasmorphicToolbox extends ConsumerWidget {
             filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
+              constraints: BoxConstraints(
+                maxWidth: isVertical ? double.infinity : 600,
+              ),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
@@ -72,46 +75,64 @@ class GlasmorphicToolbox extends ConsumerWidget {
                   width: 1.5,
                 ),
               ),
-              padding: EdgeInsets.symmetric(horizontal: 20 * scale, vertical: 16 * scale),
-              child: isVertical
-                  ? Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _PlaybackPanel(playbackState: playbackState, palette: palette, scale: scale, isVertical: isVertical),
-                        SizedBox(height: 12 * scale),
-                        _Divider(isVertical: true, palette: palette, scale: scale),
-                        SizedBox(height: 12 * scale),
-                        _ActionsPanel(
-                          onHomePressed: onHomePressed,
-                          onSourcesPressed: onSourcesPressed,
-                          onSettingsPressed: onSettingsPressed,
-                          onFullscreenPressed: onFullscreenPressed,
-                          isFullscreen: playbackState.isFullscreen,
-                          palette: palette,
-                          scale: scale,
-                          isVertical: isVertical,
+              padding: EdgeInsets.symmetric(horizontal: 10 * scale, vertical: 12 * scale),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  isVertical
+                      ? Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _PlaybackPanel(
+                              playbackState: playbackState,
+                              palette: palette,
+                              scale: scale,
+                              isVertical: isVertical,
+                              showTimers: false,
+                            ),
+                            SizedBox(height: 8 * scale),
+                            _Divider(isVertical: true, palette: palette, scale: scale),
+                            SizedBox(height: 8 * scale),
+                            _ActionsPanel(
+                              onHomePressed: onHomePressed,
+                              onSourcesPressed: onSourcesPressed,
+                              onSettingsPressed: onSettingsPressed,
+                              onFullscreenPressed: onFullscreenPressed,
+                              isFullscreen: playbackState.isFullscreen,
+                              palette: palette,
+                              scale: scale,
+                              isVertical: isVertical,
+                            ),
+                          ],
+                        )
+                      : Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _PlaybackPanel(
+                              playbackState: playbackState,
+                              palette: palette,
+                              scale: scale,
+                              isVertical: isVertical,
+                              showTimers: false,
+                            ),
+                            SizedBox(width: 10 * scale),
+                            _Divider(isVertical: false, palette: palette, scale: scale),
+                            SizedBox(width: 10 * scale),
+                            _ActionsPanel(
+                              onHomePressed: onHomePressed,
+                              onSourcesPressed: onSourcesPressed,
+                              onSettingsPressed: onSettingsPressed,
+                              onFullscreenPressed: onFullscreenPressed,
+                              isFullscreen: playbackState.isFullscreen,
+                              palette: palette,
+                              scale: scale,
+                              isVertical: isVertical,
+                            ),
+                          ],
                         ),
-                      ],
-                    )
-                  : Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _PlaybackPanel(playbackState: playbackState, palette: palette, scale: scale, isVertical: isVertical),
-                        SizedBox(width: 16 * scale),
-                        _Divider(isVertical: false, palette: palette, scale: scale),
-                        SizedBox(width: 16 * scale),
-                        _ActionsPanel(
-                          onHomePressed: onHomePressed,
-                          onSourcesPressed: onSourcesPressed,
-                          onSettingsPressed: onSettingsPressed,
-                          onFullscreenPressed: onFullscreenPressed,
-                          isFullscreen: playbackState.isFullscreen,
-                          palette: palette,
-                          scale: scale,
-                          isVertical: isVertical,
-                        ),
-                      ],
-                    ),
+                ],
+              ),
             ),
           ),
         ),
@@ -125,18 +146,20 @@ class _PlaybackPanel extends ConsumerWidget {
    final _ToolboxPalette palette;
    final double scale;
    final bool isVertical;
+   final bool showTimers;
 
   const _PlaybackPanel({
     required this.playbackState,
     required this.palette,
     required this.scale,
     required this.isVertical,
+    required this.showTimers,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20 * scale, vertical: 12 * scale),
+      padding: EdgeInsets.symmetric(horizontal: 14 * scale, vertical: 10 * scale),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -165,7 +188,7 @@ class _PlaybackPanel extends ConsumerWidget {
   }
 
   List<Widget> _buildButtons(WidgetRef ref) {
-    final spacing = SizedBox(width: isVertical ? 0 : 12 * scale, height: isVertical ? 12 * scale : 0);
+    final spacing = SizedBox(width: isVertical ? 0 : 10 * scale, height: isVertical ? 10 * scale : 0);
     return [
       _GlassButton(
         icon: LucideIcons.skip_back,
@@ -205,6 +228,60 @@ class _PlaybackPanel extends ConsumerWidget {
   }
 }
 
+class _TimersHeader extends StatelessWidget {
+  final PlaybackState playbackState;
+  final double scale;
+
+  const _TimersHeader({required this.playbackState, required this.scale});
+
+  @override
+  Widget build(BuildContext context) {
+    final elapsed = _formatDuration(Duration(seconds: playbackState.elapsedSeconds));
+    final now = DateTime.now();
+    final clock = '${_two(now.hour)}:${_two(now.minute)}:${_two(now.second)}';
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(LucideIcons.timer, color: Colors.white, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              elapsed,
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 16 * scale),
+            ),
+          ],
+        ),
+        const SizedBox(width: 12),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(LucideIcons.clock_3, color: Colors.white70, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              clock,
+              style: TextStyle(color: Colors.white70, fontSize: 15 * scale, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  String _two(int v) => v.toString().padLeft(2, '0');
+
+  String _formatDuration(Duration d) {
+    final h = d.inHours;
+    final m = d.inMinutes % 60;
+    final s = d.inSeconds % 60;
+    if (h > 0) {
+      return '${_two(h)}:${_two(m)}:${_two(s)}';
+    }
+    return '${_two(m)}:${_two(s)}';
+  }
+}
+
 class _ActionsPanel extends StatelessWidget {
   final VoidCallback onHomePressed;
   final VoidCallback onSourcesPressed;
@@ -229,7 +306,7 @@ class _ActionsPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20 * scale, vertical: 12 * scale),
+      padding: EdgeInsets.symmetric(horizontal: 14 * scale, vertical: 10 * scale),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -258,7 +335,7 @@ class _ActionsPanel extends StatelessWidget {
   }
 
   List<Widget> _buildButtons() {
-    final spacing = SizedBox(width: isVertical ? 0 : 16 * scale, height: isVertical ? 12 * scale : 0);
+    final spacing = SizedBox(width: isVertical ? 0 : 12 * scale, height: isVertical ? 10 * scale : 0);
     return [
       _GlassButton(
         icon: LucideIcons.house,

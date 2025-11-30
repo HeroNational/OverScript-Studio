@@ -36,6 +36,8 @@ mixin _$SettingsModel {
   bool get pauseOnMouseMove => throw _privateConstructorUsedError;
   String get pauseKey => throw _privateConstructorUsedError;
   String get locale => throw _privateConstructorUsedError;
+  bool get showTimers => throw _privateConstructorUsedError;
+  int get countdownDuration => throw _privateConstructorUsedError;
   Map<String, String>? get customShortcuts =>
       throw _privateConstructorUsedError;
 
@@ -67,6 +69,8 @@ abstract class $SettingsModelCopyWith<$Res> {
       bool pauseOnMouseMove,
       String pauseKey,
       String locale,
+      bool showTimers,
+      int countdownDuration,
       Map<String, String>? customShortcuts});
 }
 
@@ -98,6 +102,8 @@ class _$SettingsModelCopyWithImpl<$Res, $Val extends SettingsModel>
     Object? pauseOnMouseMove = null,
     Object? pauseKey = null,
     Object? locale = null,
+    Object? showTimers = null,
+    Object? countdownDuration = null,
     Object? customShortcuts = freezed,
   }) {
     return _then(_value.copyWith(
@@ -161,6 +167,14 @@ class _$SettingsModelCopyWithImpl<$Res, $Val extends SettingsModel>
           ? _value.locale
           : locale // ignore: cast_nullable_to_non_nullable
               as String,
+      showTimers: null == showTimers
+          ? _value.showTimers
+          : showTimers // ignore: cast_nullable_to_non_nullable
+              as bool,
+      countdownDuration: null == countdownDuration
+          ? _value.countdownDuration
+          : countdownDuration // ignore: cast_nullable_to_non_nullable
+              as int,
       customShortcuts: freezed == customShortcuts
           ? _value.customShortcuts
           : customShortcuts // ignore: cast_nullable_to_non_nullable
@@ -193,6 +207,8 @@ abstract class _$$SettingsModelImplCopyWith<$Res>
       bool pauseOnMouseMove,
       String pauseKey,
       String locale,
+      bool showTimers,
+      int countdownDuration,
       Map<String, String>? customShortcuts});
 }
 
@@ -222,6 +238,8 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
     Object? pauseOnMouseMove = null,
     Object? pauseKey = null,
     Object? locale = null,
+    Object? showTimers = null,
+    Object? countdownDuration = null,
     Object? customShortcuts = freezed,
   }) {
     return _then(_$SettingsModelImpl(
@@ -285,6 +303,14 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
           ? _value.locale
           : locale // ignore: cast_nullable_to_non_nullable
               as String,
+      showTimers: null == showTimers
+          ? _value.showTimers
+          : showTimers // ignore: cast_nullable_to_non_nullable
+              as bool,
+      countdownDuration: null == countdownDuration
+          ? _value.countdownDuration
+          : countdownDuration // ignore: cast_nullable_to_non_nullable
+              as int,
       customShortcuts: freezed == customShortcuts
           ? _value._customShortcuts
           : customShortcuts // ignore: cast_nullable_to_non_nullable
@@ -312,6 +338,8 @@ class _$SettingsModelImpl implements _SettingsModel {
       this.pauseOnMouseMove = true,
       this.pauseKey = 'Space',
       this.locale = 'fr',
+      this.showTimers = true,
+      this.countdownDuration = 5,
       final Map<String, String>? customShortcuts})
       : _customShortcuts = customShortcuts;
 
@@ -363,6 +391,12 @@ class _$SettingsModelImpl implements _SettingsModel {
   @override
   @JsonKey()
   final String locale;
+  @override
+  @JsonKey()
+  final bool showTimers;
+  @override
+  @JsonKey()
+  final int countdownDuration;
   final Map<String, String>? _customShortcuts;
   @override
   Map<String, String>? get customShortcuts {
@@ -375,7 +409,7 @@ class _$SettingsModelImpl implements _SettingsModel {
 
   @override
   String toString() {
-    return 'SettingsModel(defaultSpeed: $defaultSpeed, speedUnit: $speedUnit, autoFullscreen: $autoFullscreen, enableFocusMode: $enableFocusMode, backgroundColor: $backgroundColor, textColor: $textColor, fontFamily: $fontFamily, fontSize: $fontSize, toolbarPosition: $toolbarPosition, toolbarScale: $toolbarScale, toolboxTheme: $toolboxTheme, toolbarOrientation: $toolbarOrientation, pauseOnMouseMove: $pauseOnMouseMove, pauseKey: $pauseKey, locale: $locale, customShortcuts: $customShortcuts)';
+    return 'SettingsModel(defaultSpeed: $defaultSpeed, speedUnit: $speedUnit, autoFullscreen: $autoFullscreen, enableFocusMode: $enableFocusMode, backgroundColor: $backgroundColor, textColor: $textColor, fontFamily: $fontFamily, fontSize: $fontSize, toolbarPosition: $toolbarPosition, toolbarScale: $toolbarScale, toolboxTheme: $toolboxTheme, toolbarOrientation: $toolbarOrientation, pauseOnMouseMove: $pauseOnMouseMove, pauseKey: $pauseKey, locale: $locale, showTimers: $showTimers, countdownDuration: $countdownDuration, customShortcuts: $customShortcuts)';
   }
 
   @override
@@ -412,6 +446,10 @@ class _$SettingsModelImpl implements _SettingsModel {
             (identical(other.pauseKey, pauseKey) ||
                 other.pauseKey == pauseKey) &&
             (identical(other.locale, locale) || other.locale == locale) &&
+            (identical(other.showTimers, showTimers) ||
+                other.showTimers == showTimers) &&
+            (identical(other.countdownDuration, countdownDuration) ||
+                other.countdownDuration == countdownDuration) &&
             const DeepCollectionEquality()
                 .equals(other._customShortcuts, _customShortcuts));
   }
@@ -435,6 +473,8 @@ class _$SettingsModelImpl implements _SettingsModel {
       pauseOnMouseMove,
       pauseKey,
       locale,
+      showTimers,
+      countdownDuration,
       const DeepCollectionEquality().hash(_customShortcuts));
 
   @JsonKey(ignore: true)
@@ -468,6 +508,8 @@ abstract class _SettingsModel implements SettingsModel {
       final bool pauseOnMouseMove,
       final String pauseKey,
       final String locale,
+      final bool showTimers,
+      final int countdownDuration,
       final Map<String, String>? customShortcuts}) = _$SettingsModelImpl;
 
   factory _SettingsModel.fromJson(Map<String, dynamic> json) =
@@ -503,6 +545,10 @@ abstract class _SettingsModel implements SettingsModel {
   String get pauseKey;
   @override
   String get locale;
+  @override
+  bool get showTimers;
+  @override
+  int get countdownDuration;
   @override
   Map<String, String>? get customShortcuts;
   @override
