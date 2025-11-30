@@ -2235,7 +2235,8 @@
 /Users/heronational/Projets/Desktop/Prompteur/assets/banner_texture.jpg
 /Users/heronational/Projets/Desktop/Prompteur/assets/banner_texture_2.jpg
 /Users/heronational/Projets/Desktop/Prompteur/assets/banner_texture_3.jpg
-/Users/heronational/Projets/Desktop/Prompteur/assets/cgu.md
+/Users/heronational/Projets/Desktop/Prompteur/assets/cgu_en.md
+/Users/heronational/Projets/Desktop/Prompteur/assets/cgu_fr.md
 /Users/heronational/Projets/Desktop/Prompteur/l10n.yaml
 /Users/heronational/Projets/Desktop/Prompteur/lib/core/utils/speed_converter.dart
 /Users/heronational/Projets/Desktop/Prompteur/lib/core/utils/subtitle_parser.dart
@@ -2250,6 +2251,7 @@
 /Users/heronational/Projets/Desktop/Prompteur/lib/l10n/app_en.arb
 /Users/heronational/Projets/Desktop/Prompteur/lib/l10n/app_fr.arb
 /Users/heronational/Projets/Desktop/Prompteur/lib/main.dart
+/Users/heronational/Projets/Desktop/Prompteur/lib/presentation/providers/mobile_toolbar_provider.dart
 /Users/heronational/Projets/Desktop/Prompteur/lib/presentation/providers/playback_provider.dart
 /Users/heronational/Projets/Desktop/Prompteur/lib/presentation/providers/settings_provider.dart
 /Users/heronational/Projets/Desktop/Prompteur/lib/presentation/screens/prompter/prompter_screen.dart

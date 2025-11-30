@@ -75,6 +75,7 @@
   "vertical": "Vertical",
   "horizontal": "Horizontal",
   "toolboxOrientation": "Toolbar Orientation",
+  "toggleOrientation": "Toggle orientation",
   "playback": "Playback",
   "speedUnit": "Speed unit",
   "speedUnitPixels": "Pixels per second",
@@ -88,5 +89,8 @@
   "trialActiveLabel": "Remaining: {days} days",
   "trialExpiresOn": "Expires on {date}",
   "trialExpiredTitle": "Trial expired",
-  "trialExpiredMessage": "The testing period has ended. Source selection is disabled."
+  "trialExpiredMessage": "The testing period has ended. Source selection is disabled.",
+  "theme": "Theme",
+  "lightMode": "Light Mode",
+  "darkMode": "Dark Mode"
 }

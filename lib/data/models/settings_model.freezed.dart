@@ -38,6 +38,7 @@ mixin _$SettingsModel {
   String get locale => throw _privateConstructorUsedError;
   bool get showTimers => throw _privateConstructorUsedError;
   int get countdownDuration => throw _privateConstructorUsedError;
+  ThemeMode get themeMode => throw _privateConstructorUsedError;
   Map<String, String>? get customShortcuts =>
       throw _privateConstructorUsedError;
 
@@ -71,6 +72,7 @@ abstract class $SettingsModelCopyWith<$Res> {
       String locale,
       bool showTimers,
       int countdownDuration,
+      ThemeMode themeMode,
       Map<String, String>? customShortcuts});
 }
 
@@ -104,6 +106,7 @@ class _$SettingsModelCopyWithImpl<$Res, $Val extends SettingsModel>
     Object? locale = null,
     Object? showTimers = null,
     Object? countdownDuration = null,
+    Object? themeMode = null,
     Object? customShortcuts = freezed,
   }) {
     return _then(_value.copyWith(
@@ -175,6 +178,10 @@ class _$SettingsModelCopyWithImpl<$Res, $Val extends SettingsModel>
           ? _value.countdownDuration
           : countdownDuration // ignore: cast_nullable_to_non_nullable
               as int,
+      themeMode: null == themeMode
+          ? _value.themeMode
+          : themeMode // ignore: cast_nullable_to_non_nullable
+              as ThemeMode,
       customShortcuts: freezed == customShortcuts
           ? _value.customShortcuts
           : customShortcuts // ignore: cast_nullable_to_non_nullable
@@ -209,6 +216,7 @@ abstract class _$$SettingsModelImplCopyWith<$Res>
       String locale,
       bool showTimers,
       int countdownDuration,
+      ThemeMode themeMode,
       Map<String, String>? customShortcuts});
 }
 
@@ -240,6 +248,7 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
     Object? locale = null,
     Object? showTimers = null,
     Object? countdownDuration = null,
+    Object? themeMode = null,
     Object? customShortcuts = freezed,
   }) {
     return _then(_$SettingsModelImpl(
@@ -311,6 +320,10 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
           ? _value.countdownDuration
           : countdownDuration // ignore: cast_nullable_to_non_nullable
               as int,
+      themeMode: null == themeMode
+          ? _value.themeMode
+          : themeMode // ignore: cast_nullable_to_non_nullable
+              as ThemeMode,
       customShortcuts: freezed == customShortcuts
           ? _value._customShortcuts
           : customShortcuts // ignore: cast_nullable_to_non_nullable
@@ -340,6 +353,7 @@ class _$SettingsModelImpl implements _SettingsModel {
       this.locale = 'fr',
       this.showTimers = true,
       this.countdownDuration = 5,
+      this.themeMode = ThemeMode.dark,
       final Map<String, String>? customShortcuts})
       : _customShortcuts = customShortcuts;
 
@@ -397,6 +411,9 @@ class _$SettingsModelImpl implements _SettingsModel {
   @override
   @JsonKey()
   final int countdownDuration;
+  @override
+  @JsonKey()
+  final ThemeMode themeMode;
   final Map<String, String>? _customShortcuts;
   @override
   Map<String, String>? get customShortcuts {
@@ -409,7 +426,7 @@ class _$SettingsModelImpl implements _SettingsModel {
 
   @override
   String toString() {
-    return 'SettingsModel(defaultSpeed: $defaultSpeed, speedUnit: $speedUnit, autoFullscreen: $autoFullscreen, enableFocusMode: $enableFocusMode, backgroundColor: $backgroundColor, textColor: $textColor, fontFamily: $fontFamily, fontSize: $fontSize, toolbarPosition: $toolbarPosition, toolbarScale: $toolbarScale, toolboxTheme: $toolboxTheme, toolbarOrientation: $toolbarOrientation, pauseOnMouseMove: $pauseOnMouseMove, pauseKey: $pauseKey, locale: $locale, showTimers: $showTimers, countdownDuration: $countdownDuration, customShortcuts: $customShortcuts)';
+    return 'SettingsModel(defaultSpeed: $defaultSpeed, speedUnit: $speedUnit, autoFullscreen: $autoFullscreen, enableFocusMode: $enableFocusMode, backgroundColor: $backgroundColor, textColor: $textColor, fontFamily: $fontFamily, fontSize: $fontSize, toolbarPosition: $toolbarPosition, toolbarScale: $toolbarScale, toolboxTheme: $toolboxTheme, toolbarOrientation: $toolbarOrientation, pauseOnMouseMove: $pauseOnMouseMove, pauseKey: $pauseKey, locale: $locale, showTimers: $showTimers, countdownDuration: $countdownDuration, themeMode: $themeMode, customShortcuts: $customShortcuts)';
   }
 
   @override
@@ -450,32 +467,36 @@ class _$SettingsModelImpl implements _SettingsModel {
                 other.showTimers == showTimers) &&
             (identical(other.countdownDuration, countdownDuration) ||
                 other.countdownDuration == countdownDuration) &&
+            (identical(other.themeMode, themeMode) ||
+                other.themeMode == themeMode) &&
             const DeepCollectionEquality()
                 .equals(other._customShortcuts, _customShortcuts));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      defaultSpeed,
-      speedUnit,
-      autoFullscreen,
-      enableFocusMode,
-      backgroundColor,
-      textColor,
-      fontFamily,
-      fontSize,
-      toolbarPosition,
-      toolbarScale,
-      toolboxTheme,
-      toolbarOrientation,
-      pauseOnMouseMove,
-      pauseKey,
-      locale,
-      showTimers,
-      countdownDuration,
-      const DeepCollectionEquality().hash(_customShortcuts));
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        defaultSpeed,
+        speedUnit,
+        autoFullscreen,
+        enableFocusMode,
+        backgroundColor,
+        textColor,
+        fontFamily,
+        fontSize,
+        toolbarPosition,
+        toolbarScale,
+        toolboxTheme,
+        toolbarOrientation,
+        pauseOnMouseMove,
+        pauseKey,
+        locale,
+        showTimers,
+        countdownDuration,
+        themeMode,
+        const DeepCollectionEquality().hash(_customShortcuts)
+      ]);
 
   @JsonKey(ignore: true)
   @override
@@ -510,6 +531,7 @@ abstract class _SettingsModel implements SettingsModel {
       final String locale,
       final bool showTimers,
       final int countdownDuration,
+      final ThemeMode themeMode,
       final Map<String, String>? customShortcuts}) = _$SettingsModelImpl;
 
   factory _SettingsModel.fromJson(Map<String, dynamic> json) =
@@ -549,6 +571,8 @@ abstract class _SettingsModel implements SettingsModel {
   bool get showTimers;
   @override
   int get countdownDuration;
+  @override
+  ThemeMode get themeMode;
   @override
   Map<String, String>? get customShortcuts;
   @override

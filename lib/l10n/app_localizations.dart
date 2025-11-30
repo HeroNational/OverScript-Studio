@@ -542,6 +542,12 @@ abstract class AppLocalizations {
   /// **'Toolbar Orientation'**
   String get toolboxOrientation;
 
+  /// No description provided for @toggleOrientation.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle orientation'**
+  String get toggleOrientation;
+
   /// No description provided for @playback.
   ///
   /// In en, this message translates to:
@@ -625,6 +631,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The testing period has ended. Source selection is disabled.'**
   String get trialExpiredMessage;
+
+  /// No description provided for @theme.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get theme;
+
+  /// No description provided for @lightMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Light Mode'**
+  String get lightMode;
+
+  /// No description provided for @darkMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Mode'**
+  String get darkMode;
 }
 
 class _AppLocalizationsDelegate

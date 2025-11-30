@@ -32,6 +32,8 @@ _$SettingsModelImpl _$$SettingsModelImplFromJson(Map<String, dynamic> json) =>
       locale: json['locale'] as String? ?? 'fr',
       showTimers: json['showTimers'] as bool? ?? true,
       countdownDuration: (json['countdownDuration'] as num?)?.toInt() ?? 5,
+      themeMode: $enumDecodeNullable(_$ThemeModeEnumMap, json['themeMode']) ??
+          ThemeMode.dark,
       customShortcuts: (json['customShortcuts'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ),
@@ -57,6 +59,7 @@ Map<String, dynamic> _$$SettingsModelImplToJson(_$SettingsModelImpl instance) =>
       'locale': instance.locale,
       'showTimers': instance.showTimers,
       'countdownDuration': instance.countdownDuration,
+      'themeMode': _$ThemeModeEnumMap[instance.themeMode]!,
       'customShortcuts': instance.customShortcuts,
     };
 
@@ -89,4 +92,9 @@ const _$ToolbarOrientationEnumMap = {
   ToolbarOrientation.auto: 'auto',
   ToolbarOrientation.horizontal: 'horizontal',
   ToolbarOrientation.vertical: 'vertical',
+};
+
+const _$ThemeModeEnumMap = {
+  ThemeMode.light: 'light',
+  ThemeMode.dark: 'dark',
 };

@@ -234,6 +234,9 @@ class _TextDisplayState extends ConsumerState<TextDisplay> {
       );
     }
 
+    final settings = ref.watch(settingsProvider);
+    final pdfBackgroundColor = _parseColor(settings.backgroundColor);
+
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 40),
@@ -242,6 +245,7 @@ class _TextDisplayState extends ConsumerState<TextDisplay> {
         return Container(
           margin: const EdgeInsets.only(bottom: 32),
           decoration: BoxDecoration(
+            color: pdfBackgroundColor,
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(

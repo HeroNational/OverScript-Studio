@@ -304,9 +304,11 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 
 #if defined(__OBJC__)
 
+@class NSNotification;
 @class NSApplication;
 SWIFT_CLASS("_TtC9prompteur11AppDelegate")
 @interface AppDelegate : FlutterAppDelegate
+- (void)applicationDidFinishLaunching:(NSNotification * _Nonnull)notification;
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication * _Nonnull)sender SWIFT_WARN_UNUSED_RESULT;
 - (BOOL)applicationSupportsSecureRestorableState:(NSApplication * _Nonnull)app SWIFT_WARN_UNUSED_RESULT;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;

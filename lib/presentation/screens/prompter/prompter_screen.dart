@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:window_manager/window_manager.dart';
+import 'package:window_manager/window_manager.dart' show windowManager;
 import '../../providers/playback_provider.dart';
 import '../../providers/settings_provider.dart';
+import '../../providers/mobile_toolbar_provider.dart';
 import '../../../data/models/settings_model.dart';
 import '../../widgets/toolbox/glassmorphic_toolbox.dart';
 import '../settings/settings_screen.dart';
@@ -33,13 +35,13 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
     _focusNode.requestFocus();
 
     // Activer le plein écran automatique si configuré
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final settings = ref.read(settingsProvider);
       _focusModeEnabled = settings.enableFocusMode;
       _countdownStart = settings.countdownDuration;
       _startCountdown();
       if (settings.autoFullscreen) {
-        _toggleFullscreen();
+        await _toggleFullscreen();
       }
       if (_focusModeEnabled) {
         _focusService.enable();
@@ -74,58 +76,90 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
   }
 
   void _handleKeyEvent(KeyEvent event) {
+    // Keyboard shortcuts not available on mobile platforms
+    if (Platform.isAndroid || Platform.isIOS) {
+      return;
+    }
+
     // Ignore repeated keydown events to avoid pressed-key assertion
     if (event is KeyRepeatEvent) {
       return;
     }
 
-    final settings = ref.read(settingsProvider);
-
     if (event is KeyDownEvent) {
+      debugPrint('[Keyboard] Key pressed: ${event.logicalKey.keyLabel}');
+
       // Espace pour play/pause
       if (event.logicalKey == LogicalKeyboardKey.space) {
+        debugPrint('[Keyboard] Space pressed - toggling play/pause');
         ref.read(playbackProvider.notifier).togglePlayPause();
       }
       // F pour fullscreen
       else if (event.logicalKey == LogicalKeyboardKey.keyF) {
+        debugPrint('[Keyboard] F pressed - toggling fullscreen');
         _toggleFullscreen();
       }
       // Escape pour sortir du fullscreen
       else if (event.logicalKey == LogicalKeyboardKey.escape) {
+        debugPrint('[Keyboard] Escape pressed - exiting fullscreen');
         _exitFullscreen();
       }
       // Flèche haut pour augmenter vitesse
       else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+        debugPrint('[Keyboard] Arrow Up pressed - increasing speed');
         final currentSpeed = ref.read(playbackProvider).speed;
         ref.read(playbackProvider.notifier).updateSpeed(currentSpeed + 10);
       }
       // Flèche bas pour diminuer vitesse
       else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+        debugPrint('[Keyboard] Arrow Down pressed - decreasing speed');
         final currentSpeed = ref.read(playbackProvider).speed;
         ref.read(playbackProvider.notifier).updateSpeed((currentSpeed - 10).clamp(10, 500));
       }
       // R pour reset
       else if (event.logicalKey == LogicalKeyboardKey.keyR) {
+        debugPrint('[Keyboard] R pressed - resetting');
         ref.read(playbackProvider.notifier).reset();
       }
     }
   }
 
   Future<void> _toggleFullscreen() async {
-    final isFullscreen = await windowManager.isFullScreen();
-    if (isFullscreen) {
-      await windowManager.setFullScreen(false);
-    } else {
-      await windowManager.setFullScreen(true);
+    if (Platform.isAndroid || Platform.isIOS) {
+      // Use picture-in-picture on mobile
+      await _togglePictureInPicture();
+    } else if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
+      // Use window_manager for all desktop platforms (macOS, Windows, Linux)
+      try {
+        final isFullscreen = await windowManager.isFullScreen();
+        await windowManager.setFullScreen(!isFullscreen);
+      } catch (e) {
+        debugPrint('Error toggling fullscreen: $e');
+      }
     }
     ref.read(playbackProvider.notifier).toggleFullscreen();
   }
 
+  Future<void> _togglePictureInPicture() async {
+    try {
+      const platform = MethodChannel('com.overscript.studio/pip');
+      await platform.invokeMethod('togglePiP');
+    } catch (e) {
+      debugPrint('Error toggling picture-in-picture: $e');
+    }
+  }
+
   Future<void> _exitFullscreen() async {
-    final isFullscreen = await windowManager.isFullScreen();
-    if (isFullscreen) {
-      await windowManager.setFullScreen(false);
-      ref.read(playbackProvider.notifier).toggleFullscreen();
+    if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
+      // Use window_manager for all desktop platforms
+      try {
+        final isFullscreen = await windowManager.isFullScreen();
+        if (isFullscreen) {
+          await windowManager.setFullScreen(false);
+        }
+      } catch (e) {
+        debugPrint('Error exiting fullscreen: $e');
+      }
     }
   }
 
@@ -133,31 +167,40 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
   Widget build(BuildContext context) {
     final playbackState = ref.watch(playbackProvider);
 
-    return KeyboardListener(
-      focusNode: _focusNode,
-      onKeyEvent: _handleKeyEvent,
-      child: Scaffold(
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            // Affichage du texte
-            const Positioned.fill(child: TextDisplay()),
-            if (_countdown != null)
-              Container(
-                color: Colors.black.withOpacity(0.55),
-                alignment: Alignment.center,
-                child: Text(
-                  _countdown.toString(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 96,
-                    fontWeight: FontWeight.bold,
+    return Focus(
+      autofocus: true,
+      child: KeyboardListener(
+        focusNode: _focusNode,
+        onKeyEvent: _handleKeyEvent,
+        child: GestureDetector(
+          onTap: () {
+            // Request focus when tapping anywhere on the screen
+            _focusNode.requestFocus();
+          },
+          child: Scaffold(
+            body: Stack(
+              fit: StackFit.expand,
+              children: [
+                // Affichage du texte
+                const Positioned.fill(child: TextDisplay()),
+                if (_countdown != null)
+                  Container(
+                    color: Colors.black.withOpacity(0.55),
+                    alignment: Alignment.center,
+                    child: Text(
+                      _countdown.toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 96,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ),
-              ),
 
-            _buildPositionedToolbox(playbackState.isFullscreen),
-          ],
+                _buildPositionedToolbox(playbackState.isFullscreen),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -189,6 +232,12 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
   Widget _buildPositionedToolbox(bool isFullscreen) {
     final settings = ref.watch(settingsProvider);
     final playback = ref.watch(playbackProvider);
+    final mobileOrientation = ref.watch(mobileToolbarOrientationProvider);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobileSize = screenWidth < 500;
+
+    // Determine effective orientation: use mobile override on small screens
+    final effectiveOrientation = isMobileSize ? mobileOrientation : settings.toolbarOrientation;
 
     final toolbox = GlasmorphicToolbox(
       onHomePressed: () {
@@ -232,9 +281,16 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
         print('[UI] Fullscreen toggle (toolbar)');
         _toggleFullscreen();
       },
-      isVertical: _isVertical(settings.toolbarPosition, settings.toolbarOrientation),
+      isVertical: _isVertical(settings.toolbarPosition, effectiveOrientation, isMobileSize),
       scale: settings.toolbarScale,
       themeStyle: settings.toolboxTheme,
+      isMobile: isMobileSize,
+      onOrientationToggle: isMobileSize
+          ? () {
+              print('[UI] Toggle toolbar orientation');
+              ref.read(mobileToolbarOrientationProvider.notifier).toggleOrientation();
+            }
+          : null,
     );
 
     switch (settings.toolbarPosition) {
@@ -325,17 +381,25 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
     }
   }
 
-  bool _isVertical(ToolbarPosition position, ToolbarOrientation orientation) {
+  bool _isVertical(ToolbarPosition position, ToolbarOrientation orientation, bool isMobileSize) {
+    // Sur mobile: toujours horizontal en haut/bas
+    if (isMobileSize && (position == ToolbarPosition.top ||
+        position == ToolbarPosition.topCenter ||
+        position == ToolbarPosition.bottom ||
+        position == ToolbarPosition.bottomCenter)) {
+      return false;
+    }
+
+    // Respect explicite de l'orientation utilisateur
     if (orientation == ToolbarOrientation.horizontal) return false;
     if (orientation == ToolbarOrientation.vertical) return true;
-    // auto : vertical si latéral ou coin ou centre haut/bas
+
+    // auto : vertical si latéral ou coin, horizontal pour haut/bas centré
     return position == ToolbarPosition.left ||
         position == ToolbarPosition.right ||
         position == ToolbarPosition.topLeft ||
         position == ToolbarPosition.bottomLeft ||
         position == ToolbarPosition.topRight ||
-        position == ToolbarPosition.bottomRight ||
-        position == ToolbarPosition.topCenter ||
-        position == ToolbarPosition.bottomCenter;
+        position == ToolbarPosition.bottomRight;
   }
 }

@@ -235,6 +235,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get toolboxOrientation => 'Orientation de la barre d\'outils';
 
   @override
+  String get toggleOrientation => 'Changer l\'orientation';
+
+  @override
   String get playback => 'Lecture';
 
   @override
@@ -281,4 +284,13 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get trialExpiredMessage =>
       'La période de test est terminée. La sélection de sources est désactivée.';
+
+  @override
+  String get theme => 'Thème';
+
+  @override
+  String get lightMode => 'Mode clair';
+
+  @override
+  String get darkMode => 'Mode sombre';
 }

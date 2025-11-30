@@ -15,6 +15,8 @@ class GlasmorphicToolbox extends ConsumerWidget {
   final bool isVertical;
   final double scale;
   final ToolboxTheme themeStyle;
+  final VoidCallback? onOrientationToggle;
+  final bool isMobile;
 
   const GlasmorphicToolbox({
     super.key,
@@ -25,6 +27,8 @@ class GlasmorphicToolbox extends ConsumerWidget {
     required this.scale,
     required this.isVertical,
     required this.themeStyle,
+    this.onOrientationToggle,
+    this.isMobile = false,
   });
 
   @override
@@ -32,20 +36,30 @@ class GlasmorphicToolbox extends ConsumerWidget {
     final playbackState = ref.watch(playbackProvider);
     final l10n = AppLocalizations.of(context);
     final palette = _paletteFor(themeStyle);
-    final baseRadius = 24.0 * scale;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobileSize = screenWidth < 500;
+
+    // Adaptive sizing: clamp scale to avoid oversizing
+    // Mobile: 0.5 - 0.7
+    // Desktop: 0.7 - 1.0 (100% remains the current baseline)
+    double finalScale = isMobileSize ? scale.clamp(0.5, 0.7) : scale.clamp(0.7, 1.0);
+    double adaptiveMargin = isMobileSize ? 12.0 : 24.0;
+
+    final baseRadius = 24.0 * finalScale;
+    final renderScale = finalScale;
 
     return Transform.scale(
-      scale: scale,
+      scale: finalScale,
       alignment: Alignment.center,
       child: Container(
-        margin: const EdgeInsets.all(24),
+        margin: EdgeInsets.all(adaptiveMargin),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(baseRadius),
           boxShadow: [
             BoxShadow(
               color: palette.shadowColor.withOpacity(0.7),
-              blurRadius: 14 * scale,
-              offset: Offset(0, 10 * scale),
+              blurRadius: 14 * renderScale,
+              offset: Offset(0, 10 * renderScale),
             ),
           ],
           border: Border.all(
@@ -77,7 +91,7 @@ class GlasmorphicToolbox extends ConsumerWidget {
                   width: 1.5,
                 ),
               ),
-              padding: EdgeInsets.symmetric(horizontal: 10 * scale, vertical: 12 * scale),
+              padding: EdgeInsets.symmetric(horizontal: 10 * renderScale, vertical: 12 * renderScale),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -86,17 +100,27 @@ class GlasmorphicToolbox extends ConsumerWidget {
                       ? Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            if (isMobileSize && onOrientationToggle != null)
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 8 * renderScale),
+                                child: _GlassButton(
+                                  icon: LucideIcons.rotate_cw,
+                                  onPressed: onOrientationToggle!,
+                                  tooltip: l10n?.toggleOrientation ?? 'Changer l\'orientation',
+                                  size: 16 * renderScale,
+                                ),
+                              ),
                             _PlaybackPanel(
                               playbackState: playbackState,
                               l10n: l10n,
                               palette: palette,
-                              scale: scale,
-                              isVertical: isVertical,
+                              scale: renderScale,
+                              isVertical: true,
                               showTimers: false,
                             ),
-                            SizedBox(height: 8 * scale),
-                            _Divider(isVertical: true, palette: palette, scale: scale),
-                            SizedBox(height: 8 * scale),
+                            SizedBox(height: 8 * renderScale),
+                            _Divider(isVertical: true, palette: palette, scale: renderScale),
+                            SizedBox(height: 8 * renderScale),
                             _ActionsPanel(
                               onHomePressed: onHomePressed,
                               onSourcesPressed: onSourcesPressed,
@@ -105,37 +129,42 @@ class GlasmorphicToolbox extends ConsumerWidget {
                               isFullscreen: playbackState.isFullscreen,
                               l10n: l10n,
                               palette: palette,
-                              scale: scale,
-                              isVertical: isVertical,
+                              scale: renderScale,
+                              isVertical: true,
+                              isMobileSize: isMobileSize,
                             ),
                           ],
                         )
-                      : Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _PlaybackPanel(
-                              playbackState: playbackState,
-                              l10n: l10n,
-                              palette: palette,
-                              scale: scale,
-                              isVertical: isVertical,
-                              showTimers: false,
-                            ),
-                            SizedBox(width: 10 * scale),
-                            _Divider(isVertical: false, palette: palette, scale: scale),
-                            SizedBox(width: 10 * scale),
-                            _ActionsPanel(
-                              onHomePressed: onHomePressed,
-                              onSourcesPressed: onSourcesPressed,
-                              onSettingsPressed: onSettingsPressed,
-                              onFullscreenPressed: onFullscreenPressed,
-                              isFullscreen: playbackState.isFullscreen,
-                              l10n: l10n,
-                              palette: palette,
-                              scale: scale,
-                              isVertical: isVertical,
-                            ),
-                          ],
+                      : SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _PlaybackPanel(
+                                playbackState: playbackState,
+                                l10n: l10n,
+                                palette: palette,
+                                scale: renderScale,
+                                isVertical: isVertical,
+                                showTimers: false,
+                              ),
+                              SizedBox(width: 10 * renderScale),
+                              _Divider(isVertical: false, palette: palette, scale: renderScale),
+                              SizedBox(width: 10 * renderScale),
+                              _ActionsPanel(
+                                onHomePressed: onHomePressed,
+                                onSourcesPressed: onSourcesPressed,
+                                onSettingsPressed: onSettingsPressed,
+                                onFullscreenPressed: onFullscreenPressed,
+                                isFullscreen: playbackState.isFullscreen,
+                                l10n: l10n,
+                                palette: palette,
+                                scale: renderScale,
+                                isVertical: isVertical,
+                                isMobileSize: isMobileSize,
+                              ),
+                            ],
+                          ),
                         ),
                 ],
               ),
@@ -300,6 +329,7 @@ class _ActionsPanel extends StatelessWidget {
   final _ToolboxPalette palette;
   final double scale;
   final bool isVertical;
+  final bool isMobileSize;
 
   const _ActionsPanel({
     required this.onHomePressed,
@@ -311,6 +341,7 @@ class _ActionsPanel extends StatelessWidget {
     required this.palette,
     required this.scale,
     required this.isVertical,
+    required this.isMobileSize,
   });
 
   @override
@@ -346,7 +377,7 @@ class _ActionsPanel extends StatelessWidget {
 
   List<Widget> _buildButtons() {
     final spacing = SizedBox(width: isVertical ? 0 : 12 * scale, height: isVertical ? 10 * scale : 0);
-    return [
+    final buttons = [
       _GlassButton(
         icon: LucideIcons.house,
         onPressed: onHomePressed,
@@ -361,22 +392,31 @@ class _ActionsPanel extends StatelessWidget {
         size: 24 * scale,
       ),
       spacing,
-      _GlassButton(
-        icon: isFullscreen ? LucideIcons.minimize_2 : LucideIcons.maximize_2,
-        onPressed: onFullscreenPressed,
-        tooltip: isFullscreen
-            ? (l10n?.exitFullscreen ?? 'Quitter le plein écran')
-            : (l10n?.fullscreen ?? 'Plein écran'),
-        size: 24 * scale,
-      ),
-      spacing,
-      _GlassButton(
-        icon: LucideIcons.settings,
-        onPressed: onSettingsPressed,
-        tooltip: l10n?.settings ?? 'Paramètres',
-        size: 24 * scale,
-      ),
     ];
+
+    // Hide fullscreen button on mobile (picture-in-picture handled differently)
+    if (!isMobileSize) {
+      buttons.addAll([
+        _GlassButton(
+          icon: isFullscreen ? LucideIcons.minimize_2 : LucideIcons.maximize_2,
+          onPressed: onFullscreenPressed,
+          tooltip: isFullscreen
+              ? (l10n?.exitFullscreen ?? 'Quitter le plein écran')
+              : (l10n?.fullscreen ?? 'Plein écran'),
+          size: 24 * scale,
+        ),
+        spacing,
+      ]);
+    }
+
+    buttons.add(_GlassButton(
+      icon: LucideIcons.settings,
+      onPressed: onSettingsPressed,
+      tooltip: l10n?.settings ?? 'Paramètres',
+      size: 24 * scale,
+    ));
+
+    return buttons;
   }
 }
 

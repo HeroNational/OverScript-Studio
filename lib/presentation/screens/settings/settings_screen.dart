@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -90,8 +91,10 @@ class SettingsScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
                 _buildToolbarOrientationSelector(context, ref, settings),
                 const SizedBox(height: 16),
-                _buildToolbarScaleSelector(context, ref, settings),
-                const SizedBox(height: 16),
+                if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) ...[
+                  _buildToolbarScaleSelector(context, ref, settings),
+                  const SizedBox(height: 16),
+                ],
                 _buildToolbarThemeSelector(context, ref, settings),
                 const SizedBox(height: 16),
                 _buildSwitchTile(
@@ -480,39 +483,6 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildToolbarScaleSelector(BuildContext context, WidgetRef ref, SettingsModel settings) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(LucideIcons.maximize_2, color: Colors.white70, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              _tr(settings, 'Taille de la toolbox: ${(settings.toolbarScale * 100).toInt()}%',
-                  'Toolbox size: ${(settings.toolbarScale * 100).toInt()}%'),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-        Slider(
-          value: settings.toolbarScale.clamp(0.7, 1.4),
-          min: 0.7,
-          max: 1.4,
-          divisions: 14,
-          activeColor: const Color(0xFF6366F1),
-          onChanged: (value) {
-            ref.read(settingsProvider.notifier).updateToolbarScale(value);
-          },
-        ),
-      ],
-    );
-  }
-
   Widget _buildToolbarThemeSelector(BuildContext context, WidgetRef ref, SettingsModel settings) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -557,6 +527,39 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildToolbarScaleSelector(BuildContext context, WidgetRef ref, SettingsModel settings) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(LucideIcons.maximize_2, color: Colors.white70, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              _tr(settings, 'Taille de la toolbox: ${(settings.toolbarScale * 100).toInt()}%',
+                  'Toolbox size: ${(settings.toolbarScale * 100).toInt()}%'),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        Slider(
+          value: settings.toolbarScale.clamp(0.7, 1.0),
+          min: 0.7,
+          max: 1.0,
+          divisions: 6,
+          activeColor: const Color(0xFF6366F1),
+          onChanged: (value) {
+            ref.read(settingsProvider.notifier).updateToolbarScale(value);
+          },
         ),
       ],
     );

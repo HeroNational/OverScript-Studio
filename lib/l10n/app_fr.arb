@@ -268,6 +268,10 @@
   "@toolboxOrientation": {
     "description": "Orientation de la barre d'outils"
   },
+  "toggleOrientation": "Changer l'orientation",
+  "@toggleOrientation": {
+    "description": "Changer l'orientation de la barre d'outils"
+  },
   "homeHeadline": "OverScript Studio",
   "homeSubtitle": "Imports rapides : fichiers ou PDF",
   "footerCopyright": "© {year} OverLimits Digital Enterprise",
@@ -291,5 +295,8 @@
   "trialActiveLabel": "Restant : {days} jours",
   "trialExpiresOn": "Expiration le {date}",
   "trialExpiredTitle": "Version d'essai expirée",
-  "trialExpiredMessage": "La période de test est terminée. La sélection de sources est désactivée."
+  "trialExpiredMessage": "La période de test est terminée. La sélection de sources est désactivée.",
+  "theme": "Thème",
+  "lightMode": "Mode clair",
+  "darkMode": "Mode sombre"
 }

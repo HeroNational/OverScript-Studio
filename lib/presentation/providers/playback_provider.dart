@@ -81,7 +81,11 @@ class PlaybackNotifier extends StateNotifier<PlaybackState> {
     );
 
     try {
-      final pages = await _pdfService.renderDocument(path);
+      final settings = _ref.read(settingsProvider);
+      final pages = await _pdfService.renderDocument(
+        path,
+        backgroundColorHex: settings.backgroundColor,
+      );
       state = state.copyWith(
         isLoadingPdf: false,
         pdfPages: pages,

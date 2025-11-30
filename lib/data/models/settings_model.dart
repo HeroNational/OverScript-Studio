@@ -34,6 +34,11 @@ enum ToolbarOrientation {
   vertical,
 }
 
+enum ThemeMode {
+  light,
+  dark,
+}
+
 @freezed
 class SettingsModel with _$SettingsModel {
   const factory SettingsModel({
@@ -54,6 +59,7 @@ class SettingsModel with _$SettingsModel {
   @Default('fr') String locale,
   @Default(true) bool showTimers,
   @Default(5) int countdownDuration,
+  @Default(ThemeMode.dark) ThemeMode themeMode,
   Map<String, String>? customShortcuts,
   }) = _SettingsModel;
 

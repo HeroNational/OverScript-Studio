@@ -5,10 +5,11 @@ import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
-import 'package:window_manager/window_manager.dart';
+import 'dart:io' show Platform;
 import 'dart:convert';
 import 'dart:math' as math;
 import 'package:intl/intl.dart';
+import 'package:window_manager/window_manager.dart';
 import 'data/services/storage_service.dart';
 import 'data/models/settings_model.dart';
 import 'presentation/screens/prompter/prompter_screen.dart';
@@ -24,23 +25,14 @@ void main() async {
   // Initialiser Hive pour le stockage
   await StorageService.init();
 
-  // Configurer window_manager
-  await windowManager.ensureInitialized();
-
-  const windowOptions = WindowOptions(
-    size: Size(1200, 800),
-    minimumSize: Size(800, 600),
-    center: true,
-    backgroundColor: Colors.transparent,
-    skipTaskbar: false,
-    titleBarStyle: TitleBarStyle.normal,
-    title: 'OverScript Studio',
-  );
-
-  await windowManager.waitUntilReadyToShow(windowOptions, () async {
-    await windowManager.show();
-    await windowManager.focus();
-  });
+  // Configurer window_manager uniquement sur desktop
+  if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+    try {
+      await _initializeDesktop();
+    } catch (e) {
+      debugPrint('Erreur initialisation desktop: $e');
+    }
+  }
 
   runApp(
     ProviderScope(
@@ -49,6 +41,25 @@ void main() async {
       ),
     ),
   );
+}
+
+/// Initialise les fonctionnalités desktop
+/// Cette fonction s'exécute seulement sur Windows/macOS/Linux
+Future<void> _initializeDesktop() async {
+  await windowManager.ensureInitialized();
+
+  const windowOptions = WindowOptions(
+    minimumSize: Size(800, 600),
+    center: true,
+    backgroundColor: Colors.transparent,
+    skipTaskbar: false,
+    titleBarStyle: TitleBarStyle.normal,
+  );
+
+  await windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.show();
+    await windowManager.focus();
+  });
 }
 
 // Navigator global pour éviter l'accès à un context désactivé
@@ -246,12 +257,6 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
     );
   }
 
-  Future<void> _toggleFullscreen() async {
-    final isFullscreen = await windowManager.isFullScreen();
-    await windowManager.setFullScreen(!isFullscreen);
-    ref.read(playbackProvider.notifier).toggleFullscreen();
-  }
-
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider);
@@ -283,13 +288,14 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
           ),
         ),
         child: Center(
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 1000),
-            padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 32),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
+          child: SingleChildScrollView(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 1000),
+              padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
                 Text(
                   AppLocalizations.of(context)!.homeHeadline,
                   style: Theme.of(context).textTheme.displayLarge?.copyWith(
@@ -482,6 +488,7 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
               ],
             ),
           ),
+        ),
         ),
       ),
     );

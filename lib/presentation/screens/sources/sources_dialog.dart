@@ -35,6 +35,9 @@ class SourcesDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final dialogWidth = screenWidth > 600 ? 500.0 : screenWidth * 0.9;
+
     return Dialog(
       backgroundColor: Colors.transparent,
       child: ClipRRect(
@@ -42,7 +45,7 @@ class SourcesDialog extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
           child: Container(
-            width: 500,
+            width: dialogWidth,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -65,7 +68,7 @@ class SourcesDialog extends StatelessWidget {
                 ),
               ],
             ),
-            padding: const EdgeInsets.all(32),
+            padding: EdgeInsets.all(screenWidth > 500 ? 32 : 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,23 +78,31 @@ class SourcesDialog extends StatelessWidget {
                     Icon(
                       LucideIcons.circle_plus,
                       color: Colors.white,
-                      size: 28,
+                      size: screenWidth > 500 ? 28 : 24,
                     ),
                     const SizedBox(width: 12),
-                    Text(
-                      l10n.addSource,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    Expanded(
+                      child: Text(
+                        l10n.addSource,
+                        style: TextStyle(
+                          fontSize: screenWidth > 500 ? 24 : 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const Spacer(),
                     Tooltip(
                       message: l10n.close,
                       child: IconButton(
                         icon: const Icon(LucideIcons.x, color: Colors.white70),
                         onPressed: () => Navigator.pop(context),
+                        iconSize: screenWidth > 500 ? 24 : 20,
+                        constraints: BoxConstraints(
+                          minWidth: screenWidth > 500 ? 48 : 36,
+                          minHeight: screenWidth > 500 ? 48 : 36,
+                        ),
                       ),
                     ),
                   ],
@@ -197,59 +208,77 @@ class SourcesDialog extends StatelessWidget {
 
     showDialog(
       context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: Container(
-              width: 700,
-              height: 500,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white.withOpacity(0.15),
-                    Colors.white.withOpacity(0.05),
+      builder: (context) {
+        final screenWidth = MediaQuery.of(context).size.width;
+        final screenHeight = MediaQuery.of(context).size.height;
+        final dialogWidth = screenWidth > 800 ? 700.0 : screenWidth * 0.9;
+        final dialogHeight = screenHeight > 600 ? 500.0 : screenHeight * 0.75;
+
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+              child: Container(
+                width: dialogWidth,
+                height: dialogHeight,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Colors.white.withOpacity(0.15),
+                      Colors.white.withOpacity(0.05),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.2),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 22,
+                      offset: const Offset(0, 14),
+                    ),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
-                  width: 1.5,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 22,
-                    offset: const Offset(0, 14),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.all(32),
-              child: Column(
+                padding: EdgeInsets.all(dialogWidth > 600 ? 32 : 20),
+                child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Icon(LucideIcons.pen_line, color: Colors.white, size: 28),
+                      Icon(
+                        LucideIcons.pen_line,
+                        color: Colors.white,
+                        size: dialogWidth > 600 ? 28 : 24,
+                      ),
                       const SizedBox(width: 12),
-                      const Text(
-                        'Éditer le texte',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                      Expanded(
+                        child: Text(
+                          'Éditer le texte',
+                          style: TextStyle(
+                            fontSize: dialogWidth > 600 ? 24 : 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const Spacer(),
                       Tooltip(
                         message: AppLocalizations.of(context)!.close,
                         child: IconButton(
                           icon: const Icon(LucideIcons.x, color: Colors.white70),
                           onPressed: () => Navigator.pop(context),
+                          iconSize: dialogWidth > 600 ? 24 : 20,
+                          constraints: BoxConstraints(
+                            minWidth: dialogWidth > 600 ? 48 : 36,
+                            minHeight: dialogWidth > 600 ? 48 : 36,
+                          ),
                         ),
                       ),
                     ],
@@ -284,8 +313,10 @@ class SourcesDialog extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                  Wrap(
+                    alignment: WrapAlignment.end,
+                    spacing: 12,
+                    runSpacing: 12,
                     children: [
                       Tooltip(
                         message: AppLocalizations.of(context)!.cancel,
@@ -297,7 +328,6 @@ class SourcesDialog extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 16),
                       Tooltip(
                         message: AppLocalizations.of(context)!.save,
                         child: ElevatedButton(
@@ -308,9 +338,9 @@ class SourcesDialog extends StatelessWidget {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF6366F1),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 16,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: dialogWidth > 600 ? 32 : 20,
+                              vertical: 12,
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -327,7 +357,8 @@ class SourcesDialog extends StatelessWidget {
             ),
           ),
         ),
-      ),
+      );
+      },
     );
   }
 
@@ -356,16 +387,22 @@ class SourcesDialog extends StatelessWidget {
     return showDialog<SourceData>(
       context: context,
       useRootNavigator: true,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: Container(
-              width: 780,
-              height: 540,
-              decoration: BoxDecoration(
+      builder: (context) {
+        final screenWidth = MediaQuery.of(context).size.width;
+        final screenHeight = MediaQuery.of(context).size.height;
+        final dialogWidth = screenWidth > 900 ? 780.0 : screenWidth * 0.9;
+        final dialogHeight = screenHeight > 700 ? 540.0 : screenHeight * 0.8;
+
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+              child: Container(
+                width: dialogWidth,
+                height: dialogHeight,
+                decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -387,28 +424,40 @@ class SourcesDialog extends StatelessWidget {
                   ),
                 ],
               ),
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(dialogWidth > 600 ? 24 : 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Icon(LucideIcons.pen_line, color: Colors.white, size: 28),
+                      Icon(
+                        LucideIcons.pen_line,
+                        color: Colors.white,
+                        size: dialogWidth > 600 ? 28 : 24,
+                      ),
                       const SizedBox(width: 12),
-                      Text(
-                        AppLocalizations.of(context)!.richTextMode,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                      Expanded(
+                        child: Text(
+                          AppLocalizations.of(context)!.richTextMode,
+                          style: TextStyle(
+                            fontSize: dialogWidth > 600 ? 24 : 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const Spacer(),
                       Tooltip(
                         message: AppLocalizations.of(context)!.close,
                         child: IconButton(
                           icon: const Icon(LucideIcons.x, color: Colors.white70),
                           onPressed: () => Navigator.pop(context),
+                          iconSize: dialogWidth > 600 ? 24 : 20,
+                          constraints: BoxConstraints(
+                            minWidth: dialogWidth > 600 ? 48 : 36,
+                            minHeight: dialogWidth > 600 ? 48 : 36,
+                          ),
                         ),
                       ),
                     ],
@@ -426,16 +475,92 @@ class SourcesDialog extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
-                          quill.QuillSimpleToolbar(
-                            controller: controller,
-                            config: const quill.QuillSimpleToolbarConfig(
-                              axis: Axis.horizontal,
-                              multiRowsDisplay: true,
-                              showAlignmentButtons: true,
-                              showBackgroundColorButton: false,
-                              showUndo: true,
-                              showRedo: true,
-                            ),
+                          // Simple toolbar row without QuillSimpleToolbar to avoid bugs
+                          Builder(
+                            builder: (context) {
+                              final screenWidth = MediaQuery.of(context).size.width;
+                              final isMobile = screenWidth < 500;
+                              final toolbarHeight = isMobile ? 40.0 : 48.0;
+                              final iconSize = isMobile ? 16.0 : 18.0;
+
+                              return Container(
+                                height: toolbarHeight,
+                                padding: EdgeInsets.symmetric(horizontal: isMobile ? 4 : 8),
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: Colors.white.withOpacity(0.1),
+                                      width: 1,
+                                    ),
+                                  ),
+                                ),
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(LucideIcons.undo_2, color: Colors.white70, size: iconSize),
+                                        onPressed: () => controller.undo(),
+                                        tooltip: 'Undo',
+                                        iconSize: iconSize,
+                                        constraints: BoxConstraints(
+                                          minWidth: isMobile ? 32 : 40,
+                                          minHeight: isMobile ? 32 : 40,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: Icon(LucideIcons.redo_2, color: Colors.white70, size: iconSize),
+                                        onPressed: () => controller.redo(),
+                                        tooltip: 'Redo',
+                                        iconSize: iconSize,
+                                        constraints: BoxConstraints(
+                                          minWidth: isMobile ? 32 : 40,
+                                          minHeight: isMobile ? 32 : 40,
+                                        ),
+                                      ),
+                                      VerticalDivider(color: Colors.white10, width: isMobile ? 8 : 16),
+                                      IconButton(
+                                        icon: Icon(LucideIcons.bold, color: Colors.white70, size: iconSize),
+                                        onPressed: () {
+                                          controller.formatSelection(quill.Attribute.bold);
+                                        },
+                                        tooltip: 'Bold',
+                                        iconSize: iconSize,
+                                        constraints: BoxConstraints(
+                                          minWidth: isMobile ? 32 : 40,
+                                          minHeight: isMobile ? 32 : 40,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: Icon(LucideIcons.italic, color: Colors.white70, size: iconSize),
+                                        onPressed: () {
+                                          controller.formatSelection(quill.Attribute.italic);
+                                        },
+                                        tooltip: 'Italic',
+                                        iconSize: iconSize,
+                                        constraints: BoxConstraints(
+                                          minWidth: isMobile ? 32 : 40,
+                                          minHeight: isMobile ? 32 : 40,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: Icon(LucideIcons.underline, color: Colors.white70, size: iconSize),
+                                        onPressed: () {
+                                          controller.formatSelection(quill.Attribute.underline);
+                                        },
+                                        tooltip: 'Underline',
+                                        iconSize: iconSize,
+                                        constraints: BoxConstraints(
+                                          minWidth: isMobile ? 32 : 40,
+                                          minHeight: isMobile ? 32 : 40,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                           Expanded(
                             child: Padding(
@@ -459,8 +584,10 @@ class SourcesDialog extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                  Wrap(
+                    alignment: WrapAlignment.end,
+                    spacing: 12,
+                    runSpacing: 12,
                     children: [
                       Tooltip(
                         message: AppLocalizations.of(context)!.cancel,
@@ -472,7 +599,6 @@ class SourcesDialog extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 16),
                       Tooltip(
                         message: AppLocalizations.of(context)!.save,
                         child: ElevatedButton(
@@ -486,9 +612,9 @@ class SourcesDialog extends StatelessWidget {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF6366F1),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 16,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: dialogWidth > 600 ? 32 : 20,
+                              vertical: 12,
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -505,7 +631,8 @@ class SourcesDialog extends StatelessWidget {
             ),
           ),
         ),
-      ),
+      );
+      },
     );
   }
 }
@@ -534,6 +661,9 @@ class _SourceOptionState extends State<_SourceOption> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 500;
+    final isCompactLayout = isMobile;
+
     return Tooltip(
       message: widget.subtitle,
       child: MouseRegion(
@@ -546,7 +676,9 @@ class _SourceOptionState extends State<_SourceOption> {
             scale: _isHovered ? 1.02 : 1.0,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.all(20),
+              padding: isCompactLayout
+                  ? const EdgeInsets.all(16)
+                  : const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
@@ -569,58 +701,110 @@ class _SourceOptionState extends State<_SourceOption> {
                   ),
                 ],
               ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.12),
-                      ),
-                    ),
-                    child: Icon(
-                      widget.icon,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          widget.subtitle,
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.7),
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    LucideIcons.chevron_right,
-                    color: Colors.white.withOpacity(0.5),
-                    size: 20,
-                  ),
-                ],
-              ),
+              child: isCompactLayout
+                  ? _buildCompactLayout()
+                  : _buildDesktopLayout(),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  /// Layout pour desktop (icon à gauche, texte au centre, chevron à droite)
+  Widget _buildDesktopLayout() {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.12),
+            ),
+          ),
+          child: Icon(
+            widget.icon,
+            color: Colors.white,
+            size: 24,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                widget.subtitle,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Icon(
+          LucideIcons.chevron_right,
+          color: Colors.white.withOpacity(0.5),
+          size: 20,
+        ),
+      ],
+    );
+  }
+
+  /// Layout pour mobile (icon au centre, texte en bas)
+  Widget _buildCompactLayout() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.12),
+            ),
+          ),
+          child: Icon(
+            widget.icon,
+            color: Colors.white,
+            size: 28,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          widget.title,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          widget.subtitle,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.7),
+            fontSize: 11,
+          ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
     );
   }
 }
