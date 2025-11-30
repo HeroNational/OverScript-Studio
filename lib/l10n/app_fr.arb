@@ -272,7 +272,8 @@
   "homeSubtitle": "Imports rapides : fichiers ou PDF",
   "footerCopyright": "© {year} OverLimits Digital Enterprise",
   "footerBy": "Réalisé par Jacobin Fokou pour OverLimits Digital Enterprise",
-  "footerGithub": "GitHub : github.com/HeroNational",
+  "footerLinkedin": "LinkedIn",
+  "footerLinkedinUrl": "linkedin.com/in/jacobindanielfokou",
   "legalCgu": "CGU",
   "playback": "Lecture",
   "@playback": {

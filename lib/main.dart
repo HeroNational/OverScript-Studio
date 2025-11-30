@@ -16,6 +16,7 @@ import 'presentation/providers/playback_provider.dart';
 import 'presentation/providers/settings_provider.dart';
 import 'presentation/screens/sources/sources_dialog.dart';
 import 'presentation/screens/settings/settings_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -455,10 +456,23 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 4),
-                          Text(
-                            AppLocalizations.of(context)!.footerGithub,
-                            style: const TextStyle(color: Colors.white54, fontSize: 12),
-                            textAlign: TextAlign.center,
+                          InkWell(
+                            onTap: () async {
+                              final Uri url = Uri.parse('https://linkedin.com/in/jacobindanielfokou');
+                              if (await canLaunchUrl(url)) {
+                                await launchUrl(url, mode: LaunchMode.externalApplication);
+                              }
+                            },
+                            child: Text(
+                              '${AppLocalizations.of(context)!.footerLinkedin}: ${AppLocalizations.of(context)!.footerLinkedinUrl}',
+                              style: const TextStyle(
+                                color: Color(0xFF8B5CF6),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                decoration: TextDecoration.underline,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ],
                       ),
@@ -569,22 +583,27 @@ class _TrialBanner extends StatelessWidget {
   }
 }
 
-class CguPage extends StatelessWidget {
+class CguPage extends ConsumerWidget {
   const CguPage({super.key});
 
-  Future<String> _loadCgu() async {
-    return rootBundle.loadString('assets/cgu.md');
+  Future<String> _loadCgu(String locale) async {
+    // Charger le fichier CGU en fonction de la langue
+    final String fileName = locale.toLowerCase().startsWith('en') ? 'cgu_en.md' : 'cgu_fr.md';
+    return rootBundle.loadString('assets/$fileName');
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CGU'),
+        title: Text(l10n.legalCgu),
         backgroundColor: const Color(0xFF111827),
       ),
       body: FutureBuilder<String>(
-        future: _loadCgu(),
+        future: _loadCgu(settings.locale),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -592,7 +611,7 @@ class CguPage extends StatelessWidget {
           if (snapshot.hasError) {
             return Center(
               child: Text(
-                'Impossible de charger les CGU.',
+                l10n.error,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.redAccent),
               ),
             );

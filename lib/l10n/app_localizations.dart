@@ -404,11 +404,17 @@ abstract class AppLocalizations {
   /// **'Built by Jacobin Fokou for OverLimits Digital Enterprise'**
   String get footerBy;
 
-  /// No description provided for @footerGithub.
+  /// No description provided for @footerLinkedin.
   ///
   /// In en, this message translates to:
-  /// **'GitHub: github.com/HeroNational'**
-  String get footerGithub;
+  /// **'LinkedIn'**
+  String get footerLinkedin;
+
+  /// No description provided for @footerLinkedinUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'linkedin.com/in/jacobindanielfokou'**
+  String get footerLinkedinUrl;
 
   /// No description provided for @legalCgu.
   ///

@@ -33,6 +33,7 @@ dependencies:
   # Platform Integration
   window_manager: ^0.3.7
   screen_retriever: ^0.1.9
+  url_launcher: ^6.2.2
 
   # Models
   freezed_annotation: ^2.4.1
@@ -75,4 +76,5 @@ flutter:
     - assets/banner_texture.jpg
     - assets/banner_texture_2.jpg
     - assets/banner_texture_3.jpg
-    - assets/cgu.md
+    - assets/cgu_fr.md
+    - assets/cgu_en.md

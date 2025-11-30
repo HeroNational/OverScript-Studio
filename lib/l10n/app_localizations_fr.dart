@@ -166,7 +166,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Réalisé par Jacobin Fokou pour OverLimits Digital Enterprise';
 
   @override
-  String get footerGithub => 'GitHub : github.com/HeroNational';
+  String get footerLinkedin => 'LinkedIn';
+
+  @override
+  String get footerLinkedinUrl => 'linkedin.com/in/jacobindanielfokou';
 
   @override
   String get legalCgu => 'CGU';
