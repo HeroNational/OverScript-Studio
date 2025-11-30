@@ -108,6 +108,22 @@
   "@loadFile": {
     "description": "Charger un fichier texte ou PDF"
   },
+  "loadTextFile": "Charger un fichier texte",
+  "@loadTextFile": {
+    "description": "Charger un fichier texte (TXT, VTT, SRT)"
+  },
+  "loadTextFileDescription": "Formats: TXT, VTT, SRT",
+  "@loadTextFileDescription": {
+    "description": "Description des formats de fichiers texte supportés"
+  },
+  "loadPdfFile": "Charger un fichier PDF",
+  "@loadPdfFile": {
+    "description": "Charger un fichier PDF"
+  },
+  "loadPdfFileDescription": "Format: PDF",
+  "@loadPdfFileDescription": {
+    "description": "Description du format PDF supporté"
+  },
   "loadFromYoutube": "Charger depuis YouTube",
   "@loadFromYoutube": {
     "description": "Charger les sous-titres d'une vidéo YouTube"

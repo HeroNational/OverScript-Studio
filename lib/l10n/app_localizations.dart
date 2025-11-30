@@ -260,6 +260,30 @@ abstract class AppLocalizations {
   /// **'Load File'**
   String get loadFile;
 
+  /// No description provided for @loadTextFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Load Text File'**
+  String get loadTextFile;
+
+  /// No description provided for @loadTextFileDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Formats: TXT, VTT, SRT'**
+  String get loadTextFileDescription;
+
+  /// No description provided for @loadPdfFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Load PDF File'**
+  String get loadPdfFile;
+
+  /// No description provided for @loadPdfFileDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Format: PDF'**
+  String get loadPdfFileDescription;
+
   /// No description provided for @loadFromYoutube.
   ///
   /// In en, this message translates to:

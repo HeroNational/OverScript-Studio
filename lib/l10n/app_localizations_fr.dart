@@ -90,6 +90,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get loadFile => 'Charger un fichier';
 
   @override
+  String get loadTextFile => 'Charger un fichier texte';
+
+  @override
+  String get loadTextFileDescription => 'Formats: TXT, VTT, SRT';
+
+  @override
+  String get loadPdfFile => 'Charger un fichier PDF';
+
+  @override
+  String get loadPdfFileDescription => 'Format: PDF';
+
+  @override
   String get loadFromYoutube => 'Charger depuis YouTube';
 
   @override

@@ -90,6 +90,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loadFile => 'Load File';
 
   @override
+  String get loadTextFile => 'Load Text File';
+
+  @override
+  String get loadTextFileDescription => 'Formats: TXT, VTT, SRT';
+
+  @override
+  String get loadPdfFile => 'Load PDF File';
+
+  @override
+  String get loadPdfFileDescription => 'Format: PDF';
+
+  @override
   String get loadFromYoutube => 'Load from YouTube';
 
   @override
