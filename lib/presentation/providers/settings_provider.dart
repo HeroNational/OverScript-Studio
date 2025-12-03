@@ -86,6 +86,16 @@ class SettingsNotifier extends StateNotifier<SettingsModel> {
     await _storageService.saveSettings(state);
   }
 
+  Future<void> updateMockTextType(MockTextType type) async {
+    state = state.copyWith(mockTextType: type);
+    await _storageService.saveSettings(state);
+  }
+
+  Future<void> updateShowMockText(bool value) async {
+    state = state.copyWith(showMockTextWhenEmpty: value);
+    await _storageService.saveSettings(state);
+  }
+
   Future<void> updateSettings(SettingsModel settings) async {
     state = settings;
     await _storageService.saveSettings(state);

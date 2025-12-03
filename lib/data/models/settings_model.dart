@@ -39,6 +39,14 @@ enum ThemeMode {
   dark,
 }
 
+enum MockTextType {
+  none,
+  poem,
+  song,
+  inspiring,
+  random,
+}
+
 @freezed
 class SettingsModel with _$SettingsModel {
   const factory SettingsModel({
@@ -60,6 +68,8 @@ class SettingsModel with _$SettingsModel {
   @Default(true) bool showTimers,
   @Default(5) int countdownDuration,
   @Default(ThemeMode.dark) ThemeMode themeMode,
+  @Default(MockTextType.random) MockTextType mockTextType,
+  @Default(true) bool showMockTextWhenEmpty,
   Map<String, String>? customShortcuts,
   }) = _SettingsModel;
 

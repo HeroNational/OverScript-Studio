@@ -80,6 +80,8 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 16),
                 _buildFontSizeSlider(context, ref, settings),
+                const SizedBox(height: 16),
+                _buildMockTextControls(context, ref, settings),
               ],
             ),
             const SizedBox(height: 32),
@@ -356,6 +358,78 @@ class SettingsScreen extends ConsumerWidget {
             ref.read(settingsProvider.notifier).updateFontSize(value);
           },
         ),
+      ],
+    );
+  }
+
+  Widget _buildMockTextControls(BuildContext context, WidgetRef ref, SettingsModel settings) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(LucideIcons.book_open, color: Colors.white70, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              _tr(settings, 'Texte mock quand vide', 'Mock text when empty'),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const Spacer(),
+            Switch(
+              value: settings.showMockTextWhenEmpty,
+              onChanged: (v) => ref.read(settingsProvider.notifier).updateShowMockText(v),
+              activeThumbColor: const Color(0xFF6366F1),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        if (settings.showMockTextWhenEmpty)
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<MockTextType>(
+                value: settings.mockTextType,
+                isExpanded: true,
+                dropdownColor: const Color(0xFF2d2d2d),
+                style: const TextStyle(color: Colors.white, fontSize: 16),
+                items: [
+                  DropdownMenuItem(
+                    value: MockTextType.random,
+                    child: Text(_tr(settings, 'Aléatoire', 'Random')),
+                  ),
+                    DropdownMenuItem(
+                    value: MockTextType.poem,
+                    child: Text(_tr(settings, 'Poème', 'Poem')),
+                  ),
+                  DropdownMenuItem(
+                    value: MockTextType.song,
+                    child: Text(_tr(settings, 'Paroles de chanson', 'Song lyrics')),
+                  ),
+                  DropdownMenuItem(
+                    value: MockTextType.inspiring,
+                    child: Text(_tr(settings, 'Inspirant', 'Inspiring')),
+                  ),
+                  DropdownMenuItem(
+                    value: MockTextType.none,
+                    child: Text(_tr(settings, 'Aucun', 'None')),
+                  ),
+                ],
+                onChanged: (value) {
+                  if (value != null) {
+                    ref.read(settingsProvider.notifier).updateMockTextType(value);
+                  }
+                },
+              ),
+            ),
+          ),
       ],
     );
   }
@@ -666,7 +740,7 @@ class SettingsScreen extends ConsumerWidget {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: const Color(0xFF6366F1),
+            activeThumbColor: const Color(0xFF6366F1),
           ),
         ],
       ),

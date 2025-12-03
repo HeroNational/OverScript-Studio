@@ -39,6 +39,8 @@ mixin _$SettingsModel {
   bool get showTimers => throw _privateConstructorUsedError;
   int get countdownDuration => throw _privateConstructorUsedError;
   ThemeMode get themeMode => throw _privateConstructorUsedError;
+  MockTextType get mockTextType => throw _privateConstructorUsedError;
+  bool get showMockTextWhenEmpty => throw _privateConstructorUsedError;
   Map<String, String>? get customShortcuts =>
       throw _privateConstructorUsedError;
 
@@ -73,6 +75,8 @@ abstract class $SettingsModelCopyWith<$Res> {
       bool showTimers,
       int countdownDuration,
       ThemeMode themeMode,
+      MockTextType mockTextType,
+      bool showMockTextWhenEmpty,
       Map<String, String>? customShortcuts});
 }
 
@@ -107,6 +111,8 @@ class _$SettingsModelCopyWithImpl<$Res, $Val extends SettingsModel>
     Object? showTimers = null,
     Object? countdownDuration = null,
     Object? themeMode = null,
+    Object? mockTextType = null,
+    Object? showMockTextWhenEmpty = null,
     Object? customShortcuts = freezed,
   }) {
     return _then(_value.copyWith(
@@ -182,6 +188,14 @@ class _$SettingsModelCopyWithImpl<$Res, $Val extends SettingsModel>
           ? _value.themeMode
           : themeMode // ignore: cast_nullable_to_non_nullable
               as ThemeMode,
+      mockTextType: null == mockTextType
+          ? _value.mockTextType
+          : mockTextType // ignore: cast_nullable_to_non_nullable
+              as MockTextType,
+      showMockTextWhenEmpty: null == showMockTextWhenEmpty
+          ? _value.showMockTextWhenEmpty
+          : showMockTextWhenEmpty // ignore: cast_nullable_to_non_nullable
+              as bool,
       customShortcuts: freezed == customShortcuts
           ? _value.customShortcuts
           : customShortcuts // ignore: cast_nullable_to_non_nullable
@@ -217,6 +231,8 @@ abstract class _$$SettingsModelImplCopyWith<$Res>
       bool showTimers,
       int countdownDuration,
       ThemeMode themeMode,
+      MockTextType mockTextType,
+      bool showMockTextWhenEmpty,
       Map<String, String>? customShortcuts});
 }
 
@@ -249,6 +265,8 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
     Object? showTimers = null,
     Object? countdownDuration = null,
     Object? themeMode = null,
+    Object? mockTextType = null,
+    Object? showMockTextWhenEmpty = null,
     Object? customShortcuts = freezed,
   }) {
     return _then(_$SettingsModelImpl(
@@ -324,6 +342,14 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
           ? _value.themeMode
           : themeMode // ignore: cast_nullable_to_non_nullable
               as ThemeMode,
+      mockTextType: null == mockTextType
+          ? _value.mockTextType
+          : mockTextType // ignore: cast_nullable_to_non_nullable
+              as MockTextType,
+      showMockTextWhenEmpty: null == showMockTextWhenEmpty
+          ? _value.showMockTextWhenEmpty
+          : showMockTextWhenEmpty // ignore: cast_nullable_to_non_nullable
+              as bool,
       customShortcuts: freezed == customShortcuts
           ? _value._customShortcuts
           : customShortcuts // ignore: cast_nullable_to_non_nullable
@@ -354,6 +380,8 @@ class _$SettingsModelImpl implements _SettingsModel {
       this.showTimers = true,
       this.countdownDuration = 5,
       this.themeMode = ThemeMode.dark,
+      this.mockTextType = MockTextType.random,
+      this.showMockTextWhenEmpty = true,
       final Map<String, String>? customShortcuts})
       : _customShortcuts = customShortcuts;
 
@@ -414,6 +442,12 @@ class _$SettingsModelImpl implements _SettingsModel {
   @override
   @JsonKey()
   final ThemeMode themeMode;
+  @override
+  @JsonKey()
+  final MockTextType mockTextType;
+  @override
+  @JsonKey()
+  final bool showMockTextWhenEmpty;
   final Map<String, String>? _customShortcuts;
   @override
   Map<String, String>? get customShortcuts {
@@ -426,7 +460,7 @@ class _$SettingsModelImpl implements _SettingsModel {
 
   @override
   String toString() {
-    return 'SettingsModel(defaultSpeed: $defaultSpeed, speedUnit: $speedUnit, autoFullscreen: $autoFullscreen, enableFocusMode: $enableFocusMode, backgroundColor: $backgroundColor, textColor: $textColor, fontFamily: $fontFamily, fontSize: $fontSize, toolbarPosition: $toolbarPosition, toolbarScale: $toolbarScale, toolboxTheme: $toolboxTheme, toolbarOrientation: $toolbarOrientation, pauseOnMouseMove: $pauseOnMouseMove, pauseKey: $pauseKey, locale: $locale, showTimers: $showTimers, countdownDuration: $countdownDuration, themeMode: $themeMode, customShortcuts: $customShortcuts)';
+    return 'SettingsModel(defaultSpeed: $defaultSpeed, speedUnit: $speedUnit, autoFullscreen: $autoFullscreen, enableFocusMode: $enableFocusMode, backgroundColor: $backgroundColor, textColor: $textColor, fontFamily: $fontFamily, fontSize: $fontSize, toolbarPosition: $toolbarPosition, toolbarScale: $toolbarScale, toolboxTheme: $toolboxTheme, toolbarOrientation: $toolbarOrientation, pauseOnMouseMove: $pauseOnMouseMove, pauseKey: $pauseKey, locale: $locale, showTimers: $showTimers, countdownDuration: $countdownDuration, themeMode: $themeMode, mockTextType: $mockTextType, showMockTextWhenEmpty: $showMockTextWhenEmpty, customShortcuts: $customShortcuts)';
   }
 
   @override
@@ -469,6 +503,10 @@ class _$SettingsModelImpl implements _SettingsModel {
                 other.countdownDuration == countdownDuration) &&
             (identical(other.themeMode, themeMode) ||
                 other.themeMode == themeMode) &&
+            (identical(other.mockTextType, mockTextType) ||
+                other.mockTextType == mockTextType) &&
+            (identical(other.showMockTextWhenEmpty, showMockTextWhenEmpty) ||
+                other.showMockTextWhenEmpty == showMockTextWhenEmpty) &&
             const DeepCollectionEquality()
                 .equals(other._customShortcuts, _customShortcuts));
   }
@@ -495,6 +533,8 @@ class _$SettingsModelImpl implements _SettingsModel {
         showTimers,
         countdownDuration,
         themeMode,
+        mockTextType,
+        showMockTextWhenEmpty,
         const DeepCollectionEquality().hash(_customShortcuts)
       ]);
 
@@ -532,6 +572,8 @@ abstract class _SettingsModel implements SettingsModel {
       final bool showTimers,
       final int countdownDuration,
       final ThemeMode themeMode,
+      final MockTextType mockTextType,
+      final bool showMockTextWhenEmpty,
       final Map<String, String>? customShortcuts}) = _$SettingsModelImpl;
 
   factory _SettingsModel.fromJson(Map<String, dynamic> json) =
@@ -573,6 +615,10 @@ abstract class _SettingsModel implements SettingsModel {
   int get countdownDuration;
   @override
   ThemeMode get themeMode;
+  @override
+  MockTextType get mockTextType;
+  @override
+  bool get showMockTextWhenEmpty;
   @override
   Map<String, String>? get customShortcuts;
   @override

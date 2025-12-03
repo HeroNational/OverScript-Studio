@@ -33,16 +33,14 @@ import UIKit
 
     // On iOS, Picture-in-Picture is primarily used with AVPlayer for video content
     // For general app PiP (iOS 15+), we minimize to app switcher
-    if #available(iOS 15.0, *) {
-      // Request scene session to support multi-window/PiP
-      // For now, we'll trigger the app switcher which allows multitasking
+    if #available(iOS 16.0, *) {
+      // Request a portrait orientation preference to hint the system we support geometry changes
       if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-        let options = UIWindowSceneGeometryPreferencesPhone()
-        options.maximumFullScreenDimensions = CGSize(width: UIScreen.main.bounds.width / 2, height: UIScreen.main.bounds.height / 2)
-
-        if #available(iOS 17.0, *) {
-          scene.requestGeometryUpdate(.iOS(interfaceOrientations: .portrait))
-        }
+        let preferences = UIWindowScene.GeometryPreferences.iOS()
+        preferences.interfaceOrientations = .portrait
+        scene.requestGeometryUpdate(preferences, errorHandler: { error in
+          NSLog("PiP geometry update failed: \(error.localizedDescription)")
+        })
       }
     }
 

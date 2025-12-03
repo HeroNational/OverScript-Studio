@@ -209,7 +209,6 @@ class YoutubeSubtitleService {
       } catch (_) {
         track = tracks.first;
       }
-      if (track == null) return '';
       print('[YT] scraper using track lang=${track.languageCode} name=${track.name}');
       final subs = await scraper.getSubtitles(track);
       if (subs.isEmpty) return '';

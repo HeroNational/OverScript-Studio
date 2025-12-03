@@ -34,6 +34,10 @@ _$SettingsModelImpl _$$SettingsModelImplFromJson(Map<String, dynamic> json) =>
       countdownDuration: (json['countdownDuration'] as num?)?.toInt() ?? 5,
       themeMode: $enumDecodeNullable(_$ThemeModeEnumMap, json['themeMode']) ??
           ThemeMode.dark,
+      mockTextType:
+          $enumDecodeNullable(_$MockTextTypeEnumMap, json['mockTextType']) ??
+              MockTextType.random,
+      showMockTextWhenEmpty: json['showMockTextWhenEmpty'] as bool? ?? true,
       customShortcuts: (json['customShortcuts'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ),
@@ -60,6 +64,8 @@ Map<String, dynamic> _$$SettingsModelImplToJson(_$SettingsModelImpl instance) =>
       'showTimers': instance.showTimers,
       'countdownDuration': instance.countdownDuration,
       'themeMode': _$ThemeModeEnumMap[instance.themeMode]!,
+      'mockTextType': _$MockTextTypeEnumMap[instance.mockTextType]!,
+      'showMockTextWhenEmpty': instance.showMockTextWhenEmpty,
       'customShortcuts': instance.customShortcuts,
     };
 
@@ -97,4 +103,12 @@ const _$ToolbarOrientationEnumMap = {
 const _$ThemeModeEnumMap = {
   ThemeMode.light: 'light',
   ThemeMode.dark: 'dark',
+};
+
+const _$MockTextTypeEnumMap = {
+  MockTextType.none: 'none',
+  MockTextType.poem: 'poem',
+  MockTextType.song: 'song',
+  MockTextType.inspiring: 'inspiring',
+  MockTextType.random: 'random',
 };

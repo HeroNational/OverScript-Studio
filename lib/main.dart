@@ -164,9 +164,12 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
   Future<void> _loadLastText() async {
     final storageService = StorageService();
     final lastText = await storageService.loadLastText();
+    final settings = ref.read(settingsProvider);
     if (lastText != null) {
       _textController.text = lastText;
       _setQuillPlainText(lastText);
+    } else {
+      _maybeInjectMockText(settings);
     }
   }
 
@@ -240,6 +243,51 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
   void _setQuillPlainText(String text) {
     final replaceLen = math.max(0, _quillController.document.length - 1);
     _quillController.document.replace(0, replaceLen, '$text\n');
+  }
+
+  void _maybeInjectMockText(SettingsModel settings) {
+    if (!settings.showMockTextWhenEmpty) return;
+    final mock = _pickMockText(settings.mockTextType);
+    if (mock == null || mock.isEmpty) return;
+    _textController.text = mock;
+    _setQuillPlainText(mock);
+  }
+
+  String? _pickMockText(MockTextType type) {
+    const poems = [
+      'Sous le pont Mirabeau coule la Seine\nEt nos amours\nFaut-il qu’il m’en souvienne\nLa joie venait toujours après la peine.\n— Guillaume Apollinaire',
+      'Heureux qui, comme Ulysse, a fait un beau voyage,\nOu comme cestuy-là qui conquit la toison,\nEt puis est retourné, plein d’usage et raison,\nVivre entre ses parents le reste de son âge.\n— Joachim du Bellay',
+    ];
+    const songs = [
+      'Ne me quitte pas\nIl faut oublier\nTout peut s’oublier\nQui s’enfuit déjà.\n— Jacques Brel',
+      'I’m gonna swing from the chandelier\nFrom the chandelier\nI’m gonna live like tomorrow doesn’t exist\n— Sia',
+    ];
+    const inspiring = [
+      'Ils ne savaient pas que c’était impossible, alors ils l’ont fait. — Mark Twain',
+      'Le succès, c’est tomber sept fois, se relever huit. — Proverbe japonais',
+      'Start where you are. Use what you have. Do what you can. — Arthur Ashe',
+    ];
+
+    List<String> pool;
+    switch (type) {
+      case MockTextType.none:
+        return null;
+      case MockTextType.poem:
+        pool = poems;
+        break;
+      case MockTextType.song:
+        pool = songs;
+        break;
+      case MockTextType.inspiring:
+        pool = inspiring;
+        break;
+      case MockTextType.random:
+      default:
+        pool = [...poems, ...songs, ...inspiring];
+        break;
+    }
+    if (pool.isEmpty) return null;
+    return pool[math.Random().nextInt(pool.length)];
   }
 
   void _navigateToPrompter() {
