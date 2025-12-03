@@ -57,15 +57,19 @@
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
-			<array>
-				<string>public.data</string>
-			</array>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>srt</string>
-				<string>vtt</string>
-			</array>
-		</dict>
+	<array>
+		<string>public.data</string>
 	</array>
+	<key>CFBundleTypeExtensions</key>
+	<array>
+		<string>srt</string>
+		<string>vtt</string>
+	</array>
+	</dict>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Utilisation de la caméra pour la prévisualisation et l'enregistrement.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Utilisation du microphone pour la capture audio.</string>
 </dict>
 </plist>

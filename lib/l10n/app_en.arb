@@ -92,5 +92,19 @@
   "trialExpiredMessage": "The testing period has ended. Source selection is disabled.",
   "theme": "Theme",
   "lightMode": "Light Mode",
-  "darkMode": "Dark Mode"
+  "darkMode": "Dark Mode",
+  "cameraRecording": "Camera & recording",
+  "autoStartCamera": "Start camera automatically",
+  "autoStartCameraDescription": "Start video capture after countdown",
+  "cameraAsBackground": "Camera as background",
+  "cameraAsBackgroundDescription": "Show camera behind text (transparent mode)",
+  "promptOpacity": "Prompt opacity",
+  "camera": "Camera",
+  "microphone": "Microphone",
+  "systemDefault": "System default",
+  "builtInCamera": "Built-in camera",
+  "externalCamera": "External camera",
+  "builtInMic": "Built-in mic",
+  "externalMic": "External mic",
+  "menu": "Menu"
 }

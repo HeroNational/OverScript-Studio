@@ -9,7 +9,7 @@ import '../../providers/playback_provider.dart';
 
 class GlasmorphicToolbox extends ConsumerWidget {
   final VoidCallback onSourcesPressed;
-  final VoidCallback onSettingsPressed;
+  final VoidCallback onMenuPressed;
   final VoidCallback onFullscreenPressed;
   final VoidCallback onHomePressed;
   final bool isVertical;
@@ -21,7 +21,7 @@ class GlasmorphicToolbox extends ConsumerWidget {
   const GlasmorphicToolbox({
     super.key,
     required this.onSourcesPressed,
-    required this.onSettingsPressed,
+    required this.onMenuPressed,
     required this.onFullscreenPressed,
     required this.onHomePressed,
     required this.scale,
@@ -124,7 +124,7 @@ class GlasmorphicToolbox extends ConsumerWidget {
                             _ActionsPanel(
                               onHomePressed: onHomePressed,
                               onSourcesPressed: onSourcesPressed,
-                              onSettingsPressed: onSettingsPressed,
+                              onMenuPressed: onMenuPressed,
                               onFullscreenPressed: onFullscreenPressed,
                               isFullscreen: playbackState.isFullscreen,
                               l10n: l10n,
@@ -154,9 +154,9 @@ class GlasmorphicToolbox extends ConsumerWidget {
                               _ActionsPanel(
                                 onHomePressed: onHomePressed,
                                 onSourcesPressed: onSourcesPressed,
-                                onSettingsPressed: onSettingsPressed,
-                                onFullscreenPressed: onFullscreenPressed,
-                                isFullscreen: playbackState.isFullscreen,
+                              onMenuPressed: onMenuPressed,
+                              onFullscreenPressed: onFullscreenPressed,
+                              isFullscreen: playbackState.isFullscreen,
                                 l10n: l10n,
                                 palette: palette,
                                 scale: renderScale,
@@ -322,7 +322,7 @@ class _TimersHeader extends StatelessWidget {
 class _ActionsPanel extends StatelessWidget {
   final VoidCallback onHomePressed;
   final VoidCallback onSourcesPressed;
-  final VoidCallback onSettingsPressed;
+  final VoidCallback onMenuPressed;
   final VoidCallback onFullscreenPressed;
   final bool isFullscreen;
   final AppLocalizations? l10n;
@@ -334,7 +334,7 @@ class _ActionsPanel extends StatelessWidget {
   const _ActionsPanel({
     required this.onHomePressed,
     required this.onSourcesPressed,
-    required this.onSettingsPressed,
+    required this.onMenuPressed,
     required this.onFullscreenPressed,
     required this.isFullscreen,
     required this.l10n,
@@ -410,9 +410,9 @@ class _ActionsPanel extends StatelessWidget {
     }
 
     buttons.add(_GlassButton(
-      icon: LucideIcons.settings,
-      onPressed: onSettingsPressed,
-      tooltip: l10n?.settings ?? 'Paramètres',
+        icon: LucideIcons.menu,
+        onPressed: onMenuPressed,
+        tooltip: l10n?.settings ?? 'Menu',
       size: 24 * scale,
     ));
 

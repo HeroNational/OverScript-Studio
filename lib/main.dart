@@ -5,12 +5,16 @@ import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
+import 'package:camera/camera.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'dart:io' show Platform;
 import 'dart:convert';
 import 'dart:math' as math;
 import 'package:intl/intl.dart';
 import 'package:window_manager/window_manager.dart';
+import 'dart:async';
 import 'data/services/storage_service.dart';
+import 'data/services/capture_service.dart';
 import 'data/models/settings_model.dart';
 import 'presentation/screens/prompter/prompter_screen.dart';
 import 'presentation/providers/playback_provider.dart';
@@ -18,6 +22,7 @@ import 'presentation/providers/settings_provider.dart';
 import 'presentation/screens/sources/sources_dialog.dart';
 import 'presentation/screens/settings/settings_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'presentation/widgets/app_menu_sheet.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -117,6 +122,7 @@ class PrompterHome extends ConsumerStatefulWidget {
 class _PrompterHomeState extends ConsumerState<PrompterHome> {
   final TextEditingController _textController = TextEditingController();
   final quill.QuillController _quillController = quill.QuillController.basic();
+  final CaptureService _captureService = CaptureService();
   final List<String> _bannerAssets = const [
     'assets/banner_texture.jpg',
     'assets/banner_texture_2.jpg',
@@ -128,6 +134,13 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
   bool _trialExpired = false;
   int _trialDaysLeft = 0;
   DateTime? _trialExpiry;
+  List<CaptureDeviceInfo> _cams = const [];
+  List<CaptureDeviceInfo> _mics = const [];
+  String? _selectedCam;
+  String? _selectedMic;
+  bool _previewing = false;
+  double _fakeAudioLevel = 0.2;
+  Timer? _audioMeterTimer;
 
   @override
   void initState() {
@@ -139,6 +152,7 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
         _promptSourceDialog();
       }
     });
+    _loadDevices();
   }
 
   void _computeTrialStatus() {
@@ -161,6 +175,21 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
     _trialDaysLeft = _trialExpired ? 0 : _trialExpiry!.difference(now).inDays + 1;
   }
 
+  Future<void> _loadDevices() async {
+    try {
+      final cams = await _captureService.listVideoDevices();
+      final mics = await _captureService.listAudioDevices();
+      setState(() {
+        _cams = cams;
+        _mics = mics;
+        _selectedCam = cams.isNotEmpty ? cams.first.id : null;
+        _selectedMic = mics.isNotEmpty ? mics.first.id : null;
+      });
+    } catch (_) {
+      // ignore loading errors
+    }
+  }
+
   Future<void> _loadLastText() async {
     final storageService = StorageService();
     final lastText = await storageService.loadLastText();
@@ -177,6 +206,8 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
   void dispose() {
     _textController.dispose();
     _quillController.dispose();
+    _audioMeterTimer?.cancel();
+    _captureService.dispose();
     super.dispose();
   }
 
@@ -387,8 +418,12 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
                         }
                       },
                     ),
+                    const SizedBox(width: 12),
+                    _buildMenuButton(context),
                   ],
                 ),
+                const SizedBox(height: 12),
+                _buildCameraPreviewCard(context),
                 // Bannière illustrative
                 GestureDetector(
                   behavior: HitTestBehavior.opaque,
@@ -546,6 +581,211 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
     return settings.locale.toLowerCase().startsWith('en') ? en : fr;
   }
 
+  Widget _buildMenuButton(BuildContext context) {
+    return IconButton(
+      tooltip: AppLocalizations.of(context)?.settings ?? 'Menu',
+      onPressed: () => _showMenu(context),
+      icon: const Icon(Icons.menu, color: Colors.white),
+    );
+  }
+
+  Widget _buildCameraPreviewCard(BuildContext context) {
+    final settings = ref.watch(settingsProvider);
+    final isDesktop = !(Platform.isAndroid || Platform.isIOS);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.08), width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.videocam, color: Colors.white70),
+              const SizedBox(width: 8),
+              Text(
+                AppLocalizations.of(context)?.cameraAsBackground ?? 'Caméra',
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
+              ),
+              const Spacer(),
+              _buildAudioMeter(),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildDeviceDropdown(
+                  context,
+                  label: 'Caméra',
+                  value: _selectedCam,
+                  items: _cams,
+                  onChanged: (v) => setState(() => _selectedCam = v),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildDeviceDropdown(
+                  context,
+                  label: 'Micro',
+                  value: _selectedMic,
+                  items: _mics,
+                  onChanged: (v) => setState(() => _selectedMic = v),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 180,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white24, width: 1),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Stack(
+                  children: [
+                    if (!isDesktop && _captureService.controller != null && _captureService.controller!.value.isInitialized)
+                      CameraPreview(_captureService.controller!)
+                    else if (isDesktop && _captureService.desktopRenderer != null)
+                      RTCVideoView(
+                        _captureService.desktopRenderer!,
+                        objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+                      )
+                    else
+                      Center(
+                        child: Text(
+                          'Preview inactive',
+                          style: const TextStyle(color: Colors.white54),
+                        ),
+                      ),
+                    Positioned(
+                      right: 8,
+                      bottom: 8,
+                      child: ElevatedButton.icon(
+                        onPressed: _toggleHomePreview,
+                        icon: Icon(_previewing ? Icons.stop : Icons.play_arrow, size: 18),
+                        label: Text(_previewing ? 'Stop' : 'Preview'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDeviceDropdown(
+    BuildContext context, {
+    required String label,
+    required String? value,
+    required List<CaptureDeviceInfo> items,
+    required ValueChanged<String?> onChanged,
+  }) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: Colors.white70),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.4)),
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      dropdownColor: const Color(0xFF1f2937),
+      style: const TextStyle(color: Colors.white),
+      items: items
+          .map((d) => DropdownMenuItem(
+                value: d.id,
+                child: Text(d.label, overflow: TextOverflow.ellipsis),
+              ))
+          .toList(),
+      onChanged: onChanged,
+      // Flutter 3.33: utilise initialValue plutôt que value déprécié
+      // Note: pour compat compatibilité, on conserve value ici mais la warning est bénin.
+    );
+  }
+
+  Widget _buildAudioMeter() {
+    return Container(
+      width: 60,
+      height: 12,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.white24, width: 1),
+      ),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: FractionallySizedBox(
+          widthFactor: _fakeAudioLevel.clamp(0.05, 1.0),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF10B981), Color(0xFFF59E0B), Color(0xFFEF4444)],
+              ),
+              borderRadius: BorderRadius.circular(6),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _toggleHomePreview() async {
+    if (_previewing) {
+      await _captureService.stopCapture();
+      if (mounted) {
+        setState(() {
+          _previewing = false;
+          _captureService.controller?.dispose();
+        });
+      }
+      _stopAudioMeter();
+      return;
+    }
+
+    try {
+      await _captureService.startPreview(cameraId: _selectedCam, micId: _selectedMic);
+      _previewing = true;
+      _startAudioMeter();
+      if (mounted) setState(() {});
+    } catch (e) {
+      _previewing = false;
+      _stopAudioMeter();
+    }
+  }
+
+  void _startAudioMeter() {
+    _audioMeterTimer?.cancel();
+    _audioMeterTimer = Timer.periodic(const Duration(milliseconds: 200), (_) {
+      if (!mounted) return;
+      setState(() {
+        // Oscillation factice pour montrer la variation
+        _fakeAudioLevel = 0.2 + math.Random().nextDouble() * 0.8;
+      });
+    });
+  }
+
+  void _stopAudioMeter() {
+    _audioMeterTimer?.cancel();
+    _audioMeterTimer = null;
+    _fakeAudioLevel = 0.2;
+  }
+
   void _showTrialExpiredMessage() {
     if (!mounted) return;
     final l10n = AppLocalizations.of(context)!;
@@ -557,6 +797,18 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
         duration: const Duration(seconds: 4),
+      ),
+    );
+  }
+
+  void _showMenu(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => SizedBox(
+        height: MediaQuery.of(context).size.height * 0.85,
+        child: const AppMenuSheet(),
       ),
     );
   }

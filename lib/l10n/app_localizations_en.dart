@@ -293,4 +293,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get darkMode => 'Dark Mode';
+
+  @override
+  String get cameraRecording => 'Camera & recording';
+
+  @override
+  String get autoStartCamera => 'Start camera automatically';
+
+  @override
+  String get autoStartCameraDescription =>
+      'Start video capture after countdown';
+
+  @override
+  String get cameraAsBackground => 'Camera as background';
+
+  @override
+  String get cameraAsBackgroundDescription =>
+      'Show camera behind text (transparent mode)';
+
+  @override
+  String get promptOpacity => 'Prompt opacity';
+
+  @override
+  String get camera => 'Camera';
+
+  @override
+  String get microphone => 'Microphone';
+
+  @override
+  String get systemDefault => 'System default';
+
+  @override
+  String get builtInCamera => 'Built-in camera';
+
+  @override
+  String get externalCamera => 'External camera';
+
+  @override
+  String get builtInMic => 'Built-in mic';
+
+  @override
+  String get externalMic => 'External mic';
+
+  @override
+  String get menu => 'Menu';
 }

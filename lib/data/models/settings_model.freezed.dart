@@ -23,6 +23,11 @@ mixin _$SettingsModel {
   double get defaultSpeed => throw _privateConstructorUsedError;
   SpeedUnit get speedUnit => throw _privateConstructorUsedError;
   bool get autoFullscreen => throw _privateConstructorUsedError;
+  bool get autoStartCamera => throw _privateConstructorUsedError;
+  bool get cameraAsBackground => throw _privateConstructorUsedError;
+  double get promptOpacity => throw _privateConstructorUsedError;
+  String? get selectedCameraId => throw _privateConstructorUsedError;
+  String? get selectedMicId => throw _privateConstructorUsedError;
   bool get enableFocusMode => throw _privateConstructorUsedError;
   String get backgroundColor => throw _privateConstructorUsedError;
   String get textColor => throw _privateConstructorUsedError;
@@ -60,6 +65,11 @@ abstract class $SettingsModelCopyWith<$Res> {
       {double defaultSpeed,
       SpeedUnit speedUnit,
       bool autoFullscreen,
+      bool autoStartCamera,
+      bool cameraAsBackground,
+      double promptOpacity,
+      String? selectedCameraId,
+      String? selectedMicId,
       bool enableFocusMode,
       String backgroundColor,
       String textColor,
@@ -96,6 +106,11 @@ class _$SettingsModelCopyWithImpl<$Res, $Val extends SettingsModel>
     Object? defaultSpeed = null,
     Object? speedUnit = null,
     Object? autoFullscreen = null,
+    Object? autoStartCamera = null,
+    Object? cameraAsBackground = null,
+    Object? promptOpacity = null,
+    Object? selectedCameraId = freezed,
+    Object? selectedMicId = freezed,
     Object? enableFocusMode = null,
     Object? backgroundColor = null,
     Object? textColor = null,
@@ -128,6 +143,26 @@ class _$SettingsModelCopyWithImpl<$Res, $Val extends SettingsModel>
           ? _value.autoFullscreen
           : autoFullscreen // ignore: cast_nullable_to_non_nullable
               as bool,
+      autoStartCamera: null == autoStartCamera
+          ? _value.autoStartCamera
+          : autoStartCamera // ignore: cast_nullable_to_non_nullable
+              as bool,
+      cameraAsBackground: null == cameraAsBackground
+          ? _value.cameraAsBackground
+          : cameraAsBackground // ignore: cast_nullable_to_non_nullable
+              as bool,
+      promptOpacity: null == promptOpacity
+          ? _value.promptOpacity
+          : promptOpacity // ignore: cast_nullable_to_non_nullable
+              as double,
+      selectedCameraId: freezed == selectedCameraId
+          ? _value.selectedCameraId
+          : selectedCameraId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      selectedMicId: freezed == selectedMicId
+          ? _value.selectedMicId
+          : selectedMicId // ignore: cast_nullable_to_non_nullable
+              as String?,
       enableFocusMode: null == enableFocusMode
           ? _value.enableFocusMode
           : enableFocusMode // ignore: cast_nullable_to_non_nullable
@@ -216,6 +251,11 @@ abstract class _$$SettingsModelImplCopyWith<$Res>
       {double defaultSpeed,
       SpeedUnit speedUnit,
       bool autoFullscreen,
+      bool autoStartCamera,
+      bool cameraAsBackground,
+      double promptOpacity,
+      String? selectedCameraId,
+      String? selectedMicId,
       bool enableFocusMode,
       String backgroundColor,
       String textColor,
@@ -250,6 +290,11 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
     Object? defaultSpeed = null,
     Object? speedUnit = null,
     Object? autoFullscreen = null,
+    Object? autoStartCamera = null,
+    Object? cameraAsBackground = null,
+    Object? promptOpacity = null,
+    Object? selectedCameraId = freezed,
+    Object? selectedMicId = freezed,
     Object? enableFocusMode = null,
     Object? backgroundColor = null,
     Object? textColor = null,
@@ -282,6 +327,26 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
           ? _value.autoFullscreen
           : autoFullscreen // ignore: cast_nullable_to_non_nullable
               as bool,
+      autoStartCamera: null == autoStartCamera
+          ? _value.autoStartCamera
+          : autoStartCamera // ignore: cast_nullable_to_non_nullable
+              as bool,
+      cameraAsBackground: null == cameraAsBackground
+          ? _value.cameraAsBackground
+          : cameraAsBackground // ignore: cast_nullable_to_non_nullable
+              as bool,
+      promptOpacity: null == promptOpacity
+          ? _value.promptOpacity
+          : promptOpacity // ignore: cast_nullable_to_non_nullable
+              as double,
+      selectedCameraId: freezed == selectedCameraId
+          ? _value.selectedCameraId
+          : selectedCameraId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      selectedMicId: freezed == selectedMicId
+          ? _value.selectedMicId
+          : selectedMicId // ignore: cast_nullable_to_non_nullable
+              as String?,
       enableFocusMode: null == enableFocusMode
           ? _value.enableFocusMode
           : enableFocusMode // ignore: cast_nullable_to_non_nullable
@@ -365,6 +430,11 @@ class _$SettingsModelImpl implements _SettingsModel {
       {this.defaultSpeed = 120.0,
       this.speedUnit = SpeedUnit.pixelsPerSecond,
       this.autoFullscreen = true,
+      this.autoStartCamera = false,
+      this.cameraAsBackground = false,
+      this.promptOpacity = 0.9,
+      this.selectedCameraId,
+      this.selectedMicId,
       this.enableFocusMode = false,
       this.backgroundColor = '#1a1a1a',
       this.textColor = '#ffffff',
@@ -397,6 +467,19 @@ class _$SettingsModelImpl implements _SettingsModel {
   @override
   @JsonKey()
   final bool autoFullscreen;
+  @override
+  @JsonKey()
+  final bool autoStartCamera;
+  @override
+  @JsonKey()
+  final bool cameraAsBackground;
+  @override
+  @JsonKey()
+  final double promptOpacity;
+  @override
+  final String? selectedCameraId;
+  @override
+  final String? selectedMicId;
   @override
   @JsonKey()
   final bool enableFocusMode;
@@ -460,7 +543,7 @@ class _$SettingsModelImpl implements _SettingsModel {
 
   @override
   String toString() {
-    return 'SettingsModel(defaultSpeed: $defaultSpeed, speedUnit: $speedUnit, autoFullscreen: $autoFullscreen, enableFocusMode: $enableFocusMode, backgroundColor: $backgroundColor, textColor: $textColor, fontFamily: $fontFamily, fontSize: $fontSize, toolbarPosition: $toolbarPosition, toolbarScale: $toolbarScale, toolboxTheme: $toolboxTheme, toolbarOrientation: $toolbarOrientation, pauseOnMouseMove: $pauseOnMouseMove, pauseKey: $pauseKey, locale: $locale, showTimers: $showTimers, countdownDuration: $countdownDuration, themeMode: $themeMode, mockTextType: $mockTextType, showMockTextWhenEmpty: $showMockTextWhenEmpty, customShortcuts: $customShortcuts)';
+    return 'SettingsModel(defaultSpeed: $defaultSpeed, speedUnit: $speedUnit, autoFullscreen: $autoFullscreen, autoStartCamera: $autoStartCamera, cameraAsBackground: $cameraAsBackground, promptOpacity: $promptOpacity, selectedCameraId: $selectedCameraId, selectedMicId: $selectedMicId, enableFocusMode: $enableFocusMode, backgroundColor: $backgroundColor, textColor: $textColor, fontFamily: $fontFamily, fontSize: $fontSize, toolbarPosition: $toolbarPosition, toolbarScale: $toolbarScale, toolboxTheme: $toolboxTheme, toolbarOrientation: $toolbarOrientation, pauseOnMouseMove: $pauseOnMouseMove, pauseKey: $pauseKey, locale: $locale, showTimers: $showTimers, countdownDuration: $countdownDuration, themeMode: $themeMode, mockTextType: $mockTextType, showMockTextWhenEmpty: $showMockTextWhenEmpty, customShortcuts: $customShortcuts)';
   }
 
   @override
@@ -474,6 +557,16 @@ class _$SettingsModelImpl implements _SettingsModel {
                 other.speedUnit == speedUnit) &&
             (identical(other.autoFullscreen, autoFullscreen) ||
                 other.autoFullscreen == autoFullscreen) &&
+            (identical(other.autoStartCamera, autoStartCamera) ||
+                other.autoStartCamera == autoStartCamera) &&
+            (identical(other.cameraAsBackground, cameraAsBackground) ||
+                other.cameraAsBackground == cameraAsBackground) &&
+            (identical(other.promptOpacity, promptOpacity) ||
+                other.promptOpacity == promptOpacity) &&
+            (identical(other.selectedCameraId, selectedCameraId) ||
+                other.selectedCameraId == selectedCameraId) &&
+            (identical(other.selectedMicId, selectedMicId) ||
+                other.selectedMicId == selectedMicId) &&
             (identical(other.enableFocusMode, enableFocusMode) ||
                 other.enableFocusMode == enableFocusMode) &&
             (identical(other.backgroundColor, backgroundColor) ||
@@ -518,6 +611,11 @@ class _$SettingsModelImpl implements _SettingsModel {
         defaultSpeed,
         speedUnit,
         autoFullscreen,
+        autoStartCamera,
+        cameraAsBackground,
+        promptOpacity,
+        selectedCameraId,
+        selectedMicId,
         enableFocusMode,
         backgroundColor,
         textColor,
@@ -557,6 +655,11 @@ abstract class _SettingsModel implements SettingsModel {
       {final double defaultSpeed,
       final SpeedUnit speedUnit,
       final bool autoFullscreen,
+      final bool autoStartCamera,
+      final bool cameraAsBackground,
+      final double promptOpacity,
+      final String? selectedCameraId,
+      final String? selectedMicId,
       final bool enableFocusMode,
       final String backgroundColor,
       final String textColor,
@@ -585,6 +688,16 @@ abstract class _SettingsModel implements SettingsModel {
   SpeedUnit get speedUnit;
   @override
   bool get autoFullscreen;
+  @override
+  bool get autoStartCamera;
+  @override
+  bool get cameraAsBackground;
+  @override
+  double get promptOpacity;
+  @override
+  String? get selectedCameraId;
+  @override
+  String? get selectedMicId;
   @override
   bool get enableFocusMode;
   @override

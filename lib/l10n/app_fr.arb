@@ -298,5 +298,61 @@
   "trialExpiredMessage": "La période de test est terminée. La sélection de sources est désactivée.",
   "theme": "Thème",
   "lightMode": "Mode clair",
-  "darkMode": "Mode sombre"
+  "darkMode": "Mode sombre",
+  "cameraRecording": "Caméra & enregistrement",
+  "@cameraRecording": {
+    "description": "Section caméra et enregistrement"
+  },
+  "autoStartCamera": "Lancer la caméra automatiquement",
+  "@autoStartCamera": {
+    "description": "Démarrer automatiquement la caméra"
+  },
+  "autoStartCameraDescription": "Démarre la capture vidéo après le compte à rebours",
+  "@autoStartCameraDescription": {
+    "description": "Description du démarrage automatique de la caméra"
+  },
+  "cameraAsBackground": "Caméra en fond du prompteur",
+  "@cameraAsBackground": {
+    "description": "Afficher la caméra en arrière-plan"
+  },
+  "cameraAsBackgroundDescription": "Affiche la caméra derrière le texte (mode transparent)",
+  "@cameraAsBackgroundDescription": {
+    "description": "Description du mode caméra en arrière-plan"
+  },
+  "promptOpacity": "Opacité du texte",
+  "@promptOpacity": {
+    "description": "Opacité du texte du prompteur"
+  },
+  "camera": "Caméra",
+  "@camera": {
+    "description": "Sélection de caméra"
+  },
+  "microphone": "Microphone",
+  "@microphone": {
+    "description": "Sélection de microphone"
+  },
+  "systemDefault": "Défaut système",
+  "@systemDefault": {
+    "description": "Paramètre par défaut du système"
+  },
+  "builtInCamera": "Caméra intégrée",
+  "@builtInCamera": {
+    "description": "Caméra intégrée de l'appareil"
+  },
+  "externalCamera": "Caméra externe",
+  "@externalCamera": {
+    "description": "Caméra externe connectée"
+  },
+  "builtInMic": "Micro intégré",
+  "@builtInMic": {
+    "description": "Microphone intégré de l'appareil"
+  },
+  "externalMic": "Micro externe",
+  "@externalMic": {
+    "description": "Microphone externe connecté"
+  },
+  "menu": "Menu",
+  "@menu": {
+    "description": "Bouton menu"
+  }
 }

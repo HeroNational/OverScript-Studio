@@ -71,6 +71,31 @@ class SettingsNotifier extends StateNotifier<SettingsModel> {
     await _storageService.saveSettings(state);
   }
 
+  Future<void> updateAutoStartCamera(bool value) async {
+    state = state.copyWith(autoStartCamera: value);
+    await _storageService.saveSettings(state);
+  }
+
+  Future<void> updateCameraAsBackground(bool value) async {
+    state = state.copyWith(cameraAsBackground: value);
+    await _storageService.saveSettings(state);
+  }
+
+  Future<void> updatePromptOpacity(double value) async {
+    state = state.copyWith(promptOpacity: value);
+    await _storageService.saveSettings(state);
+  }
+
+  Future<void> updateSelectedCamera(String? id) async {
+    state = state.copyWith(selectedCameraId: id);
+    await _storageService.saveSettings(state);
+  }
+
+  Future<void> updateSelectedMic(String? id) async {
+    state = state.copyWith(selectedMicId: id);
+    await _storageService.saveSettings(state);
+  }
+
   Future<void> updateShowTimers(bool value) async {
     state = state.copyWith(showTimers: value);
     await _storageService.saveSettings(state);

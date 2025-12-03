@@ -43,6 +43,10 @@ dependencies:
   google_fonts: ^6.1.0
   flutter_lucide: ^1.1.0
   flutter_colorpicker: ^1.1.0
+  video_player: ^2.9.2
+  camera: ^0.10.5+5
+  flutter_webrtc: ^0.9.46
+  permission_handler: ^11.3.1
 
   # Éditeur riche WYSIWYG
   flutter_quill: ^11.5.0

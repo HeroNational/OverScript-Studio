@@ -649,6 +649,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dark Mode'**
   String get darkMode;
+
+  /// No description provided for @cameraRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera & recording'**
+  String get cameraRecording;
+
+  /// No description provided for @autoStartCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Start camera automatically'**
+  String get autoStartCamera;
+
+  /// No description provided for @autoStartCameraDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Start video capture after countdown'**
+  String get autoStartCameraDescription;
+
+  /// No description provided for @cameraAsBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera as background'**
+  String get cameraAsBackground;
+
+  /// No description provided for @cameraAsBackgroundDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Show camera behind text (transparent mode)'**
+  String get cameraAsBackgroundDescription;
+
+  /// No description provided for @promptOpacity.
+  ///
+  /// In en, this message translates to:
+  /// **'Prompt opacity'**
+  String get promptOpacity;
+
+  /// No description provided for @camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get camera;
+
+  /// No description provided for @microphone.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone'**
+  String get microphone;
+
+  /// No description provided for @systemDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'System default'**
+  String get systemDefault;
+
+  /// No description provided for @builtInCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in camera'**
+  String get builtInCamera;
+
+  /// No description provided for @externalCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'External camera'**
+  String get externalCamera;
+
+  /// No description provided for @builtInMic.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in mic'**
+  String get builtInMic;
+
+  /// No description provided for @externalMic.
+  ///
+  /// In en, this message translates to:
+  /// **'External mic'**
+  String get externalMic;
+
+  /// No description provided for @menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get menu;
 }
 
 class _AppLocalizationsDelegate

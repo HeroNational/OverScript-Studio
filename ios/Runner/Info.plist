@@ -24,6 +24,10 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Utilisation de la caméra pour l'enregistrement vidéo.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Utilisation du microphone pour la capture audio.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
@@ -45,5 +49,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>L'application a besoin d'accéder à votre caméra pour enregistrer des vidéos.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>L'application a besoin d'accéder à votre microphone pour enregistrer l'audio.</string>
 </dict>
 </plist>

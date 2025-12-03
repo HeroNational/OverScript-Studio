@@ -9,8 +9,8 @@ import '../../providers/settings_provider.dart';
 import '../../providers/mobile_toolbar_provider.dart';
 import '../../../data/models/settings_model.dart';
 import '../../widgets/toolbox/glassmorphic_toolbox.dart';
-import '../settings/settings_screen.dart';
 import '../sources/sources_dialog.dart';
+import '../../widgets/app_menu_sheet.dart';
 import 'widgets/text_display.dart';
 import '../../../data/services/focus_mode_service.dart';
 
@@ -268,14 +268,9 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
           }
         });
       },
-      onSettingsPressed: () {
-        print('[UI] Settings (toolbar)');
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const SettingsScreen(),
-          ),
-        );
+      onMenuPressed: () {
+        print('[UI] Menu (toolbar)');
+        _showMenu();
       },
       onFullscreenPressed: () {
         print('[UI] Fullscreen toggle (toolbar)');
@@ -401,5 +396,17 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
         position == ToolbarPosition.bottomLeft ||
         position == ToolbarPosition.topRight ||
         position == ToolbarPosition.bottomRight;
+  }
+
+  void _showMenu() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => SizedBox(
+        height: MediaQuery.of(context).size.height * 0.85,
+        child: const AppMenuSheet(),
+      ),
+    );
   }
 }

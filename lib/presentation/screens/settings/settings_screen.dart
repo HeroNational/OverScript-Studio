@@ -7,6 +7,7 @@ import 'package:prompteur/l10n/app_localizations.dart';
 import '../../../data/models/settings_model.dart';
 import '../../../core/utils/speed_converter.dart';
 import '../../providers/settings_provider.dart';
+import '../../providers/capture_device_provider.dart' show videoDevicesProvider, audioDevicesProvider, translateDeviceLabel;
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -82,6 +83,8 @@ class SettingsScreen extends ConsumerWidget {
                 _buildFontSizeSlider(context, ref, settings),
                 const SizedBox(height: 16),
                 _buildMockTextControls(context, ref, settings),
+                const SizedBox(height: 16),
+                _buildCameraOverlayControls(context, ref, settings),
               ],
             ),
             const SizedBox(height: 32),
@@ -430,6 +433,177 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
           ),
+      ],
+    );
+  }
+
+  Widget _buildCameraOverlayControls(BuildContext context, WidgetRef ref, SettingsModel settings) {
+    final l10n = AppLocalizations.of(context)!;
+    final videosAsync = ref.watch(videoDevicesProvider);
+    final audiosAsync = ref.watch(audioDevicesProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(LucideIcons.video, color: Colors.white70, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              l10n.cameraRecording,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _buildSwitchTile(
+          context,
+          l10n.autoStartCamera,
+          l10n.autoStartCameraDescription,
+          settings.autoStartCamera,
+          (v) => ref.read(settingsProvider.notifier).updateAutoStartCamera(v),
+          LucideIcons.play,
+        ),
+        const SizedBox(height: 12),
+        _buildSwitchTile(
+          context,
+          l10n.cameraAsBackground,
+          l10n.cameraAsBackgroundDescription,
+          settings.cameraAsBackground,
+          (v) => ref.read(settingsProvider.notifier).updateCameraAsBackground(v),
+          LucideIcons.layers,
+        ),
+        const SizedBox(height: 12),
+        if (settings.cameraAsBackground)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(LucideIcons.droplet, color: Colors.white70, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    l10n.promptOpacity,
+                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                  const Spacer(),
+                  Text(
+                    '${(settings.promptOpacity * 100).toInt()}%',
+                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                ],
+              ),
+              Slider(
+                value: settings.promptOpacity.clamp(0.2, 1.0),
+                min: 0.2,
+                max: 1.0,
+                divisions: 8,
+                activeColor: const Color(0xFF6366F1),
+                onChanged: (v) => ref.read(settingsProvider.notifier).updatePromptOpacity(v),
+              ),
+            ],
+          ),
+        const SizedBox(height: 12),
+        Text(
+          l10n.camera,
+          style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 6),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: videosAsync.when(
+            data: (devices) {
+              debugPrint('[Settings] Video devices loaded: ${devices.length}');
+              final items = [
+                DropdownMenuItem<String>(value: null, child: Text(l10n.systemDefault)),
+                ...devices.map((d) {
+                  debugPrint('[Settings] Device: id=${d.id}, label=${d.label}');
+                  return DropdownMenuItem<String>(
+                    value: d.id,
+                    child: Text(translateDeviceLabel(d.label.isNotEmpty ? d.label : d.id)),
+                  );
+                }),
+              ];
+              return DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: settings.selectedCameraId,
+                  isExpanded: true,
+                  dropdownColor: const Color(0xFF2d2d2d),
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                  items: items,
+                  onChanged: (v) => ref.read(settingsProvider.notifier).updateSelectedCamera(v),
+                ),
+              );
+            },
+            loading: () => const Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+            error: (err, st) {
+              debugPrint('[Settings] Error loading video devices: $err');
+              return Text(
+                'Error: $err',
+                style: const TextStyle(color: Colors.red, fontSize: 14),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          l10n.microphone,
+          style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 6),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: audiosAsync.when(
+            data: (devices) {
+              final items = [
+                DropdownMenuItem<String>(value: null, child: Text(l10n.systemDefault)),
+                ...devices.map((d) => DropdownMenuItem<String>(
+                  value: d.id,
+                  child: Text(d.label.isNotEmpty ? d.label : d.id),
+                )),
+              ];
+              return DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: settings.selectedMicId,
+                  isExpanded: true,
+                  dropdownColor: const Color(0xFF2d2d2d),
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                  items: items,
+                  onChanged: (v) => ref.read(settingsProvider.notifier).updateSelectedMic(v),
+                ),
+              );
+            },
+            loading: () => const Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+            error: (err, st) => Text(
+              'Error: $err',
+              style: const TextStyle(color: Colors.red, fontSize: 14),
+            ),
+          ),
+        ),
       ],
     );
   }
