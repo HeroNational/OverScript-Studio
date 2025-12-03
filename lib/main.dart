@@ -7,7 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'dart:io' show Platform;
+import 'dart:io' show Platform, File;
 import 'dart:convert';
 import 'dart:math' as math;
 import 'package:intl/intl.dart';
@@ -141,6 +141,7 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
   bool _previewing = false;
   double _fakeAudioLevel = 0.2;
   Timer? _audioMeterTimer;
+  List<File> _recordings = [];
 
   @override
   void initState() {
@@ -153,6 +154,9 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
       }
     });
     _loadDevices();
+    _refreshRecordings();
+    // Démarrer une preview par défaut
+    _startHomePreview(auto: true);
   }
 
   void _computeTrialStatus() {
@@ -418,78 +422,31 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
                         }
                       },
                     ),
-                    const SizedBox(width: 12),
-                    _buildMenuButton(context),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                _buildCameraPreviewCard(context),
-                // Bannière illustrative
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    print('[UI] Tap banner add source');
-                    if (_trialEnabled && _trialExpired) {
-                      _showTrialExpiredMessage();
-                      return;
-                    }
-                    _promptSourceDialog(force: true);
-                  },
-                  child: Container(
-                    height: 200,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(_bannerAsset),
-                        fit: BoxFit.cover,
-                        opacity: 0.35,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      gradient: const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Color(0xFF1F2937),
-                          Color(0xFF111827),
-                        ],
-                      ),
-                      border: Border.all(color: Colors.white.withOpacity(0.08), width: 1),
-                    ),
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white.withOpacity(0.15),
-                            border: Border.all(color: Colors.white.withOpacity(0.45), width: 1.5),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.35),
-                                blurRadius: 18,
-                                offset: const Offset(0, 10),
-                              ),
-                            ],
-                          ),
-                          child: const Icon(Icons.add, color: Colors.white, size: 42),
+                    const SizedBox(width: 8),
+                    Tooltip(
+                      message: AppLocalizations.of(context)!.addSource,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          print('[UI] Add source (top button)');
+                          if (_trialEnabled && _trialExpired) {
+                            _showTrialExpiredMessage();
+                            return;
+                          }
+                          _promptSourceDialog(force: true);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6366F1),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
-                        const SizedBox(height: 12),
-                        Text(
-                          AppLocalizations.of(context)!.addSource,
-                          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
-                        ),
-                      ],
+                        icon: const Icon(Icons.add),
+                        label: Text(AppLocalizations.of(context)!.addSource),
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Boutons d’action (paramètres uniquement)
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Tooltip(
-                        message: AppLocalizations.of(context)!.settings,
-                    child: OutlinedButton(
+                    const SizedBox(width: 8),
+                    IconButton(
+                      tooltip: AppLocalizations.of(context)!.settings,
                       onPressed: () {
                         print('[UI] Open settings');
                         Navigator.push(
@@ -499,12 +456,56 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
                           ),
                         );
                       },
-                      style: subtleButton,
-                      child: const Icon(Icons.settings, color: Colors.white),
+                      icon: const Icon(Icons.settings, color: Colors.white),
                     ),
-                  ),
+                    const SizedBox(width: 4),
+                    _buildMenuButton(context),
+                  ],
                 ),
+                const SizedBox(height: 12),
+                _buildCameraPreviewCard(context),
                 const SizedBox(height: 24),
+                if (_recordings.isNotEmpty)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Enregistrements',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),
+                      ),
+                      const SizedBox(height: 12),
+                      ..._recordings.map(
+                        (file) => Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.04),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.white.withOpacity(0.08)),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.play_circle_outline, color: Colors.white70),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  file.path.split('/').last,
+                                  style: const TextStyle(color: Colors.white),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.redAccent),
+                                onPressed: () => _confirmDelete(file),
+                                tooltip: 'Supprimer',
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                  ),
                 const Divider(color: Colors.white24, height: 32),
                 Padding(
                   padding: const EdgeInsets.only(top: 12),
@@ -623,7 +624,12 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
                   label: 'Caméra',
                   value: _selectedCam,
                   items: _cams,
-                  onChanged: (v) => setState(() => _selectedCam = v),
+                  onChanged: (v) {
+                    setState(() => _selectedCam = v);
+                    if (v != null) {
+                      _startHomePreview(auto: false);
+                    }
+                  },
                 ),
               ),
               const SizedBox(width: 12),
@@ -633,50 +639,103 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
                   label: 'Micro',
                   value: _selectedMic,
                   items: _mics,
-                  onChanged: (v) => setState(() => _selectedMic = v),
+                  onChanged: (v) {
+                    setState(() => _selectedMic = v);
+                    if (v != null) {
+                      _startHomePreview(auto: false);
+                    }
+                  },
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
           SizedBox(
-            height: 180,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.white24, width: 1),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Stack(
-                  children: [
-                    if (!isDesktop && _captureService.controller != null && _captureService.controller!.value.isInitialized)
-                      CameraPreview(_captureService.controller!)
-                    else if (isDesktop && _captureService.desktopRenderer != null)
-                      RTCVideoView(
-                        _captureService.desktopRenderer!,
-                        objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-                      )
-                    else
-                      Center(
-                        child: Text(
-                          'Preview inactive',
-                          style: const TextStyle(color: Colors.white54),
+            height: 140,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.white24, width: 1),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Stack(
+                    children: [
+                      if (!isDesktop && _captureService.controller != null && _captureService.controller!.value.isInitialized)
+                        CameraPreview(_captureService.controller!)
+                      else if (isDesktop && _captureService.desktopRenderer != null)
+                        RTCVideoView(
+                          _captureService.desktopRenderer!,
+                          objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+                        )
+                      else
+                        Center(
+                          child: Text(
+                            'Preview inactive',
+                            style: const TextStyle(color: Colors.white54),
+                          ),
+                        ),
+                      Positioned(
+                        left: 8,
+                        bottom: 8,
+                        child: IconButton(
+                          tooltip: _captureService.isRecording ? 'Stop' : 'Rec',
+                          icon: Icon(
+                            _captureService.isRecording ? Icons.stop : Icons.fiber_manual_record,
+                            color: _captureService.isRecording ? Colors.redAccent : Colors.red,
+                          ),
+                          onPressed: _toggleRecording,
                         ),
                       ),
-                    Positioned(
-                      right: 8,
-                      bottom: 8,
-                      child: ElevatedButton.icon(
-                        onPressed: _toggleHomePreview,
-                        icon: Icon(_previewing ? Icons.stop : Icons.play_arrow, size: 18),
-                        label: Text(_previewing ? 'Stop' : 'Preview'),
+                      Positioned(
+                        right: 8,
+                        bottom: 8,
+                        child: IconButton(
+                          tooltip: 'Plein écran',
+                          icon: const Icon(Icons.fullscreen, color: Colors.white),
+                          onPressed: _openFullscreenPreview,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
+            ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.04),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.white.withOpacity(0.08)),
+            ),
+            child: Row(
+              children: [
+                IconButton(
+                  tooltip: 'Lecture',
+                  onPressed: () => _startHomePreview(auto: false),
+                  icon: const Icon(Icons.play_arrow, color: Colors.white),
+                ),
+                IconButton(
+                  tooltip: 'Pause',
+                  onPressed: _pausePreview,
+                  icon: const Icon(Icons.pause, color: Colors.white),
+                ),
+                IconButton(
+                  tooltip: _captureService.isRecording ? 'Stop' : 'Rec',
+                  onPressed: _toggleRecording,
+                  icon: Icon(
+                    _captureService.isRecording ? Icons.stop : Icons.fiber_manual_record,
+                    color: _captureService.isRecording ? Colors.redAccent : Colors.red,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  _captureService.isRecording ? 'Enregistrement en cours' : 'Prêt',
+                  style: const TextStyle(color: Colors.white70),
+                ),
+              ],
             ),
           ),
         ],
@@ -746,27 +805,8 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
   }
 
   void _toggleHomePreview() async {
-    if (_previewing) {
-      await _captureService.stopCapture();
-      if (mounted) {
-        setState(() {
-          _previewing = false;
-          _captureService.controller?.dispose();
-        });
-      }
-      _stopAudioMeter();
-      return;
-    }
-
-    try {
-      await _captureService.startPreview(cameraId: _selectedCam, micId: _selectedMic);
-      _previewing = true;
-      _startAudioMeter();
-      if (mounted) setState(() {});
-    } catch (e) {
-      _previewing = false;
-      _stopAudioMeter();
-    }
+    if (_previewing) return;
+    await _startHomePreview(auto: false);
   }
 
   void _startAudioMeter() {
@@ -784,6 +824,119 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
     _audioMeterTimer?.cancel();
     _audioMeterTimer = null;
     _fakeAudioLevel = 0.2;
+  }
+
+  Future<void> _pausePreview() async {
+    await _captureService.stopPreview();
+    _previewing = false;
+    _stopAudioMeter();
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _refreshRecordings() async {
+    final list = await _captureService.listRecordings();
+    setState(() {
+      _recordings = list.map((e) => File(e.path)).toList();
+    });
+  }
+
+  Future<void> _toggleRecording() async {
+    if (_captureService.isRecording) {
+      final path = await _captureService.stopCapture();
+      if (path != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Enregistrement sauvegardé : $path')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Aucun fichier enregistré (desktop non supporté ?)')),
+        );
+      }
+      await _refreshRecordings();
+      setState(() {});
+      return;
+    }
+    try {
+      await _captureService.startCapture(cameraId: _selectedCam, micId: _selectedMic);
+      setState(() {});
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enregistrement non disponible sur cet appareil.')),
+      );
+    }
+  }
+
+  Future<void> _confirmDelete(File file) async {
+    final res = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Supprimer ?'),
+        content: Text('Voulez-vous supprimer ${file.path.split('/').last} ?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Annuler')),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Supprimer')),
+        ],
+      ),
+    );
+    if (res == true) {
+      await _captureService.deleteRecording(file);
+      await _refreshRecordings();
+    }
+  }
+
+  Future<void> _startHomePreview({required bool auto}) async {
+    try {
+      await _captureService.startPreview(cameraId: _selectedCam, micId: _selectedMic);
+      _previewing = true;
+      _startAudioMeter();
+      if (mounted) setState(() {});
+    } catch (_) {
+      _previewing = false;
+      _stopAudioMeter();
+      if (mounted) setState(() {});
+    }
+  }
+
+  void _openFullscreenPreview() {
+    showDialog(
+      context: context,
+      builder: (_) {
+        final isDesktop = !(Platform.isAndroid || Platform.isIOS);
+        return Dialog(
+          backgroundColor: Colors.black87,
+          insetPadding: const EdgeInsets.all(24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1100, maxHeight: 700),
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Stack(
+                children: [
+                  if (!isDesktop && _captureService.controller != null && _captureService.controller!.value.isInitialized)
+                    CameraPreview(_captureService.controller!)
+                  else if (isDesktop && _captureService.desktopRenderer != null)
+                    RTCVideoView(
+                      _captureService.desktopRenderer!,
+                      objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+                    )
+                  else
+                    const Center(
+                      child: Text('Preview inactive', style: TextStyle(color: Colors.white70)),
+                    ),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: IconButton(
+                      icon: const Icon(Icons.close, color: Colors.white),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _showTrialExpiredMessage() {

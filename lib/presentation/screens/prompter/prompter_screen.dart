@@ -13,6 +13,7 @@ import '../sources/sources_dialog.dart';
 import '../../widgets/app_menu_sheet.dart';
 import 'widgets/text_display.dart';
 import '../../../data/services/focus_mode_service.dart';
+import '../../../data/services/capture_service.dart';
 
 class PrompterScreen extends ConsumerStatefulWidget {
   const PrompterScreen({super.key});
@@ -24,10 +25,12 @@ class PrompterScreen extends ConsumerStatefulWidget {
 class _PrompterScreenState extends ConsumerState<PrompterScreen> {
   final FocusNode _focusNode = FocusNode();
   final FocusModeService _focusService = FocusModeService();
+  final CaptureService _captureService = CaptureService();
   Timer? _countdownTimer;
   int? _countdown;
   bool _focusModeEnabled = false;
   int _countdownStart = 0;
+  bool _recording = false;
 
   @override
   void initState() {
@@ -55,6 +58,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
     if (_focusModeEnabled) {
       _focusService.disable();
     }
+    _captureService.dispose();
     _focusNode.dispose();
     super.dispose();
   }
@@ -197,7 +201,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
                     ),
                   ),
 
-                _buildPositionedToolbox(playbackState.isFullscreen),
+                _buildPositionedToolbars(playbackState.isFullscreen),
               ],
             ),
           ),
@@ -229,7 +233,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
     });
   }
 
-  Widget _buildPositionedToolbox(bool isFullscreen) {
+  Widget _buildPositionedToolbars(bool isFullscreen) {
     final settings = ref.watch(settingsProvider);
     final playback = ref.watch(playbackProvider);
     final mobileOrientation = ref.watch(mobileToolbarOrientationProvider);
@@ -238,6 +242,8 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
 
     // Determine effective orientation: use mobile override on small screens
     final effectiveOrientation = isMobileSize ? mobileOrientation : settings.toolbarOrientation;
+
+    final isVertical = _isVertical(settings.toolbarPosition, effectiveOrientation, isMobileSize);
 
     final toolbox = GlasmorphicToolbox(
       onHomePressed: () {
@@ -276,7 +282,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
         print('[UI] Fullscreen toggle (toolbar)');
         _toggleFullscreen();
       },
-      isVertical: _isVertical(settings.toolbarPosition, effectiveOrientation, isMobileSize),
+      isVertical: isVertical,
       scale: settings.toolbarScale,
       themeStyle: settings.toolboxTheme,
       isMobile: isMobileSize,
@@ -288,6 +294,23 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
           : null,
     );
 
+    final dock = _RecordingDock(
+      isVertical: isVertical,
+      isRecording: _recording,
+      onPlay: () => ref.read(playbackProvider.notifier).play(),
+      onPause: () => ref.read(playbackProvider.notifier).pause(),
+      onRecord: _toggleRecord,
+    );
+
+    final grouped = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        toolbox,
+        const SizedBox(width: 12),
+        dock,
+      ],
+    );
+
     switch (settings.toolbarPosition) {
       case ToolbarPosition.top:
         return Positioned(
@@ -295,7 +318,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
           left: 0,
           right: 0,
           child: SafeArea(
-            child: Center(child: toolbox),
+            child: Center(child: grouped),
           ),
         );
       case ToolbarPosition.topCenter:
@@ -304,7 +327,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
           left: 0,
           right: 0,
           child: SafeArea(
-            child: Center(child: toolbox),
+            child: Center(child: grouped),
           ),
         );
       case ToolbarPosition.bottom:
@@ -313,7 +336,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
           left: 0,
           right: 0,
           child: SafeArea(
-            child: Center(child: toolbox),
+            child: Center(child: grouped),
           ),
         );
       case ToolbarPosition.bottomCenter:
@@ -322,7 +345,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
           left: 0,
           right: 0,
           child: SafeArea(
-            child: Center(child: toolbox),
+            child: Center(child: grouped),
           ),
         );
       case ToolbarPosition.left:
@@ -333,7 +356,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
           child: SafeArea(
             child: Align(
               alignment: Alignment.centerLeft,
-              child: toolbox,
+              child: grouped,
             ),
           ),
         );
@@ -345,7 +368,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
           child: SafeArea(
             child: Align(
               alignment: Alignment.centerRight,
-              child: toolbox,
+              child: grouped,
             ),
           ),
         );
@@ -353,25 +376,25 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
         return Positioned(
           top: 16,
           left: 16,
-          child: SafeArea(child: toolbox),
+          child: SafeArea(child: grouped),
         );
       case ToolbarPosition.topRight:
         return Positioned(
           top: 16,
           right: 16,
-          child: SafeArea(child: toolbox),
+          child: SafeArea(child: grouped),
         );
       case ToolbarPosition.bottomLeft:
         return Positioned(
           bottom: 16,
           left: 16,
-          child: SafeArea(child: toolbox),
+          child: SafeArea(child: grouped),
         );
       case ToolbarPosition.bottomRight:
         return Positioned(
           bottom: 16,
           right: 16,
-          child: SafeArea(child: toolbox),
+          child: SafeArea(child: grouped),
         );
     }
   }
@@ -407,6 +430,87 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
         height: MediaQuery.of(context).size.height * 0.85,
         child: const AppMenuSheet(),
       ),
+    );
+  }
+
+  Future<void> _toggleRecord() async {
+    if (_recording) {
+      await _captureService.stopCapture();
+      setState(() => _recording = false);
+      return;
+    }
+    try {
+      await _captureService.startCapture();
+      setState(() => _recording = true);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enregistrement non disponible sur cet appareil.')),
+      );
+    }
+  }
+}
+
+class _RecordingDock extends StatelessWidget {
+  const _RecordingDock({
+    required this.isVertical,
+    required this.isRecording,
+    required this.onPlay,
+    required this.onPause,
+    required this.onRecord,
+  });
+
+  final bool isVertical;
+  final bool isRecording;
+  final VoidCallback onPlay;
+  final VoidCallback onPause;
+  final VoidCallback onRecord;
+
+  @override
+  Widget build(BuildContext context) {
+    final children = <Widget>[
+      IconButton(
+        tooltip: 'Lecture',
+        icon: const Icon(Icons.play_arrow, color: Colors.white),
+        onPressed: onPlay,
+      ),
+      IconButton(
+        tooltip: 'Pause',
+        icon: const Icon(Icons.pause, color: Colors.white),
+        onPressed: onPause,
+      ),
+      IconButton(
+        tooltip: isRecording ? 'Stop' : 'Rec',
+        icon: Icon(
+          isRecording ? Icons.stop : Icons.fiber_manual_record,
+          color: isRecording ? Colors.redAccent : Colors.red,
+        ),
+        onPressed: onRecord,
+      ),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withOpacity(0.12), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.35),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: isVertical
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              children: children,
+            )
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              children: children,
+            ),
     );
   }
 }

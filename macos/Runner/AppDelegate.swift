@@ -38,6 +38,29 @@ class AppDelegate: FlutterAppDelegate {
         result(FlutterMethodNotImplemented)
       }
     }
+
+    let recorderChannel = FlutterMethodChannel(
+      name: "com.overscript.studio/desktop_recorder",
+      binaryMessenger: controller.engine.binaryMessenger
+    )
+
+    recorderChannel.setMethodCallHandler { [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) in
+      guard let args = call.arguments as? [String: Any] else {
+        result(FlutterError(code: "BAD_ARGS", message: "Arguments manquants", details: nil))
+        return
+      }
+      switch call.method {
+      case "startRecording":
+        let path = args["path"] as? String
+        let videoId = args["videoDeviceId"] as? String
+        let audioId = args["audioDeviceId"] as? String
+        self?.recorder.start(path: path, videoId: videoId, audioId: audioId, result: result)
+      case "stopRecording":
+        self?.recorder.stop(result: result)
+      } else {
+        result(FlutterMethodNotImplemented)
+      }
+    }
   }
 
   private func toggleFullscreen(result: @escaping FlutterResult) {
@@ -108,5 +131,83 @@ class AppDelegate: FlutterAppDelegate {
     }
 
     return devices
+  }
+
+  // MARK: - Recorder helper
+  private let recorder = DesktopRecorder()
+}
+
+class DesktopRecorder: NSObject, AVCaptureFileOutputRecordingDelegate {
+  private let session = AVCaptureSession()
+  private let movieOutput = AVCaptureMovieFileOutput()
+  private var currentResult: FlutterResult?
+
+  func start(path: String?, videoId: String?, audioId: String?, result: @escaping FlutterResult) {
+    guard let path = path else {
+      result(FlutterError(code: "NO_PATH", message: "Chemin manquant", details: nil))
+      return
+    }
+
+    session.beginConfiguration()
+    session.sessionPreset = .high
+
+    // Clear previous inputs
+    for input in session.inputs {
+      session.removeInput(input)
+    }
+
+    do {
+      let videoDevice = videoId.flatMap { AVCaptureDevice(uniqueID: $0) } ?? AVCaptureDevice.default(for: .video)
+      if let v = videoDevice {
+        let videoInput = try AVCaptureDeviceInput(device: v)
+        if session.canAddInput(videoInput) { session.addInput(videoInput) }
+      }
+
+      let audioDevice = audioId.flatMap { AVCaptureDevice(uniqueID: $0) } ?? AVCaptureDevice.default(for: .audio)
+      if let a = audioDevice {
+        let audioInput = try AVCaptureDeviceInput(device: a)
+        if session.canAddInput(audioInput) { session.addInput(audioInput) }
+      }
+    } catch {
+      session.commitConfiguration()
+      result(FlutterError(code: "INPUT_ERROR", message: "Impossible d'ajouter les entrées", details: error.localizedDescription))
+      return
+    }
+
+    if session.canAddOutput(movieOutput) && !session.outputs.contains(movieOutput) {
+      session.addOutput(movieOutput)
+    }
+
+    session.commitConfiguration()
+
+    // Start session
+    if !session.isRunning {
+      session.startRunning()
+    }
+
+    currentResult = result
+    let url = URL(fileURLWithPath: path)
+    movieOutput.startRecording(to: url, recordingDelegate: self)
+  }
+
+  func stop(result: @escaping FlutterResult) {
+    guard movieOutput.isRecording else {
+      result(nil)
+      return
+    }
+    currentResult = result
+    movieOutput.stopRecording()
+    session.stopRunning()
+  }
+
+  func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
+    if let result = currentResult {
+      if let error = error {
+        result(FlutterError(code: "RECORD_ERROR", message: error.localizedDescription, details: nil))
+      } else {
+        result(outputFileURL.path)
+      }
+    }
+    currentResult = nil
   }
 }

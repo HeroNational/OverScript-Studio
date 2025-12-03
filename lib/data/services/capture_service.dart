@@ -3,6 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:flutter/services.dart';
 
 class CaptureDeviceInfo {
   final String id;
@@ -14,10 +15,14 @@ class CaptureDeviceInfo {
 /// Mobile : plugin camera.
 /// Desktop : preview via WebRTC (pas d'enregistrement fichier dans cette version).
 class CaptureService {
+  static const MethodChannel _desktopRecorderChannel = MethodChannel('com.overscript.studio/desktop_recorder');
   CameraController? _controller;
   bool _recording = false;
   MediaStream? _desktopStream;
   RTCVideoRenderer? _desktopRenderer;
+  MediaRecorder? _desktopRecorder;
+  String? _desktopRecordingPath;
+  bool get _isMac => Platform.isMacOS;
 
   CameraController? get controller => _controller;
   bool get isRecording => _recording;
@@ -76,32 +81,105 @@ class CaptureService {
     }
   }
 
+  /// Stoppe uniquement la preview (sans toucher à l’état d’enregistrement).
+  Future<void> stopPreview() async {
+    if (_isDesktop) {
+      await _stopPreviewDesktop();
+      return;
+    }
+    if (_controller != null) {
+      await _controller?.dispose();
+      _controller = null;
+    }
+  }
+
   /// Démarre l’enregistrement (init preview si besoin).
   Future<void> startCapture({String? cameraId, String? micId}) async {
     if (!await _ensurePermissions()) return;
+    if (_isMac) {
+      await _startPreviewDesktop(cameraId: cameraId, micId: micId);
+      try {
+        final path = await _desktopRecordPath();
+        _desktopRecordingPath = path;
+        await _desktopRecorderChannel.invokeMethod('startRecording', {
+          'path': path,
+          'videoDeviceId': cameraId,
+          'audioDeviceId': micId,
+        });
+        _recording = true;
+      } catch (_) {
+        _recording = false;
+        _desktopRecordingPath = null;
+        throw Exception('Desktop recording not supported on this platform');
+      }
+      return;
+    }
     if (_isDesktop) {
       await _startPreviewDesktop(cameraId: cameraId, micId: micId);
-      _recording = true; // enregistrement desktop non implémenté
+      // Tentative d’enregistrement desktop via MediaRecorder (si supporté par le runtime)
+      try {
+        _desktopRecorder = MediaRecorder();
+        final track = _desktopStream?.getVideoTracks().isNotEmpty == true
+            ? _desktopStream!.getVideoTracks().first
+            : null;
+        final path = await _desktopRecordPath();
+        _desktopRecordingPath = path;
+        await _desktopRecorder!.start(path, videoTrack: track, audioChannel: RecorderAudioChannel.INPUT);
+        _recording = true;
+      } catch (_) {
+        _recording = false;
+        _desktopRecordingPath = null;
+        throw Exception('Desktop recording not supported on this platform');
+      }
     } else {
       await _startCaptureMobile(cameraId: cameraId);
     }
   }
 
-  Future<void> stopCapture() async {
-    if (_isDesktop) {
-      await _stopPreviewDesktop();
-      _recording = false;
-      return;
+  Future<String?> stopCapture() async {
+    if (_isMac) {
+      try {
+        final path = await _desktopRecorderChannel.invokeMethod<String>('stopRecording');
+        _recording = false;
+        _desktopRecordingPath = null;
+        await _stopPreviewDesktop();
+        if (path != null && File(path).existsSync()) {
+          return path;
+        }
+        return null;
+      } catch (_) {
+        _recording = false;
+        _desktopRecordingPath = null;
+        await _stopPreviewDesktop();
+        return null;
+      }
     }
-    if (_controller == null || !_recording) return;
+    if (_isDesktop) {
+      try {
+        if (_desktopRecorder != null && _recording) {
+          await _desktopRecorder!.stop();
+        }
+      } catch (_) {}
+      await _stopPreviewDesktop();
+      final path = _desktopRecordingPath;
+      _desktopRecordingPath = null;
+      _recording = false;
+      if (path != null && File(path).existsSync()) {
+        return path;
+      }
+      return null;
+    }
+    if (_controller == null || !_recording) return null;
     try {
       final file = await _controller!.stopVideoRecording();
       _recording = false;
       final recordingsDir = await _ensureRecordingsDir();
       final targetPath = '${recordingsDir.path}/rec_${DateTime.now().millisecondsSinceEpoch}.mp4';
       await file.saveTo(targetPath);
+      return targetPath;
     } catch (_) {
       _recording = false;
+      return null;
     }
   }
 
@@ -112,6 +190,8 @@ class CaptureService {
       }
       await _controller?.dispose();
       await _stopPreviewDesktop();
+      _desktopRecorder = null;
+      _desktopRecordingPath = null;
     } finally {
       _controller = null;
       _recording = false;
@@ -120,6 +200,11 @@ class CaptureService {
 
   Future<void> _startPreviewMobile({String? cameraId}) async {
     if (!Platform.isAndroid && !Platform.isIOS) return;
+    // Dispose l’ancienne preview si on change de caméra
+    if (_controller != null) {
+      await _controller?.dispose();
+      _controller = null;
+    }
     final cameras = await availableCameras();
     if (cameras.isEmpty) {
       throw Exception('No cameras available');
@@ -201,6 +286,27 @@ class CaptureService {
       await dir.create(recursive: true);
     }
     return dir;
+  }
+
+  Future<String> _desktopRecordPath() async {
+    final dir = await _ensureRecordingsDir();
+    return '${dir.path}/rec_${DateTime.now().millisecondsSinceEpoch}.mp4';
+  }
+
+  /// Liste les enregistrements sauvegardés.
+  Future<List<FileSystemEntity>> listRecordings() async {
+    final dir = await _ensureRecordingsDir();
+    if (!await dir.exists()) return [];
+    final files = dir.listSync().whereType<File>().toList();
+    files.sort((a, b) => b.statSync().modified.compareTo(a.statSync().modified));
+    return files;
+  }
+
+  /// Supprime un enregistrement
+  Future<void> deleteRecording(FileSystemEntity file) async {
+    if (file.existsSync()) {
+      await file.delete();
+    }
   }
 
   bool get _isDesktop => Platform.isMacOS || Platform.isWindows || Platform.isLinux;
