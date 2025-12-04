@@ -22,7 +22,7 @@ class PrompterScreen extends ConsumerStatefulWidget {
   ConsumerState<PrompterScreen> createState() => _PrompterScreenState();
 }
 
-class _PrompterScreenState extends ConsumerState<PrompterScreen> {
+class _PrompterScreenState extends ConsumerState<PrompterScreen> with SingleTickerProviderStateMixin {
   final FocusNode _focusNode = FocusNode();
   final FocusModeService _focusService = FocusModeService();
   final CaptureService _captureService = CaptureService();
@@ -31,10 +31,17 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
   bool _focusModeEnabled = false;
   int _countdownStart = 0;
   bool _recording = false;
+  List<CaptureDeviceInfo> _camDevices = const [];
+  int _camIndex = 0;
+  late final AnimationController _recordPulseController;
+  Timer? _recordTimer;
+  int _recordElapsedSeconds = 0;
+  bool _previewing = false;
 
   @override
   void initState() {
     super.initState();
+    _recordPulseController = AnimationController(vsync: this, duration: const Duration(seconds: 1))..repeat(reverse: true);
     _focusNode.requestFocus();
 
     // Activer le plein écran automatique si configuré
@@ -50,11 +57,14 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
         _focusService.enable();
       }
     });
+    _loadCamDevices();
   }
 
   @override
   void dispose() {
     _countdownTimer?.cancel();
+    _recordTimer?.cancel();
+    _recordPulseController.dispose();
     if (_focusModeEnabled) {
       _focusService.disable();
     }
@@ -76,6 +86,52 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
       if (text.isNotEmpty) {
         ref.read(playbackProvider.notifier).setText(text);
       }
+    }
+  }
+
+  Future<void> _loadCamDevices() async {
+    try {
+      final devices = await _captureService.listVideoDevices();
+      setState(() {
+        _camDevices = devices;
+        _camIndex = 0;
+      });
+    } catch (_) {}
+  }
+
+  CaptureDeviceInfo? get _currentCam => _camDevices.isEmpty ? null : _camDevices[_camIndex % _camDevices.length];
+
+  Future<void> _stopPreview() async {
+    await _captureService.stopPreview();
+    setState(() => _previewing = false);
+  }
+
+  Future<void> _startPreview() async {
+    final cam = _currentCam;
+    try {
+      await _captureService.startPreview(cameraId: cam?.id);
+      setState(() => _previewing = true);
+    } catch (_) {
+      setState(() => _previewing = false);
+    }
+  }
+
+  Future<void> _togglePreview() async {
+    if (_previewing) {
+      await _stopPreview();
+    } else {
+      await _startPreview();
+    }
+  }
+
+  Future<void> _switchCamera() async {
+    if (_camDevices.length <= 1) return;
+    setState(() {
+      _camIndex = (_camIndex + 1) % _camDevices.length;
+    });
+    if (_previewing) {
+      await _stopPreview();
+      await _startPreview();
     }
   }
 
@@ -282,41 +338,26 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
         print('[UI] Fullscreen toggle (toolbar)');
         _toggleFullscreen();
       },
+      onRecordPressed: () {
+        print('[UI] Toggle record (toolbar)');
+        _toggleRecord();
+      },
+      isRecording: _recording,
+      recordSeconds: _recordElapsedSeconds,
+      recordPulse: _recordPulseController,
       isVertical: isVertical,
       scale: settings.toolbarScale,
       themeStyle: settings.toolboxTheme,
       isMobile: isMobileSize,
-      onOrientationToggle: isMobileSize
-          ? () {
-              print('[UI] Toggle toolbar orientation');
-              ref.read(mobileToolbarOrientationProvider.notifier).toggleOrientation();
-            }
-          : null,
+      onOrientationToggle: null,
     );
 
-    final dock = _RecordingDock(
-      isVertical: isVertical,
-      isRecording: _recording,
-      onPlay: () => ref.read(playbackProvider.notifier).play(),
-      onPause: () => ref.read(playbackProvider.notifier).pause(),
-      onRecord: _toggleRecord,
-    );
-
-    final grouped = Wrap(
-      alignment: WrapAlignment.center,
-      spacing: 12,
-      runSpacing: 12,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
-        toolbox,
-        dock,
-      ],
-    );
+    final grouped = toolbox;
 
     switch (settings.toolbarPosition) {
       case ToolbarPosition.top:
         return Positioned(
-          top: 16,
+          top: 8,
           left: 0,
           right: 0,
           child: SafeArea(
@@ -325,7 +366,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
         );
       case ToolbarPosition.topCenter:
         return Positioned(
-          top: 16,
+          top: 8,
           left: 0,
           right: 0,
           child: SafeArea(
@@ -334,7 +375,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
         );
       case ToolbarPosition.bottom:
         return Positioned(
-          bottom: 16,
+          bottom: 8,
           left: 0,
           right: 0,
           child: SafeArea(
@@ -343,7 +384,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
         );
       case ToolbarPosition.bottomCenter:
         return Positioned(
-          bottom: 16,
+          bottom: 8,
           left: 0,
           right: 0,
           child: SafeArea(
@@ -354,7 +395,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
         return Positioned(
           top: 0,
           bottom: 0,
-          left: 16,
+          left: 8,
           child: SafeArea(
             child: Align(
               alignment: Alignment.centerLeft,
@@ -366,7 +407,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
         return Positioned(
           top: 0,
           bottom: 0,
-          right: 16,
+          right: 8,
           child: SafeArea(
             child: Align(
               alignment: Alignment.centerRight,
@@ -376,26 +417,26 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
         );
       case ToolbarPosition.topLeft:
         return Positioned(
-          top: 16,
-          left: 16,
+          top: 8,
+          left: 8,
           child: SafeArea(child: grouped),
         );
       case ToolbarPosition.topRight:
         return Positioned(
-          top: 16,
-          right: 16,
+          top: 8,
+          right: 8,
           child: SafeArea(child: grouped),
         );
       case ToolbarPosition.bottomLeft:
         return Positioned(
-          bottom: 16,
-          left: 16,
+          bottom: 8,
+          left: 8,
           child: SafeArea(child: grouped),
         );
       case ToolbarPosition.bottomRight:
         return Positioned(
-          bottom: 16,
-          right: 16,
+          bottom: 8,
+          right: 8,
           child: SafeArea(child: grouped),
         );
     }
@@ -438,81 +479,71 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
   Future<void> _toggleRecord() async {
     if (_recording) {
       await _captureService.stopCapture();
-      setState(() => _recording = false);
+      _recordTimer?.cancel();
+      setState(() {
+        _recording = false;
+        _recordElapsedSeconds = 0;
+      });
+      await _stopPreview();
       return;
     }
     try {
-      await _captureService.startCapture();
-      setState(() => _recording = true);
+      if (!_previewing) {
+        await _startPreview();
+      }
+      await _captureService.startCapture(cameraId: _currentCam?.id);
+      _recordTimer?.cancel();
+      _recordTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+        setState(() => _recordElapsedSeconds += 1);
+      });
+      setState(() {
+        _recording = true;
+        _recordElapsedSeconds = 0;
+      });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Enregistrement non disponible sur cet appareil.')),
       );
     }
   }
-}
 
-class _RecordingDock extends StatelessWidget {
-  const _RecordingDock({
-    required this.isVertical,
-    required this.isRecording,
-    required this.onPlay,
-    required this.onPause,
-    required this.onRecord,
-  });
+  Widget _buildRecordIndicator() {
+    if (!_recording) return const SizedBox.shrink();
+    String two(int v) => v.toString().padLeft(2, '0');
+    final hours = _recordElapsedSeconds ~/ 3600;
+    final minutes = (_recordElapsedSeconds % 3600) ~/ 60;
+    final seconds = _recordElapsedSeconds % 60;
+    final time = hours > 0 ? '${two(hours)}:${two(minutes)}:${two(seconds)}' : '${two(minutes)}:${two(seconds)}';
 
-  final bool isVertical;
-  final bool isRecording;
-  final VoidCallback onPlay;
-  final VoidCallback onPause;
-  final VoidCallback onRecord;
-
-  @override
-  Widget build(BuildContext context) {
-    final children = <Widget>[
-      IconButton(
-        tooltip: 'Lecture',
-        icon: const Icon(Icons.play_arrow, color: Colors.white),
-        onPressed: onPlay,
-      ),
-      IconButton(
-        tooltip: 'Pause',
-        icon: const Icon(Icons.pause, color: Colors.white),
-        onPressed: onPause,
-      ),
-      IconButton(
-        tooltip: isRecording ? 'Stop' : 'Rec',
-        icon: Icon(
-          isRecording ? Icons.stop : Icons.fiber_manual_record,
-          color: isRecording ? Colors.redAccent : Colors.red,
-        ),
-        onPressed: onRecord,
-      ),
-    ];
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.06),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.12), width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.35),
-            blurRadius: 18,
-            offset: const Offset(0, 10),
+    return Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ScaleTransition(
+            scale: Tween(begin: 0.8, end: 1.2).animate(
+              CurvedAnimation(parent: _recordPulseController, curve: Curves.easeInOut),
+            ),
+            child: Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(
+                color: Colors.redAccent,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(color: Colors.redAccent.withOpacity(0.5), blurRadius: 12),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            time,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
           ),
         ],
       ),
-      child: isVertical
-          ? Column(
-              mainAxisSize: MainAxisSize.min,
-              children: children,
-            )
-          : Row(
-              mainAxisSize: MainAxisSize.min,
-              children: children,
-            ),
     );
   }
 }

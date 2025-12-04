@@ -45,16 +45,19 @@ class CaptureService {
       return [CaptureDeviceInfo('default', 'Caméra système')];
     }
     final cams = await availableCameras();
-    return cams
-        .map((camera) {
-          final label = camera.lensDirection == CameraLensDirection.front
-              ? 'Front Camera'
-              : camera.lensDirection == CameraLensDirection.back
-                  ? 'Back Camera'
-                  : 'External Camera';
-          return CaptureDeviceInfo(camera.name, label);
-        })
-        .toList();
+    final List<CaptureDeviceInfo> devices = [];
+    final Set<String> seenLabels = {};
+    for (final camera in cams) {
+      final label = camera.lensDirection == CameraLensDirection.front
+          ? 'Front Camera'
+          : camera.lensDirection == CameraLensDirection.back
+              ? 'Back Camera'
+              : 'External Camera';
+      if (seenLabels.contains(label)) continue;
+      seenLabels.add(label);
+      devices.add(CaptureDeviceInfo(camera.name, label));
+    }
+    return devices;
   }
 
   /// Liste les micros disponibles.

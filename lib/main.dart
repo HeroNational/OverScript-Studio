@@ -120,7 +120,7 @@ class PrompterHome extends ConsumerStatefulWidget {
   ConsumerState<PrompterHome> createState() => _PrompterHomeState();
 }
 
-class _PrompterHomeState extends ConsumerState<PrompterHome> {
+class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerProviderStateMixin {
   final TextEditingController _textController = TextEditingController();
   final quill.QuillController _quillController = quill.QuillController.basic();
   final CaptureService _captureService = CaptureService();
@@ -143,10 +143,12 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
   double _fakeAudioLevel = 0.2;
   Timer? _audioMeterTimer;
   List<File> _recordings = [];
+  late final AnimationController _recordPulseController;
 
   @override
   void initState() {
     super.initState();
+    _recordPulseController = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat();
     _bannerAsset = _bannerAssets[math.Random().nextInt(_bannerAssets.length)];
     _computeTrialStatus();
     if (Platform.isAndroid || Platform.isIOS) {
@@ -158,11 +160,7 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
     } else {
       _startHomePreview(auto: true);
     }
-    _loadLastText().then((_) {
-      if (!_trialExpired) {
-        _promptSourceDialog();
-      }
-    });
+    _loadLastText();
     _loadDevices();
     _refreshRecordings();
     // Démarrer une preview par défaut
@@ -229,6 +227,7 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
 
   @override
   void dispose() {
+    _recordPulseController.dispose();
     _textController.dispose();
     _quillController.dispose();
     _audioMeterTimer?.cancel();
@@ -707,22 +706,25 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
                       Positioned(
                         left: 8,
                         bottom: 8,
-                        child: IconButton(
-                          tooltip: _captureService.isRecording ? 'Stop' : 'Rec',
-                          icon: Icon(
-                            _captureService.isRecording ? Icons.stop : Icons.fiber_manual_record,
-                            color: _captureService.isRecording ? Colors.redAccent : Colors.red,
-                          ),
-                          onPressed: _toggleRecording,
-                        ),
-                      ),
-                      Positioned(
                         right: 8,
-                        bottom: 8,
-                        child: IconButton(
-                          tooltip: 'Plein écran',
-                          icon: const Icon(Icons.fullscreen, color: Colors.white),
-                          onPressed: _openFullscreenPreview,
+                        child: Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 8,
+                          runSpacing: 6,
+                          children: [
+                            _buildCamControlButton(
+                              tooltip: _previewing ? 'Pause preview' : 'Lecture preview',
+                              onPressed: _togglePreviewPlayPause,
+                              icon: _previewing ? Icons.pause : Icons.play_arrow,
+                            ),
+                            _buildCamControlButton(
+                              tooltip: _captureService.isRecording ? 'Stop' : 'Rec',
+                              onPressed: _toggleRecording,
+                              icon: _captureService.isRecording ? Icons.stop : Icons.fiber_manual_record,
+                              color: _captureService.isRecording ? Colors.redAccent : Colors.red,
+                              isRecording: _captureService.isRecording,
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -738,33 +740,21 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: Colors.white.withOpacity(0.08)),
             ),
-            child: Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 4,
-              runSpacing: 8,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                IconButton(
-                  tooltip: 'Lecture',
-                  onPressed: () => _startHomePreview(auto: false),
-                  icon: const Icon(Icons.play_arrow, color: Colors.white),
-                ),
-                IconButton(
-                  tooltip: 'Pause',
-                  onPressed: _pausePreview,
-                  icon: const Icon(Icons.pause, color: Colors.white),
-                ),
-                IconButton(
-                  tooltip: _captureService.isRecording ? 'Stop' : 'Rec',
-                  onPressed: _toggleRecording,
-                  icon: Icon(
-                    _captureService.isRecording ? Icons.stop : Icons.fiber_manual_record,
-                    color: _captureService.isRecording ? Colors.redAccent : Colors.red,
-                  ),
+                _buildCamControlButton(
+                  tooltip: _previewing ? 'Pause preview' : 'Lecture preview',
+                  onPressed: _togglePreviewPlayPause,
+                  icon: _previewing ? Icons.pause : Icons.play_arrow,
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  _captureService.isRecording ? 'Enregistrement en cours' : 'Prêt',
-                  style: const TextStyle(color: Colors.white70),
+                _buildCamControlButton(
+                  tooltip: _captureService.isRecording ? 'Stop' : 'Rec',
+                  onPressed: _toggleRecording,
+                  icon: _captureService.isRecording ? Icons.stop : Icons.fiber_manual_record,
+                  color: _captureService.isRecording ? Colors.redAccent : Colors.red,
+                  isRecording: _captureService.isRecording,
                 ),
               ],
             ),
@@ -832,6 +822,73 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _togglePreviewPlayPause() async {
+    if (_previewing) {
+      await _pausePreview();
+    } else {
+      await _startHomePreview(auto: false);
+    }
+  }
+
+  Widget _buildCamControlButton({
+    required IconData icon,
+    required String tooltip,
+    required VoidCallback onPressed,
+    Color color = Colors.white,
+    bool isRecording = false,
+  }) {
+    final baseDecoration = BoxDecoration(
+      color: Colors.white.withOpacity(0.06),
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(color: Colors.white24, width: 1),
+    );
+
+    if (!isRecording) {
+      return Container(
+        decoration: baseDecoration,
+        child: IconButton(
+          tooltip: tooltip,
+          onPressed: onPressed,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints.tightFor(width: 44, height: 44),
+          icon: Icon(icon, color: color, size: 20),
+        ),
+      );
+    }
+
+    return AnimatedBuilder(
+      animation: _recordPulseController,
+      builder: (context, child) {
+        final pulse = 0.5 + 0.5 * math.sin(_recordPulseController.value * 2 * math.pi);
+        final color1 = Color.lerp(const Color(0xFFFF4D4F), const Color(0xFFFF7A45), pulse)!;
+        final color2 = Color.lerp(const Color(0xFFFF7A45), const Color(0xFFFF4D4F), pulse)!;
+        return Container(
+          decoration: baseDecoration.copyWith(
+            gradient: LinearGradient(
+              colors: [color1, color2],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.redAccent.withOpacity(0.35 + 0.15 * pulse),
+                blurRadius: 14 + 6 * pulse,
+                spreadRadius: 1,
+              ),
+            ],
+          ),
+          child: IconButton(
+            tooltip: tooltip,
+            onPressed: onPressed,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints.tightFor(width: 44, height: 44),
+            icon: Icon(icon, color: Colors.white, size: 20),
+          ),
+        );
+      },
     );
   }
 

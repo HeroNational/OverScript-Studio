@@ -11,6 +11,10 @@ class GlasmorphicToolbox extends ConsumerWidget {
   final VoidCallback onSourcesPressed;
   final VoidCallback onMenuPressed;
   final VoidCallback onFullscreenPressed;
+  final VoidCallback onRecordPressed;
+  final bool isRecording;
+  final int recordSeconds;
+  final Animation<double> recordPulse;
   final VoidCallback onHomePressed;
   final bool isVertical;
   final double scale;
@@ -23,6 +27,10 @@ class GlasmorphicToolbox extends ConsumerWidget {
     required this.onSourcesPressed,
     required this.onMenuPressed,
     required this.onFullscreenPressed,
+    required this.onRecordPressed,
+    required this.isRecording,
+    required this.recordSeconds,
+    required this.recordPulse,
     required this.onHomePressed,
     required this.scale,
     required this.isVertical,
@@ -39,134 +47,111 @@ class GlasmorphicToolbox extends ConsumerWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobileSize = screenWidth < 500;
 
-    // Adaptive sizing: clamp scale to avoid oversizing
-    // Mobile: 0.5 - 0.7
-    // Desktop: 0.7 - 1.0 (100% remains the current baseline)
-    double finalScale = isMobileSize ? scale.clamp(0.5, 0.7) : scale.clamp(0.7, 1.0);
-    double adaptiveMargin = isMobileSize ? 12.0 : 24.0;
+    // Sur mobile : largeur plus contenue et légère réduction d'échelle pour limiter la hauteur.
+    double finalScale = isMobileSize ? 0.95 : scale.clamp(0.7, 1.0);
+    double adaptiveMargin = isMobileSize ? 8.0 : 24.0;
+    final double maxWidth = isMobileSize ? MediaQuery.of(context).size.width * 0.7 : 600;
 
     final baseRadius = 24.0 * finalScale;
     final renderScale = finalScale;
 
-    return Transform.scale(
-      scale: finalScale,
+    return Align(
       alignment: Alignment.center,
-      child: Container(
-        margin: EdgeInsets.all(adaptiveMargin),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(baseRadius),
-          boxShadow: [
-            BoxShadow(
-              color: palette.shadowColor.withOpacity(0.7),
-              blurRadius: 14 * renderScale,
-              offset: Offset(0, 10 * renderScale),
+      child: Transform.scale(
+        scale: finalScale,
+        alignment: Alignment.center,
+        child: SizedBox(
+          width: maxWidth,
+          child: Container(
+            margin: EdgeInsets.all(adaptiveMargin),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(baseRadius),
+              boxShadow: [
+                BoxShadow(
+                  color: palette.shadowColor.withOpacity(0.7),
+                  blurRadius: 14 * renderScale,
+                  offset: Offset(0, 10 * renderScale),
+                ),
+              ],
+              border: Border.all(
+                color: palette.borderColor,
+                width: 1,
+              ),
             ),
-          ],
-          border: Border.all(
-            color: palette.borderColor,
-            width: 1,
-          ),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(baseRadius),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              constraints: BoxConstraints(
-                maxWidth: isVertical ? double.infinity : 600,
-              ),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    palette.surfaceStart,
-                    palette.surfaceEnd,
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(baseRadius),
-                border: Border.all(
-                  color: palette.borderStrong,
-                  width: 1.5,
-                ),
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 10 * renderScale, vertical: 12 * renderScale),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  isVertical
-                      ? Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (isMobileSize && onOrientationToggle != null)
-                              Padding(
-                                padding: EdgeInsets.only(bottom: 8 * renderScale),
-                                child: _GlassButton(
-                                  icon: LucideIcons.rotate_cw,
-                                  onPressed: onOrientationToggle!,
-                                  tooltip: l10n?.toggleOrientation ?? 'Changer l\'orientation',
-                                  size: 16 * renderScale,
-                                ),
-                              ),
-                            _PlaybackPanel(
-                              playbackState: playbackState,
-                              l10n: l10n,
-                              palette: palette,
-                              scale: renderScale,
-                              isVertical: true,
-                              showTimers: false,
-                            ),
-                            SizedBox(height: 8 * renderScale),
-                            _Divider(isVertical: true, palette: palette, scale: renderScale),
-                            SizedBox(height: 8 * renderScale),
-                            _ActionsPanel(
-                              onHomePressed: onHomePressed,
-                              onSourcesPressed: onSourcesPressed,
-                              onMenuPressed: onMenuPressed,
-                              onFullscreenPressed: onFullscreenPressed,
-                              isFullscreen: playbackState.isFullscreen,
-                              l10n: l10n,
-                              palette: palette,
-                              scale: renderScale,
-                              isVertical: true,
-                              isMobileSize: isMobileSize,
-                            ),
-                          ],
-                        )
-                      : SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              _PlaybackPanel(
-                                playbackState: playbackState,
-                                l10n: l10n,
-                                palette: palette,
-                                scale: renderScale,
-                                isVertical: isVertical,
-                                showTimers: false,
-                              ),
-                              SizedBox(width: 10 * renderScale),
-                              _Divider(isVertical: false, palette: palette, scale: renderScale),
-                              SizedBox(width: 10 * renderScale),
-                              _ActionsPanel(
-                                onHomePressed: onHomePressed,
-                                onSourcesPressed: onSourcesPressed,
-                              onMenuPressed: onMenuPressed,
-                              onFullscreenPressed: onFullscreenPressed,
-                              isFullscreen: playbackState.isFullscreen,
-                                l10n: l10n,
-                                palette: palette,
-                                scale: renderScale,
-                                isVertical: isVertical,
-                                isMobileSize: isMobileSize,
-                              ),
-                            ],
-                          ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(baseRadius),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  constraints: isMobileSize
+                      ? BoxConstraints.tightFor(width: maxWidth)
+                      : BoxConstraints(maxWidth: maxWidth),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        palette.surfaceStart,
+                        palette.surfaceEnd,
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(baseRadius),
+                    border: Border.all(
+                      color: palette.borderStrong,
+                      width: 1.5,
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 10 * renderScale,
+                    vertical: (isMobileSize ? 8 : 12) * renderScale,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      if (isRecording) ...[
+                        _RecordStatusChip(seconds: recordSeconds, pulse: recordPulse, scale: renderScale),
+                        SizedBox(height: 8 * renderScale),
+                      ],
+                      SizedBox(
+                        width: double.infinity,
+                        child: _PlaybackPanel(
+                          playbackState: playbackState,
+                          l10n: l10n,
+                          palette: palette,
+                          scale: renderScale,
+                          isVertical: isVertical,
+                          showTimers: false,
+                          onRecordPressed: onRecordPressed,
+                          isRecording: isRecording,
                         ),
-                ],
+                      ),
+                      SizedBox(height: 8 * renderScale),
+                      if (!isMobileSize) ...[
+                        _Divider(isVertical: isVertical, palette: palette, scale: renderScale),
+                        SizedBox(height: 8 * renderScale),
+                      ],
+                      SizedBox(
+                        width: double.infinity,
+                        child: _ActionsPanel(
+                          onHomePressed: onHomePressed,
+                          onSourcesPressed: onSourcesPressed,
+                          onMenuPressed: onMenuPressed,
+                          onFullscreenPressed: onFullscreenPressed,
+                          onRecordPressed: onRecordPressed,
+                          isRecording: isRecording,
+                          isFullscreen: playbackState.isFullscreen,
+                          l10n: l10n,
+                          palette: palette,
+                          scale: renderScale,
+                          isVertical: isVertical,
+                          isMobileSize: isMobileSize,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -176,6 +161,53 @@ class GlasmorphicToolbox extends ConsumerWidget {
   }
 }
 
+class _RecordStatusChip extends StatelessWidget {
+  final int seconds;
+  final Animation<double> pulse;
+  final double scale;
+
+  const _RecordStatusChip({
+    required this.seconds,
+    required this.pulse,
+    required this.scale,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    String two(int v) => v.toString().padLeft(2, '0');
+    final h = seconds ~/ 3600;
+    final m = (seconds % 3600) ~/ 60;
+    final s = seconds % 60;
+    final time = h > 0 ? '${two(h)}:${two(m)}:${two(s)}' : '${two(m)}:${two(s)}';
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ScaleTransition(
+          scale: Tween(begin: 0.85, end: 1.2).animate(
+            CurvedAnimation(parent: pulse, curve: Curves.easeInOut),
+          ),
+          child: Container(
+            width: 12 * scale,
+            height: 12 * scale,
+            decoration: BoxDecoration(
+              color: Colors.redAccent,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(color: Colors.redAccent.withOpacity(0.5), blurRadius: 12),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(width: 8 * scale),
+        Text(
+          time,
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14 * scale),
+        ),
+      ],
+    );
+  }
+}
 class _PlaybackPanel extends ConsumerWidget {
   final PlaybackState playbackState;
   final _ToolboxPalette palette;
@@ -183,6 +215,8 @@ class _PlaybackPanel extends ConsumerWidget {
   final bool isVertical;
   final bool showTimers;
   final AppLocalizations? l10n;
+  final VoidCallback onRecordPressed;
+  final bool isRecording;
 
   const _PlaybackPanel({
     required this.playbackState,
@@ -191,10 +225,13 @@ class _PlaybackPanel extends ConsumerWidget {
     required this.scale,
     required this.isVertical,
     required this.showTimers,
+    required this.onRecordPressed,
+    required this.isRecording,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final buttons = _buildButtons(ref);
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 14 * scale, vertical: 10 * scale),
       decoration: BoxDecoration(
@@ -212,118 +249,60 @@ class _PlaybackPanel extends ConsumerWidget {
           width: 1,
         ),
       ),
-      child: isVertical
-          ? Column(
-              mainAxisSize: MainAxisSize.min,
-              children: _buildButtons(ref),
-            )
-          : Row(
-              mainAxisSize: MainAxisSize.min,
-              children: _buildButtons(ref),
-            ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Wrap(
+            alignment: WrapAlignment.spaceEvenly,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 14 * scale,
+            runSpacing: 12 * scale,
+            children: buttons,
+          ),
+        ],
+      ),
     );
   }
 
   List<Widget> _buildButtons(WidgetRef ref) {
-    final spacing = SizedBox(width: isVertical ? 0 : 10 * scale, height: isVertical ? 10 * scale : 0);
-    return [
+    final buttons = <Widget>[
       _GlassButton(
-        icon: LucideIcons.skip_back,
+        icon: LucideIcons.refresh_cw,
         onPressed: () => ref.read(playbackProvider.notifier).reset(),
         tooltip: l10n?.reset ?? 'Réinitialiser',
-        size: 20 * scale,
+        size: 24 * scale,
+        toastMessage: l10n?.reset ?? 'Revenir au début',
       ),
-      spacing,
       _GlassButton(
         icon: playbackState.isPlaying ? LucideIcons.pause : LucideIcons.play,
         onPressed: () => ref.read(playbackProvider.notifier).togglePlayPause(),
         tooltip: playbackState.isPlaying ? (l10n?.pause ?? 'Pause') : (l10n?.play ?? 'Lecture'),
-        size: 28 * scale,
-        primary: true,
+        size: 24 * scale,
+        toastMessage: playbackState.isPlaying
+            ? (l10n?.pause ?? 'Lecture mise en pause')
+            : (l10n?.play ?? 'Lecture démarrée'),
       ),
-      spacing,
-      Container(
-        padding: EdgeInsets.symmetric(horizontal: 12 * scale, vertical: 6 * scale),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8 * scale),
-          border: Border.all(
-            color: Colors.white.withOpacity(0.2),
-            width: 1,
-          ),
-        ),
-        child: Text(
-          '${playbackState.speed.toInt()}',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 14 * scale,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+      _GlassButton(
+        icon: isRecording ? LucideIcons.circle_stop : LucideIcons.video,
+        onPressed: onRecordPressed,
+        tooltip: isRecording ? 'Arrêter l\'enregistrement' : (l10n?.camera ?? 'Démarrer l\'enregistrement'),
+        size: 24 * scale,
+        toastMessage: isRecording ? 'Enregistrement arrêté' : 'Enregistrement démarré',
       ),
     ];
+
+    return buttons;
   }
 }
 
-class _TimersHeader extends StatelessWidget {
-  final PlaybackState playbackState;
-  final double scale;
-
-  const _TimersHeader({required this.playbackState, required this.scale});
-
-  @override
-  Widget build(BuildContext context) {
-    final elapsed = _formatDuration(Duration(seconds: playbackState.elapsedSeconds));
-    final now = DateTime.now();
-    final clock = '${_two(now.hour)}:${_two(now.minute)}:${_two(now.second)}';
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(LucideIcons.timer, color: Colors.white, size: 18),
-            const SizedBox(width: 8),
-            Text(
-              elapsed,
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 16 * scale),
-            ),
-          ],
-        ),
-        const SizedBox(width: 12),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(LucideIcons.clock_3, color: Colors.white70, size: 18),
-            const SizedBox(width: 8),
-            Text(
-              clock,
-              style: TextStyle(color: Colors.white70, fontSize: 15 * scale, fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  String _two(int v) => v.toString().padLeft(2, '0');
-
-  String _formatDuration(Duration d) {
-    final h = d.inHours;
-    final m = d.inMinutes % 60;
-    final s = d.inSeconds % 60;
-    if (h > 0) {
-      return '${_two(h)}:${_two(m)}:${_two(s)}';
-    }
-    return '${_two(m)}:${_two(s)}';
-  }
-}
 
 class _ActionsPanel extends StatelessWidget {
   final VoidCallback onHomePressed;
   final VoidCallback onSourcesPressed;
   final VoidCallback onMenuPressed;
   final VoidCallback onFullscreenPressed;
+  final VoidCallback onRecordPressed;
+  final bool isRecording;
   final bool isFullscreen;
   final AppLocalizations? l10n;
   final _ToolboxPalette palette;
@@ -336,6 +315,8 @@ class _ActionsPanel extends StatelessWidget {
     required this.onSourcesPressed,
     required this.onMenuPressed,
     required this.onFullscreenPressed,
+    required this.onRecordPressed,
+    required this.isRecording,
     required this.isFullscreen,
     required this.l10n,
     required this.palette,
@@ -346,6 +327,7 @@ class _ActionsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final buttons = _buildButtons();
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 14 * scale, vertical: 10 * scale),
       decoration: BoxDecoration(
@@ -363,40 +345,35 @@ class _ActionsPanel extends StatelessWidget {
           width: 1,
         ),
       ),
-      child: isVertical
-          ? Column(
-              mainAxisSize: MainAxisSize.min,
-              children: _buildButtons(),
-            )
-          : Row(
-              mainAxisSize: MainAxisSize.min,
-              children: _buildButtons(),
-            ),
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 12 * scale,
+        runSpacing: 10 * scale,
+        children: buttons,
+      ),
     );
   }
 
   List<Widget> _buildButtons() {
-    final spacing = SizedBox(width: isVertical ? 0 : 12 * scale, height: isVertical ? 10 * scale : 0);
-    final buttons = [
+    final buttons = <Widget>[
       _GlassButton(
         icon: LucideIcons.house,
         onPressed: onHomePressed,
         tooltip: l10n?.home ?? 'Accueil',
         size: 22 * scale,
       ),
-      spacing,
       _GlassButton(
         icon: LucideIcons.circle_plus,
         onPressed: onSourcesPressed,
         tooltip: l10n?.addSource ?? 'Ajouter une source',
         size: 24 * scale,
       ),
-      spacing,
     ];
 
     // Hide fullscreen button on mobile (picture-in-picture handled differently)
     if (!isMobileSize) {
-      buttons.addAll([
+      buttons.add(
         _GlassButton(
           icon: isFullscreen ? LucideIcons.minimize_2 : LucideIcons.maximize_2,
           onPressed: onFullscreenPressed,
@@ -404,17 +381,21 @@ class _ActionsPanel extends StatelessWidget {
               ? (l10n?.exitFullscreen ?? 'Quitter le plein écran')
               : (l10n?.fullscreen ?? 'Plein écran'),
           size: 24 * scale,
+          toastMessage: isFullscreen
+              ? (l10n?.exitFullscreen ?? 'Plein écran désactivé')
+              : (l10n?.fullscreen ?? 'Plein écran activé'),
         ),
-        spacing,
-      ]);
+      );
     }
 
-    buttons.add(_GlassButton(
+    buttons.add(
+      _GlassButton(
         icon: LucideIcons.menu,
         onPressed: onMenuPressed,
         tooltip: l10n?.settings ?? 'Menu',
-      size: 24 * scale,
-    ));
+        size: 24 * scale,
+      ),
+    );
 
     return buttons;
   }
@@ -426,6 +407,7 @@ class _GlassButton extends StatefulWidget {
   final String tooltip;
   final double size;
   final bool primary;
+  final String? toastMessage;
 
   const _GlassButton({
     required this.icon,
@@ -433,6 +415,7 @@ class _GlassButton extends StatefulWidget {
     required this.tooltip,
     this.size = 24,
     this.primary = false,
+    this.toastMessage,
   });
 
   @override
@@ -450,7 +433,18 @@ class _GlassButtonState extends State<_GlassButton> {
         onEnter: (_) => setState(() => _isHovered = true),
         onExit: (_) => setState(() => _isHovered = false),
         child: GestureDetector(
-          onTap: widget.onPressed,
+          onTap: () {
+            widget.onPressed();
+            if (widget.toastMessage != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(widget.toastMessage!),
+                  duration: const Duration(milliseconds: 1200),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
+          },
           child: AnimatedScale(
             duration: const Duration(milliseconds: 160),
             scale: _isHovered ? 1.05 : 1.0,

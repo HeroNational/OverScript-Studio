@@ -234,39 +234,40 @@ class _TextDisplayState extends ConsumerState<TextDisplay> {
       );
     }
 
-    // Pour la lecture PDF, on force un fond clair pour assurer le contraste,
-    // indépendamment du thème général.
-    final pdfBackgroundColor = Colors.white;
+    final settings = ref.watch(settingsProvider);
+    final pdfBackgroundColor = _parseColor(settings.backgroundColor);
+    final pageColor = Color.lerp(pdfBackgroundColor, Colors.white, 0.12)!;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final bool isMobile = screenWidth < 700;
 
-    return ListView.builder(
-      controller: _scrollController,
-      padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 40),
-      itemCount: pages.length,
-      itemBuilder: (context, index) {
-        return Container(
-          margin: const EdgeInsets.only(bottom: 32),
-          decoration: BoxDecoration(
-            color: pdfBackgroundColor,
-            borderRadius: BorderRadius.circular(18),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.25),
-                blurRadius: 20,
-                offset: const Offset(0, 12),
+    return Container(
+      color: pdfBackgroundColor,
+      child: ListView.builder(
+        controller: _scrollController,
+        padding: EdgeInsets.symmetric(horizontal: isMobile ? 8 : 24, vertical: isMobile ? 16 : 24),
+        itemCount: pages.length,
+        itemBuilder: (context, index) {
+          return Container(
+            width: double.infinity,
+            margin: EdgeInsets.only(bottom: isMobile ? 16 : 24),
+            decoration: BoxDecoration(
+              color: pageColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.08),
+                width: 1.2,
               ),
-            ],
-            border: Border.all(
-              color: Colors.black.withOpacity(0.04),
-              width: 1,
             ),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: Image.memory(
-            pages[index],
-            fit: BoxFit.contain,
-          ),
-        );
-      },
+            clipBehavior: Clip.antiAlias,
+            child: Image.memory(
+              pages[index],
+              fit: BoxFit.fitWidth,
+              width: double.infinity,
+              alignment: Alignment.topCenter,
+            ),
+          );
+        },
+      ),
     );
   }
 }
