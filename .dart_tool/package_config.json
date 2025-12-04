@@ -566,6 +566,12 @@
       "languageVersion": "2.19"
     },
     {
+      "name": "open_filex",
+      "rootUri": "file:///Users/heronational/.pub-cache/hosted/pub.dev/open_filex-4.7.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
       "name": "package_config",
       "rootUri": "file:///Users/heronational/.pub-cache/hosted/pub.dev/package_config-2.2.0",
       "packageUri": "lib/",

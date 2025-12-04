@@ -17,6 +17,7 @@ class CaptureDeviceInfo {
 class CaptureService {
   static const MethodChannel _desktopRecorderChannel = MethodChannel('com.overscript.studio/desktop_recorder');
   CameraController? _controller;
+  bool _controllerActive = false;
   bool _recording = false;
   MediaStream? _desktopStream;
   RTCVideoRenderer? _desktopRenderer;
@@ -25,6 +26,7 @@ class CaptureService {
   bool get _isMac => Platform.isMacOS;
 
   CameraController? get controller => _controller;
+  bool get hasActiveController => _controllerActive && _controller != null && !_controller!.value.isRecordingPaused;
   bool get isRecording => _recording;
   bool get isInitialized => _controller?.value.isInitialized ?? (_desktopRenderer != null);
   RTCVideoRenderer? get desktopRenderer => _desktopRenderer;
@@ -73,7 +75,9 @@ class CaptureService {
 
   /// Démarre la preview (sans enregistrement).
   Future<void> startPreview({String? cameraId, String? micId}) async {
-    if (!await _ensurePermissions()) return;
+    if (!await _ensurePermissions()) {
+      throw Exception('Permissions camera/micro refusées');
+    }
     if (_isDesktop) {
       await _startPreviewDesktop(cameraId: cameraId, micId: micId);
     } else {
@@ -88,14 +92,18 @@ class CaptureService {
       return;
     }
     if (_controller != null) {
-      await _controller?.dispose();
+      _controllerActive = false;
+      final old = _controller;
       _controller = null;
+      await old?.dispose();
     }
   }
 
   /// Démarre l’enregistrement (init preview si besoin).
   Future<void> startCapture({String? cameraId, String? micId}) async {
-    if (!await _ensurePermissions()) return;
+    if (!await _ensurePermissions()) {
+      throw Exception('Permissions camera/micro refusées');
+    }
     if (_isMac) {
       await _startPreviewDesktop(cameraId: cameraId, micId: micId);
       try {
@@ -202,7 +210,10 @@ class CaptureService {
     if (!Platform.isAndroid && !Platform.isIOS) return;
     // Dispose l’ancienne preview si on change de caméra
     if (_controller != null) {
-      await _controller?.dispose();
+      _controllerActive = false;
+      final old = _controller;
+      _controller = null;
+      await old?.dispose();
       _controller = null;
     }
     final cameras = await availableCameras();
@@ -218,9 +229,11 @@ class CaptureService {
       selected,
       ResolutionPreset.medium,
       enableAudio: true,
-      imageFormatGroup: ImageFormatGroup.yuv420,
+      // iOS n'accepte pas yuv420 pour la preview caméra, on force le format supporté
+      imageFormatGroup: Platform.isIOS ? ImageFormatGroup.bgra8888 : ImageFormatGroup.yuv420,
     );
     await _controller!.initialize();
+    _controllerActive = true;
   }
 
   Future<void> _startCaptureMobile({String? cameraId}) async {
@@ -311,14 +324,21 @@ class CaptureService {
 
   bool get _isDesktop => Platform.isMacOS || Platform.isWindows || Platform.isLinux;
 
+  /// Expose une requête de permissions explicite (utile au démarrage).
+  Future<bool> requestPermissions() => _ensurePermissions();
+
   Future<bool> _ensurePermissions() async {
     if (_isDesktop) return true;
-    final statuses = await [
-      Permission.camera,
-      Permission.microphone,
-    ].request();
-    final camOk = statuses[Permission.camera]?.isGranted ?? false;
-    final micOk = statuses[Permission.microphone]?.isGranted ?? false;
+    final statuses = await [Permission.camera, Permission.microphone].request();
+    final camStatus = statuses[Permission.camera];
+    final micStatus = statuses[Permission.microphone];
+    final camOk = camStatus?.isGranted ?? false;
+    final micOk = micStatus?.isGranted ?? false;
+
+    // Si l'utilisateur a refusé définitivement, ouvrons les réglages pour qu'il voie l'option
+    if ((camStatus?.isPermanentlyDenied ?? false) || (micStatus?.isPermanentlyDenied ?? false)) {
+      await openAppSettings();
+    }
     return camOk && micOk;
   }
 }

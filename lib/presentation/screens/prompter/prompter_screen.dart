@@ -302,11 +302,13 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> {
       onRecord: _toggleRecord,
     );
 
-    final grouped = Row(
-      mainAxisSize: MainAxisSize.min,
+    final grouped = Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 12,
+      runSpacing: 12,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         toolbox,
-        const SizedBox(width: 12),
         dock,
       ],
     );

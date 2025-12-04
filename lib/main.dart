@@ -15,6 +15,7 @@ import 'package:window_manager/window_manager.dart';
 import 'dart:async';
 import 'data/services/storage_service.dart';
 import 'data/services/capture_service.dart';
+import 'package:open_filex/open_filex.dart';
 import 'data/models/settings_model.dart';
 import 'presentation/screens/prompter/prompter_screen.dart';
 import 'presentation/providers/playback_provider.dart';
@@ -148,6 +149,15 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
     super.initState();
     _bannerAsset = _bannerAssets[math.Random().nextInt(_bannerAssets.length)];
     _computeTrialStatus();
+    if (Platform.isAndroid || Platform.isIOS) {
+      _requestMobilePermissions().then((granted) {
+        if (granted && mounted) {
+          _startHomePreview(auto: true);
+        }
+      });
+    } else {
+      _startHomePreview(auto: true);
+    }
     _loadLastText().then((_) {
       if (!_trialExpired) {
         _promptSourceDialog();
@@ -192,6 +202,17 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
     } catch (_) {
       // ignore loading errors
     }
+  }
+
+  Future<bool> _requestMobilePermissions() async {
+    if (!(Platform.isAndroid || Platform.isIOS)) return false;
+    final ok = await _captureService.requestPermissions();
+    if (!ok && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Autorisez l’accès Caméra/Micro dans Réglages pour activer la preview.')),
+      );
+    }
+    return ok;
   }
 
   Future<void> _loadLastText() async {
@@ -403,64 +424,66 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
                     expiry: _trialExpiry,
                   ),
                 const SizedBox(height: 32),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    DropdownButton<String>(
-                      value: settings.locale,
-                      dropdownColor: const Color(0xFF1f2937),
-                      style: const TextStyle(color: Colors.white),
-                      underline: const SizedBox(),
-                      items: [
-                        DropdownMenuItem(value: 'fr', child: Text(AppLocalizations.of(context)!.french)),
-                        DropdownMenuItem(value: 'en', child: Text(AppLocalizations.of(context)!.english)),
-                      ],
-                      onChanged: (value) {
-                        if (value != null) {
-                          print('[UI] Change locale -> $value');
-                          ref.read(settingsProvider.notifier).updateLocale(value);
-                        }
-                      },
-                    ),
-                    const SizedBox(width: 8),
-                    Tooltip(
-                      message: AppLocalizations.of(context)!.addSource,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          print('[UI] Add source (top button)');
-                          if (_trialEnabled && _trialExpired) {
-                            _showTrialExpiredMessage();
-                            return;
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      DropdownButton<String>(
+                        value: settings.locale,
+                        dropdownColor: const Color(0xFF1f2937),
+                        style: const TextStyle(color: Colors.white),
+                        underline: const SizedBox(),
+                        items: [
+                          DropdownMenuItem(value: 'fr', child: Text(AppLocalizations.of(context)!.french)),
+                          DropdownMenuItem(value: 'en', child: Text(AppLocalizations.of(context)!.english)),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            print('[UI] Change locale -> $value');
+                            ref.read(settingsProvider.notifier).updateLocale(value);
                           }
-                          _promptSourceDialog(force: true);
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6366F1),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        ),
-                        icon: const Icon(Icons.add),
-                        label: Text(AppLocalizations.of(context)!.addSource),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    IconButton(
-                      tooltip: AppLocalizations.of(context)!.settings,
-                      onPressed: () {
-                        print('[UI] Open settings');
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SettingsScreen(),
+                      Tooltip(
+                        message: AppLocalizations.of(context)!.addSource,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            print('[UI] Add source (top button)');
+                            if (_trialEnabled && _trialExpired) {
+                              _showTrialExpiredMessage();
+                              return;
+                            }
+                            _promptSourceDialog(force: true);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF6366F1),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                           ),
-                        );
-                      },
-                      icon: const Icon(Icons.settings, color: Colors.white),
-                    ),
-                    const SizedBox(width: 4),
-                    _buildMenuButton(context),
-                  ],
+                          icon: const Icon(Icons.add),
+                          label: Text(AppLocalizations.of(context)!.addSource),
+                        ),
+                      ),
+                      IconButton(
+                        tooltip: AppLocalizations.of(context)!.settings,
+                        onPressed: () {
+                          print('[UI] Open settings');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsScreen(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.settings, color: Colors.white),
+                      ),
+                      _buildMenuButton(context),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 12),
                 _buildCameraPreviewCard(context),
@@ -493,6 +516,11 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
                                   style: const TextStyle(color: Colors.white),
                                   overflow: TextOverflow.ellipsis,
                                 ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.insert_drive_file, color: Colors.white70),
+                                tooltip: 'Ouvrir dans Fichiers',
+                                onPressed: () => _openRecording(file),
                               ),
                               IconButton(
                                 icon: const Icon(Icons.delete, color: Colors.redAccent),
@@ -662,7 +690,7 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
                   borderRadius: BorderRadius.circular(12),
                   child: Stack(
                     children: [
-                      if (!isDesktop && _captureService.controller != null && _captureService.controller!.value.isInitialized)
+                      if (!isDesktop && _captureService.hasActiveController && _captureService.controller!.value.isInitialized)
                         CameraPreview(_captureService.controller!)
                       else if (isDesktop && _captureService.desktopRenderer != null)
                         RTCVideoView(
@@ -710,7 +738,10 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: Colors.white.withOpacity(0.08)),
             ),
-            child: Row(
+            child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 4,
+              runSpacing: 8,
               children: [
                 IconButton(
                   tooltip: 'Lecture',
@@ -730,7 +761,7 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
                     color: _captureService.isRecording ? Colors.redAccent : Colors.red,
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 Text(
                   _captureService.isRecording ? 'Enregistrement en cours' : 'Prêt',
                   style: const TextStyle(color: Colors.white70),
@@ -840,6 +871,15 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
     });
   }
 
+  Future<void> _openRecording(File file) async {
+    final result = await OpenFilex.open(file.path);
+    if (result.type != ResultType.done && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Impossible d\'ouvrir le fichier: ${result.message}')),
+      );
+    }
+  }
+
   Future<void> _toggleRecording() async {
     if (_captureService.isRecording) {
       final path = await _captureService.stopCapture();
@@ -898,6 +938,10 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
   }
 
   void _openFullscreenPreview() {
+    final isMobile = Platform.isAndroid || Platform.isIOS;
+    if (isMobile) {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    }
     showDialog(
       context: context,
       builder: (_) {
@@ -911,7 +955,7 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
               aspectRatio: 16 / 9,
               child: Stack(
                 children: [
-                  if (!isDesktop && _captureService.controller != null && _captureService.controller!.value.isInitialized)
+                  if (!isDesktop && _captureService.hasActiveController && _captureService.controller!.value.isInitialized)
                     CameraPreview(_captureService.controller!)
                   else if (isDesktop && _captureService.desktopRenderer != null)
                     RTCVideoView(
@@ -936,7 +980,12 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> {
           ),
         );
       },
-    );
+    ).whenComplete(() {
+      if (isMobile) {
+        // Restaure les orientations autorisées après la fermeture du plein écran
+        SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+      }
+    });
   }
 
   void _showTrialExpiredMessage() {

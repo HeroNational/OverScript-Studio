@@ -46,6 +46,7 @@ class SourcesDialog extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
           child: Container(
             width: dialogWidth,
+            constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.9),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -69,133 +70,135 @@ class SourcesDialog extends StatelessWidget {
               ],
             ),
             padding: EdgeInsets.all(screenWidth > 500 ? 32 : 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      LucideIcons.circle_plus,
-                      color: Colors.white,
-                      size: screenWidth > 500 ? 28 : 24,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        l10n.addSource,
-                        style: TextStyle(
-                          fontSize: screenWidth > 500 ? 24 : 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        LucideIcons.circle_plus,
+                        color: Colors.white,
+                        size: screenWidth > 500 ? 28 : 24,
                       ),
-                    ),
-                    Tooltip(
-                      message: l10n.close,
-                      child: IconButton(
-                        icon: const Icon(LucideIcons.x, color: Colors.white70),
-                        onPressed: () => Navigator.pop(context),
-                        iconSize: screenWidth > 500 ? 24 : 20,
-                        constraints: BoxConstraints(
-                          minWidth: screenWidth > 500 ? 48 : 36,
-                          minHeight: screenWidth > 500 ? 48 : 36,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          l10n.addSource,
+                          style: TextStyle(
+                            fontSize: screenWidth > 500 ? 24 : 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  l10n.welcomeSubtitle,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
+                      Tooltip(
+                        message: l10n.close,
+                        child: IconButton(
+                          icon: const Icon(LucideIcons.x, color: Colors.white70),
+                          onPressed: () => Navigator.pop(context),
+                          iconSize: screenWidth > 500 ? 24 : 20,
+                          constraints: BoxConstraints(
+                            minWidth: screenWidth > 500 ? 48 : 36,
+                            minHeight: screenWidth > 500 ? 48 : 36,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 32),
-                _SourceOption(
-                  icon: LucideIcons.file_text,
-                  title: l10n.loadTextFile,
-                  subtitle: l10n.loadTextFileDescription,
-                  gradientColors: const [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-                  onTap: () async {
-                    print('[FilePicker] Opening text file picker...');
-                    try {
-                      final result = await FilePicker.platform.pickFiles(
-                        type: FileType.custom,
-                        allowedExtensions: ['txt', 'vtt', 'srt'],
-                        allowMultiple: false,
-                        withData: false,
-                        withReadStream: false,
-                      );
+                  const SizedBox(height: 24),
+                  Text(
+                    l10n.welcomeSubtitle,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  _SourceOption(
+                    icon: LucideIcons.file_text,
+                    title: l10n.loadTextFile,
+                    subtitle: l10n.loadTextFileDescription,
+                    gradientColors: const [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                    onTap: () async {
+                      print('[FilePicker] Opening text file picker...');
+                      try {
+                        final result = await FilePicker.platform.pickFiles(
+                          type: FileType.custom,
+                          allowedExtensions: ['txt', 'vtt', 'srt'],
+                          allowMultiple: false,
+                          withData: false,
+                          withReadStream: false,
+                        );
 
-                      print('[FilePicker] Result: ${result != null ? "File selected" : "No file selected"}');
+                        print('[FilePicker] Result: ${result != null ? "File selected" : "No file selected"}');
 
-                      if (result != null && result.files.single.path != null) {
-                        final path = result.files.single.path!;
-                        print('[FilePicker] Selected file: $path');
-                        final file = File(path);
-                        String content = await file.readAsString();
-                        final ext = (result.files.single.extension ?? path.split('.').last).toLowerCase();
+                        if (result != null && result.files.single.path != null) {
+                          final path = result.files.single.path!;
+                          print('[FilePicker] Selected file: $path');
+                          final file = File(path);
+                          String content = await file.readAsString();
+                          final ext = (result.files.single.extension ?? path.split('.').last).toLowerCase();
 
-                        if (ext == 'srt' || ext == 'vtt') {
-                          content = SubtitleParser.cleanSubtitleContent(content);
+                          if (ext == 'srt' || ext == 'vtt') {
+                            content = SubtitleParser.cleanSubtitleContent(content);
+                          }
+
+                          Navigator.of(context, rootNavigator: true).pop(SourceData(text: content));
                         }
-
-                        Navigator.of(context, rootNavigator: true).pop(SourceData(text: content));
+                      } catch (e) {
+                        print('[FilePicker] Error: $e');
                       }
-                    } catch (e) {
-                      print('[FilePicker] Error: $e');
-                    }
-                  },
-                ),
-                const SizedBox(height: 16),
-                _SourceOption(
-                  icon: LucideIcons.file,
-                  title: l10n.loadPdfFile,
-                  subtitle: l10n.loadPdfFileDescription,
-                  gradientColors: const [Color(0xFFEC4899), Color(0xFFF59E0B)],
-                  onTap: () async {
-                    print('[FilePicker] Opening PDF file picker...');
-                    try {
-                      final result = await FilePicker.platform.pickFiles(
-                        type: FileType.custom,
-                        allowedExtensions: ['pdf'],
-                        allowMultiple: false,
-                        withData: false,
-                        withReadStream: false,
-                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  _SourceOption(
+                    icon: LucideIcons.file,
+                    title: l10n.loadPdfFile,
+                    subtitle: l10n.loadPdfFileDescription,
+                    gradientColors: const [Color(0xFFEC4899), Color(0xFFF59E0B)],
+                    onTap: () async {
+                      print('[FilePicker] Opening PDF file picker...');
+                      try {
+                        final result = await FilePicker.platform.pickFiles(
+                          type: FileType.custom,
+                          allowedExtensions: ['pdf'],
+                          allowMultiple: false,
+                          withData: false,
+                          withReadStream: false,
+                        );
 
-                      print('[FilePicker] PDF Result: ${result != null ? "File selected" : "No file selected"}');
+                        print('[FilePicker] PDF Result: ${result != null ? "File selected" : "No file selected"}');
 
-                      if (result != null && result.files.single.path != null) {
-                        final path = result.files.single.path!;
-                        print('[FilePicker] Selected PDF: $path');
-                        Navigator.of(context, rootNavigator: true).pop(SourceData(pdfPath: path));
+                        if (result != null && result.files.single.path != null) {
+                          final path = result.files.single.path!;
+                          print('[FilePicker] Selected PDF: $path');
+                          Navigator.of(context, rootNavigator: true).pop(SourceData(pdfPath: path));
+                        }
+                      } catch (e) {
+                        print('[FilePicker] PDF Error: $e');
                       }
-                    } catch (e) {
-                      print('[FilePicker] PDF Error: $e');
-                    }
-                  },
-                ),
-                const SizedBox(height: 16),
-                _SourceOption(
-                  icon: LucideIcons.pen_line,
-                  title: l10n.textEditor,
-                  subtitle: l10n.richTextMode,
-                  gradientColors: const [Color(0xFF10B981), Color(0xFF06B6D4)],
-                  onTap: () {
-                    _showRichEditor(context).then((source) {
-                      if (source != null) {
-                        Navigator.of(context, rootNavigator: true).pop(source);
-                      }
-                    });
-                  },
-                ),
-              ],
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  _SourceOption(
+                    icon: LucideIcons.pen_line,
+                    title: l10n.textEditor,
+                    subtitle: l10n.richTextMode,
+                    gradientColors: const [Color(0xFF10B981), Color(0xFF06B6D4)],
+                    onTap: () {
+                      _showRichEditor(context).then((source) {
+                        if (source != null) {
+                          Navigator.of(context, rootNavigator: true).pop(source);
+                        }
+                      });
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),

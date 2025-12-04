@@ -234,8 +234,9 @@ class _TextDisplayState extends ConsumerState<TextDisplay> {
       );
     }
 
-    final settings = ref.watch(settingsProvider);
-    final pdfBackgroundColor = _parseColor(settings.backgroundColor);
+    // Pour la lecture PDF, on force un fond clair pour assurer le contraste,
+    // indépendamment du thème général.
+    final pdfBackgroundColor = Colors.white;
 
     return ListView.builder(
       controller: _scrollController,
@@ -255,7 +256,7 @@ class _TextDisplayState extends ConsumerState<TextDisplay> {
               ),
             ],
             border: Border.all(
-              color: Colors.white.withOpacity(0.08),
+              color: Colors.black.withOpacity(0.04),
               width: 1,
             ),
           ),
