@@ -118,10 +118,10 @@ class CaptureService {
           'audioDeviceId': micId,
         });
         _recording = true;
-      } catch (_) {
+      } catch (e) {
         _recording = false;
         _desktopRecordingPath = null;
-        throw Exception('Desktop recording not supported on this platform');
+        throw Exception('Desktop recording failed: $e');
       }
       return;
     }
@@ -137,10 +137,10 @@ class CaptureService {
         _desktopRecordingPath = path;
         await _desktopRecorder!.start(path, videoTrack: track, audioChannel: RecorderAudioChannel.INPUT);
         _recording = true;
-      } catch (_) {
+      } catch (e) {
         _recording = false;
         _desktopRecordingPath = null;
-        throw Exception('Desktop recording not supported on this platform');
+        throw Exception('Desktop recording failed: $e');
       }
     } else {
       await _startCaptureMobile(cameraId: cameraId);

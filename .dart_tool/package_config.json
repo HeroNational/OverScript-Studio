@@ -555,7 +555,7 @@
     },
     {
       "name": "mime",
-      "rootUri": "file:///Users/heronational/.pub-cache/hosted/pub.dev/mime-2.0.0",
+      "rootUri": "file:///Users/heronational/.pub-cache/hosted/pub.dev/mime-1.0.6",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
@@ -766,6 +766,18 @@
     {
       "name": "screen_retriever",
       "rootUri": "file:///Users/heronational/.pub-cache/hosted/pub.dev/screen_retriever-0.1.9",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
+      "name": "share_plus",
+      "rootUri": "file:///Users/heronational/.pub-cache/hosted/pub.dev/share_plus-7.2.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
+      "name": "share_plus_platform_interface",
+      "rootUri": "file:///Users/heronational/.pub-cache/hosted/pub.dev/share_plus_platform_interface-3.4.0",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },

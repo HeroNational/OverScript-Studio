@@ -24,6 +24,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter_keyboard_visibility_linux/flutter_keyboard_visibility_linux.dart';
 import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:quill_native_bridge/quill_native_bridge.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences_linux/shared_preferences_linux.dart';
 import 'package:url_launcher_linux/url_launcher_linux.dart';
 import 'package:file_picker/file_picker.dart';
@@ -38,6 +39,7 @@ import 'package:file_selector_windows/file_selector_windows.dart';
 import 'package:flutter_keyboard_visibility_windows/flutter_keyboard_visibility_windows.dart';
 import 'package:path_provider_windows/path_provider_windows.dart';
 import 'package:quill_native_bridge_windows/quill_native_bridge_windows.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences_windows/shared_preferences_windows.dart';
 import 'package:url_launcher_windows/url_launcher_windows.dart';
 
@@ -212,6 +214,15 @@ class _PluginRegistrant {
       }
 
       try {
+        SharePlusLinuxPlugin.registerWith();
+      } catch (err) {
+        print(
+          '`share_plus` threw an error: $err. '
+          'The app may not function as expected until you remove this plugin from pubspec.yaml'
+        );
+      }
+
+      try {
         SharedPreferencesLinux.registerWith();
       } catch (err) {
         print(
@@ -335,6 +346,15 @@ class _PluginRegistrant {
       } catch (err) {
         print(
           '`quill_native_bridge_windows` threw an error: $err. '
+          'The app may not function as expected until you remove this plugin from pubspec.yaml'
+        );
+      }
+
+      try {
+        SharePlusWindowsPlugin.registerWith();
+      } catch (err) {
+        print(
+          '`share_plus` threw an error: $err. '
           'The app may not function as expected until you remove this plugin from pubspec.yaml'
         );
       }

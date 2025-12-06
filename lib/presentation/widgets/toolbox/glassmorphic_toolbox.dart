@@ -50,7 +50,8 @@ class GlasmorphicToolbox extends ConsumerWidget {
     // Sur mobile : largeur plus contenue et légère réduction d'échelle pour limiter la hauteur.
     double finalScale = isMobileSize ? 0.95 : scale.clamp(0.7, 1.0);
     double adaptiveMargin = isMobileSize ? 8.0 : 24.0;
-    final double maxWidth = isMobileSize ? MediaQuery.of(context).size.width * 0.7 : 600;
+    // Sur desktop on force une largeur plus compacte pour éviter les grands espacements.
+    final double maxWidth = isMobileSize ? MediaQuery.of(context).size.width * 0.7 : 480;
 
     final baseRadius = 24.0 * finalScale;
     final renderScale = finalScale;
@@ -106,51 +107,96 @@ class GlasmorphicToolbox extends ConsumerWidget {
                     horizontal: 10 * renderScale,
                     vertical: (isMobileSize ? 8 : 12) * renderScale,
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      if (isRecording) ...[
-                        _RecordStatusChip(seconds: recordSeconds, pulse: recordPulse, scale: renderScale),
-                        SizedBox(height: 8 * renderScale),
-                      ],
-                      SizedBox(
-                        width: double.infinity,
-                        child: _PlaybackPanel(
-                          playbackState: playbackState,
-                          l10n: l10n,
-                          palette: palette,
-                          scale: renderScale,
-                          isVertical: isVertical,
-                          showTimers: false,
-                          onRecordPressed: onRecordPressed,
-                          isRecording: isRecording,
+                  child: isMobileSize
+                      ? Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if (isRecording) ...[
+                              _RecordStatusChip(seconds: recordSeconds, pulse: recordPulse, scale: renderScale),
+                              SizedBox(height: 8 * renderScale),
+                            ],
+                            SizedBox(
+                              width: double.infinity,
+                              child: _PlaybackPanel(
+                                playbackState: playbackState,
+                                l10n: l10n,
+                                palette: palette,
+                                scale: renderScale,
+                                isVertical: isVertical,
+                                showTimers: false,
+                                onRecordPressed: onRecordPressed,
+                                isRecording: isRecording,
+                              ),
+                            ),
+                            SizedBox(height: 8 * renderScale),
+                            SizedBox(
+                              width: double.infinity,
+                              child: _ActionsPanel(
+                                onHomePressed: onHomePressed,
+                                onSourcesPressed: onSourcesPressed,
+                                onMenuPressed: onMenuPressed,
+                                onFullscreenPressed: onFullscreenPressed,
+                                onRecordPressed: onRecordPressed,
+                                isRecording: isRecording,
+                                isFullscreen: playbackState.isFullscreen,
+                                l10n: l10n,
+                                palette: palette,
+                                scale: renderScale,
+                                isVertical: isVertical,
+                                isMobileSize: isMobileSize,
+                              ),
+                            ),
+                          ],
+                        )
+                        : Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (isRecording) ...[
+                                    _RecordStatusChip(seconds: recordSeconds, pulse: recordPulse, scale: renderScale),
+                                    SizedBox(height: 8 * renderScale),
+                                  ],
+                                  _PlaybackPanel(
+                                    playbackState: playbackState,
+                                    l10n: l10n,
+                                    palette: palette,
+                                    scale: renderScale,
+                                    isVertical: isVertical,
+                                    showTimers: false,
+                                    onRecordPressed: onRecordPressed,
+                                    isRecording: isRecording,
+                                    compact: true,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: 4 * renderScale),
+                            Expanded(
+                              flex: 1,
+                              child: _ActionsPanel(
+                                onHomePressed: onHomePressed,
+                                onSourcesPressed: onSourcesPressed,
+                                onMenuPressed: onMenuPressed,
+                                onFullscreenPressed: onFullscreenPressed,
+                                onRecordPressed: onRecordPressed,
+                                isRecording: isRecording,
+                                isFullscreen: playbackState.isFullscreen,
+                                l10n: l10n,
+                                palette: palette,
+                                scale: renderScale,
+                                isVertical: isVertical,
+                                isMobileSize: isMobileSize,
+                                compact: true,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      SizedBox(height: 8 * renderScale),
-                      if (!isMobileSize) ...[
-                        _Divider(isVertical: isVertical, palette: palette, scale: renderScale),
-                        SizedBox(height: 8 * renderScale),
-                      ],
-                      SizedBox(
-                        width: double.infinity,
-                        child: _ActionsPanel(
-                          onHomePressed: onHomePressed,
-                          onSourcesPressed: onSourcesPressed,
-                          onMenuPressed: onMenuPressed,
-                          onFullscreenPressed: onFullscreenPressed,
-                          onRecordPressed: onRecordPressed,
-                          isRecording: isRecording,
-                          isFullscreen: playbackState.isFullscreen,
-                          l10n: l10n,
-                          palette: palette,
-                          scale: renderScale,
-                          isVertical: isVertical,
-                          isMobileSize: isMobileSize,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ),
@@ -217,6 +263,7 @@ class _PlaybackPanel extends ConsumerWidget {
   final AppLocalizations? l10n;
   final VoidCallback onRecordPressed;
   final bool isRecording;
+  final bool compact;
 
   const _PlaybackPanel({
     required this.playbackState,
@@ -227,13 +274,17 @@ class _PlaybackPanel extends ConsumerWidget {
     required this.showTimers,
     required this.onRecordPressed,
     required this.isRecording,
+    this.compact = false,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final buttons = _buildButtons(ref);
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 14 * scale, vertical: 10 * scale),
+      padding: EdgeInsets.symmetric(
+        horizontal: (compact ? 10 : 14) * scale,
+        vertical: (compact ? 8 : 10) * scale,
+      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -309,6 +360,7 @@ class _ActionsPanel extends StatelessWidget {
   final double scale;
   final bool isVertical;
   final bool isMobileSize;
+  final bool compact;
 
   const _ActionsPanel({
     required this.onHomePressed,
@@ -323,13 +375,17 @@ class _ActionsPanel extends StatelessWidget {
     required this.scale,
     required this.isVertical,
     required this.isMobileSize,
+    this.compact = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final buttons = _buildButtons();
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 14 * scale, vertical: 10 * scale),
+      padding: EdgeInsets.symmetric(
+        horizontal: (compact ? 6 : 14) * scale,
+        vertical: (compact ? 4 : 10) * scale,
+      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -348,8 +404,8 @@ class _ActionsPanel extends StatelessWidget {
       child: Wrap(
         alignment: WrapAlignment.center,
         crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 12 * scale,
-        runSpacing: 10 * scale,
+        spacing: (compact ? 6 : 12) * scale,
+        runSpacing: (compact ? 4 : 10) * scale,
         children: buttons,
       ),
     );

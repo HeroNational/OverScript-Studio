@@ -57,7 +57,7 @@ class AppDelegate: FlutterAppDelegate {
         self?.recorder.start(path: path, videoId: videoId, audioId: audioId, result: result)
       case "stopRecording":
         self?.recorder.stop(result: result)
-      } else {
+      default:
         result(FlutterMethodNotImplemented)
       }
     }
@@ -142,12 +142,52 @@ class DesktopRecorder: NSObject, AVCaptureFileOutputRecordingDelegate {
   private let movieOutput = AVCaptureMovieFileOutput()
   private var currentResult: FlutterResult?
 
+  private func ensurePermissions(completion: @escaping (Bool) -> Void) {
+    let group = DispatchGroup()
+    var videoGranted = false
+    var audioGranted = false
+
+    func request(_ mediaType: AVMediaType, setter: @escaping (Bool) -> Void) {
+      let status = AVCaptureDevice.authorizationStatus(for: mediaType)
+      switch status {
+      case .authorized:
+        setter(true)
+      case .notDetermined:
+        group.enter()
+        AVCaptureDevice.requestAccess(for: mediaType) { granted in
+          setter(granted)
+          group.leave()
+        }
+      default:
+        setter(false)
+      }
+    }
+
+    request(.video) { granted in videoGranted = granted }
+    request(.audio) { granted in audioGranted = granted }
+
+    group.notify(queue: .main) {
+      completion(videoGranted && audioGranted)
+    }
+  }
+
   func start(path: String?, videoId: String?, audioId: String?, result: @escaping FlutterResult) {
     guard let path = path else {
       result(FlutterError(code: "NO_PATH", message: "Chemin manquant", details: nil))
       return
     }
 
+    ensurePermissions { granted in
+      guard granted else {
+        result(FlutterError(code: "PERMISSION_DENIED", message: "Autorisez la caméra et le micro dans Préférences Système", details: nil))
+        return
+      }
+
+      self.startWithGrantedPermissions(path: path, videoId: videoId, audioId: audioId, result: result)
+    }
+  }
+
+  private func startWithGrantedPermissions(path: String, videoId: String?, audioId: String?, result: @escaping FlutterResult) {
     session.beginConfiguration()
     session.sessionPreset = .high
 

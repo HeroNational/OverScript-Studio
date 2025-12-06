@@ -28,6 +28,7 @@ mixin _$SettingsModel {
   double get promptOpacity => throw _privateConstructorUsedError;
   String? get selectedCameraId => throw _privateConstructorUsedError;
   String? get selectedMicId => throw _privateConstructorUsedError;
+  bool get enableVideoSharing => throw _privateConstructorUsedError;
   bool get enableFocusMode => throw _privateConstructorUsedError;
   String get backgroundColor => throw _privateConstructorUsedError;
   String get textColor => throw _privateConstructorUsedError;
@@ -70,6 +71,7 @@ abstract class $SettingsModelCopyWith<$Res> {
       double promptOpacity,
       String? selectedCameraId,
       String? selectedMicId,
+      bool enableVideoSharing,
       bool enableFocusMode,
       String backgroundColor,
       String textColor,
@@ -111,6 +113,7 @@ class _$SettingsModelCopyWithImpl<$Res, $Val extends SettingsModel>
     Object? promptOpacity = null,
     Object? selectedCameraId = freezed,
     Object? selectedMicId = freezed,
+    Object? enableVideoSharing = null,
     Object? enableFocusMode = null,
     Object? backgroundColor = null,
     Object? textColor = null,
@@ -163,6 +166,10 @@ class _$SettingsModelCopyWithImpl<$Res, $Val extends SettingsModel>
           ? _value.selectedMicId
           : selectedMicId // ignore: cast_nullable_to_non_nullable
               as String?,
+      enableVideoSharing: null == enableVideoSharing
+          ? _value.enableVideoSharing
+          : enableVideoSharing // ignore: cast_nullable_to_non_nullable
+              as bool,
       enableFocusMode: null == enableFocusMode
           ? _value.enableFocusMode
           : enableFocusMode // ignore: cast_nullable_to_non_nullable
@@ -256,6 +263,7 @@ abstract class _$$SettingsModelImplCopyWith<$Res>
       double promptOpacity,
       String? selectedCameraId,
       String? selectedMicId,
+      bool enableVideoSharing,
       bool enableFocusMode,
       String backgroundColor,
       String textColor,
@@ -295,6 +303,7 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
     Object? promptOpacity = null,
     Object? selectedCameraId = freezed,
     Object? selectedMicId = freezed,
+    Object? enableVideoSharing = null,
     Object? enableFocusMode = null,
     Object? backgroundColor = null,
     Object? textColor = null,
@@ -347,6 +356,10 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
           ? _value.selectedMicId
           : selectedMicId // ignore: cast_nullable_to_non_nullable
               as String?,
+      enableVideoSharing: null == enableVideoSharing
+          ? _value.enableVideoSharing
+          : enableVideoSharing // ignore: cast_nullable_to_non_nullable
+              as bool,
       enableFocusMode: null == enableFocusMode
           ? _value.enableFocusMode
           : enableFocusMode // ignore: cast_nullable_to_non_nullable
@@ -435,6 +448,7 @@ class _$SettingsModelImpl implements _SettingsModel {
       this.promptOpacity = 0.9,
       this.selectedCameraId,
       this.selectedMicId,
+      this.enableVideoSharing = false,
       this.enableFocusMode = false,
       this.backgroundColor = '#1a1a1a',
       this.textColor = '#ffffff',
@@ -480,6 +494,9 @@ class _$SettingsModelImpl implements _SettingsModel {
   final String? selectedCameraId;
   @override
   final String? selectedMicId;
+  @override
+  @JsonKey()
+  final bool enableVideoSharing;
   @override
   @JsonKey()
   final bool enableFocusMode;
@@ -543,7 +560,7 @@ class _$SettingsModelImpl implements _SettingsModel {
 
   @override
   String toString() {
-    return 'SettingsModel(defaultSpeed: $defaultSpeed, speedUnit: $speedUnit, autoFullscreen: $autoFullscreen, autoStartCamera: $autoStartCamera, cameraAsBackground: $cameraAsBackground, promptOpacity: $promptOpacity, selectedCameraId: $selectedCameraId, selectedMicId: $selectedMicId, enableFocusMode: $enableFocusMode, backgroundColor: $backgroundColor, textColor: $textColor, fontFamily: $fontFamily, fontSize: $fontSize, toolbarPosition: $toolbarPosition, toolbarScale: $toolbarScale, toolboxTheme: $toolboxTheme, toolbarOrientation: $toolbarOrientation, pauseOnMouseMove: $pauseOnMouseMove, pauseKey: $pauseKey, locale: $locale, showTimers: $showTimers, countdownDuration: $countdownDuration, themeMode: $themeMode, mockTextType: $mockTextType, showMockTextWhenEmpty: $showMockTextWhenEmpty, customShortcuts: $customShortcuts)';
+    return 'SettingsModel(defaultSpeed: $defaultSpeed, speedUnit: $speedUnit, autoFullscreen: $autoFullscreen, autoStartCamera: $autoStartCamera, cameraAsBackground: $cameraAsBackground, promptOpacity: $promptOpacity, selectedCameraId: $selectedCameraId, selectedMicId: $selectedMicId, enableVideoSharing: $enableVideoSharing, enableFocusMode: $enableFocusMode, backgroundColor: $backgroundColor, textColor: $textColor, fontFamily: $fontFamily, fontSize: $fontSize, toolbarPosition: $toolbarPosition, toolbarScale: $toolbarScale, toolboxTheme: $toolboxTheme, toolbarOrientation: $toolbarOrientation, pauseOnMouseMove: $pauseOnMouseMove, pauseKey: $pauseKey, locale: $locale, showTimers: $showTimers, countdownDuration: $countdownDuration, themeMode: $themeMode, mockTextType: $mockTextType, showMockTextWhenEmpty: $showMockTextWhenEmpty, customShortcuts: $customShortcuts)';
   }
 
   @override
@@ -567,6 +584,8 @@ class _$SettingsModelImpl implements _SettingsModel {
                 other.selectedCameraId == selectedCameraId) &&
             (identical(other.selectedMicId, selectedMicId) ||
                 other.selectedMicId == selectedMicId) &&
+            (identical(other.enableVideoSharing, enableVideoSharing) ||
+                other.enableVideoSharing == enableVideoSharing) &&
             (identical(other.enableFocusMode, enableFocusMode) ||
                 other.enableFocusMode == enableFocusMode) &&
             (identical(other.backgroundColor, backgroundColor) ||
@@ -616,6 +635,7 @@ class _$SettingsModelImpl implements _SettingsModel {
         promptOpacity,
         selectedCameraId,
         selectedMicId,
+        enableVideoSharing,
         enableFocusMode,
         backgroundColor,
         textColor,
@@ -660,6 +680,7 @@ abstract class _SettingsModel implements SettingsModel {
       final double promptOpacity,
       final String? selectedCameraId,
       final String? selectedMicId,
+      final bool enableVideoSharing,
       final bool enableFocusMode,
       final String backgroundColor,
       final String textColor,
@@ -698,6 +719,8 @@ abstract class _SettingsModel implements SettingsModel {
   String? get selectedCameraId;
   @override
   String? get selectedMicId;
+  @override
+  bool get enableVideoSharing;
   @override
   bool get enableFocusMode;
   @override

@@ -1,8 +1,10 @@
-import 'dart:io' show Platform;
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:prompteur/l10n/app_localizations.dart';
 import '../../../data/models/settings_model.dart';
 import '../../../core/utils/speed_converter.dart';
@@ -560,6 +562,8 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 12),
+        _buildVideoActions(context, ref),
+        const SizedBox(height: 12),
         Text(
           l10n.microphone,
           style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w600),
@@ -983,5 +987,94 @@ class SettingsScreen extends ConsumerWidget {
       case SpeedUnit.wordsPerMinute:
         return 1000.0;
     }
+  }
+
+  Widget _buildVideoActions(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+
+    final shareLabel = _tr(ref.read(settingsProvider), 'Partager', 'Share');
+
+    Future<void> pickAndShare() async {
+      final result = await FilePicker.platform.pickFiles(type: FileType.video);
+      if (result == null || result.files.single.path == null) return;
+
+      final path = result.files.single.path!;
+      await Share.shareXFiles([XFile(path)], text: shareLabel);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_tr(ref.read(settingsProvider), 'Vidéo partagée', 'Shared'))),
+      );
+    }
+
+    Future<void> pickAndDelete() async {
+      final result = await FilePicker.platform.pickFiles(type: FileType.video);
+      if (result == null || result.files.single.path == null) return;
+
+      final path = result.files.single.path!;
+      final file = File(path);
+      if (await file.exists()) {
+        await file.delete();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(_tr(ref.read(settingsProvider), 'Vidéo supprimée', 'Deleted'))),
+        );
+      }
+    }
+
+    Widget buildButton({required IconData icon, required String label, required VoidCallback onPressed}) {
+      return SizedBox(
+        height: 48,
+        child: ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white.withOpacity(0.08),
+            foregroundColor: Colors.white,
+            elevation: 0,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+          onPressed: onPressed,
+          icon: Icon(icon, size: 20),
+          label: Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(LucideIcons.video, color: Colors.white70, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              _tr(ref.read(settingsProvider), 'Actions vidéo', 'Video actions'),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              Expanded(child: buildButton(icon: LucideIcons.share_2, label: shareLabel, onPressed: pickAndShare)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: buildButton(
+                  icon: LucideIcons.trash_2,
+                  label: _tr(ref.read(settingsProvider), 'Supprimer', 'Delete'),
+                  onPressed: pickAndDelete,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }

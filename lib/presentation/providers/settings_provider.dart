@@ -96,6 +96,16 @@ class SettingsNotifier extends StateNotifier<SettingsModel> {
     await _storageService.saveSettings(state);
   }
 
+  Future<void> updateEnableVideoSharing(bool value) async {
+    state = state.copyWith(enableVideoSharing: value);
+    await _storageService.saveSettings(state);
+  }
+
+  Future<void> clearVideoSelection() async {
+    state = state.copyWith(selectedCameraId: null, enableVideoSharing: false);
+    await _storageService.saveSettings(state);
+  }
+
   Future<void> updateShowTimers(bool value) async {
     state = state.copyWith(showTimers: value);
     await _storageService.saveSettings(state);

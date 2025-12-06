@@ -48,6 +48,7 @@ dependencies:
   camera: ^0.10.5+5
   flutter_webrtc: ^0.9.46
   permission_handler: ^11.3.1
+  share_plus: ^7.2.2
 
   # Éditeur riche WYSIWYG
   flutter_quill: ^11.5.0

@@ -538,17 +538,17 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerPr
                   padding: const EdgeInsets.only(top: 12),
                   child: Column(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
+                        runSpacing: 4,
                         children: [
                           Text(
                             AppLocalizations.of(context)!.footerCopyright(DateTime.now().year),
                             style: const TextStyle(color: Colors.white70, fontSize: 12),
                           ),
-                          const SizedBox(width: 8),
                           const Text('|', style: TextStyle(color: Colors.white38)),
-                          const SizedBox(width: 8),
                           TextButton(
                             onPressed: () {
                               print('[UI] Open CGU');
@@ -634,47 +634,64 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerPr
             children: [
               const Icon(Icons.videocam, color: Colors.white70),
               const SizedBox(width: 8),
-              Text(
-                AppLocalizations.of(context)?.cameraAsBackground ?? 'Caméra',
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
+              Expanded(
+                child: Text(
+                  AppLocalizations.of(context)?.cameraAsBackground ?? 'Caméra',
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              const Spacer(),
+              const SizedBox(width: 8),
               _buildAudioMeter(),
             ],
           ),
           const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _buildDeviceDropdown(
-                  context,
-                  label: 'Caméra',
-                  value: _selectedCam,
-                  items: _cams,
-                  onChanged: (v) {
-                    setState(() => _selectedCam = v);
-                    if (v != null) {
-                      _startHomePreview(auto: false);
-                    }
-                  },
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildDeviceDropdown(
-                  context,
-                  label: 'Micro',
-                  value: _selectedMic,
-                  items: _mics,
-                  onChanged: (v) {
-                    setState(() => _selectedMic = v);
-                    if (v != null) {
-                      _startHomePreview(auto: false);
-                    }
-                  },
-                ),
-              ),
-            ],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final narrow = constraints.maxWidth < 360;
+              final camDropdown = _buildDeviceDropdown(
+                context,
+                label: 'Caméra',
+                value: _selectedCam,
+                items: _cams,
+                onChanged: (v) {
+                  setState(() => _selectedCam = v);
+                  if (v != null) {
+                    _startHomePreview(auto: false);
+                  }
+                },
+              );
+              final micDropdown = _buildDeviceDropdown(
+                context,
+                label: 'Micro',
+                value: _selectedMic,
+                items: _mics,
+                onChanged: (v) {
+                  setState(() => _selectedMic = v);
+                  if (v != null) {
+                    _startHomePreview(auto: false);
+                  }
+                },
+              );
+
+              if (narrow) {
+                return Column(
+                  children: [
+                    camDropdown,
+                    const SizedBox(height: 12),
+                    micDropdown,
+                  ],
+                );
+              }
+
+              return Row(
+                children: [
+                  Expanded(child: camDropdown),
+                  const SizedBox(width: 12),
+                  Expanded(child: micDropdown),
+                ],
+              );
+            },
           ),
           const SizedBox(height: 12),
           SizedBox(
@@ -957,8 +974,13 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerPr
       await _captureService.startCapture(cameraId: _selectedCam, micId: _selectedMic);
       setState(() {});
     } catch (e) {
+      debugPrint('[Record] start failed: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enregistrement non disponible sur cet appareil.')),
+        SnackBar(
+          content: Text(
+            'Enregistrement impossible : $e\nVérifiez les autorisations caméra/micro dans Réglages Système > Confidentialité.',
+          ),
+        ),
       );
     }
   }
