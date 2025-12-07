@@ -19,8 +19,8 @@ class AppMenuSheet extends ConsumerStatefulWidget {
 class _AppMenuSheetState extends ConsumerState<AppMenuSheet> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   final VideoLibraryService _videoService = VideoLibraryService();
-  late Future<List<FileSystemEntity>> _videosFuture;
   final StorageService _storage = StorageService();
+  late Future<List<FileSystemEntity>> _videosFuture;
   late Future<Map<String, dynamic>> _infoFuture;
 
   @override
