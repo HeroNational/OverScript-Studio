@@ -525,6 +525,7 @@ class SettingsScreen extends ConsumerWidget {
           child: videosAsync.when(
             data: (devices) {
               debugPrint('[Settings] Video devices loaded: ${devices.length}');
+              final currentSettings = ref.watch(settingsProvider);
               final items = [
                 DropdownMenuItem<String>(
                   value: null,
@@ -540,8 +541,8 @@ class SettingsScreen extends ConsumerWidget {
                   );
                 }),
               ];
-              final selectedCamera = items.any((item) => item.value == settings.selectedCameraId)
-                  ? settings.selectedCameraId
+              final selectedCamera = items.any((item) => item.value == currentSettings.selectedCameraId)
+                  ? currentSettings.selectedCameraId
                   : null;
               return DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
@@ -589,6 +590,7 @@ class SettingsScreen extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: audiosAsync.when(
             data: (devices) {
+              final currentSettings = ref.watch(settingsProvider);
               final items = [
                 DropdownMenuItem<String>(
                   value: null,
@@ -602,7 +604,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ];
               final selectedMic =
-                  items.any((item) => item.value == settings.selectedMicId) ? settings.selectedMicId : null;
+                  items.any((item) => item.value == currentSettings.selectedMicId) ? currentSettings.selectedMicId : null;
               return DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   value: selectedMic,
