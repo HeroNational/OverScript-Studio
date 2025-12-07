@@ -929,7 +929,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpFeature4.
   ///
   /// In en, this message translates to:
-  /// **'Mobile-friendly experience (keyboard shortcuts hidden on phones)'**
+  /// **'Mobile-friendly experience'**
   String get helpFeature4;
 
   /// No description provided for @helpFeature5.

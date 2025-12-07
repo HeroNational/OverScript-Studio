@@ -139,7 +139,7 @@
   "helpFeature1": "System overview tab with locale-aware details and recording folder shortcut",
   "helpFeature2": "Per-video actions: open in folder, share, or delete recordings",
   "helpFeature3": "Customizable speed, fonts, colors, and mirror mode toggle",
-  "helpFeature4": "Mobile-friendly experience (keyboard shortcuts hidden on phones)",
+  "helpFeature4": "Mobile-friendly experience",
   "helpFeature5": "Focus mode and fullscreen controls for distraction-free reading",
   "helpSystemRequirementsTitle": "System Requirements (Windows)",
   "helpSystemRequirementsDescription": "For Windows users, video recording requires Visual C++ Redistributable 2013 (x64). If you experience issues with recording:",

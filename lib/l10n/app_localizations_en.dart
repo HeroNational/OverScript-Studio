@@ -444,8 +444,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Customizable speed, fonts, colors, and mirror mode toggle';
 
   @override
-  String get helpFeature4 =>
-      'Mobile-friendly experience (keyboard shortcuts hidden on phones)';
+  String get helpFeature4 => 'Mobile-friendly experience';
 
   @override
   String get helpFeature5 =>

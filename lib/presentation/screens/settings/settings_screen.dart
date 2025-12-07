@@ -540,8 +540,7 @@ class SettingsScreen extends ConsumerWidget {
                   );
                 }),
               ];
-              final selectedCamera =
-                  items.any((item) => item.value == settings.selectedCameraId)
+              final selectedCamera = items.any((item) => item.value == settings.selectedCameraId)
                   ? settings.selectedCameraId
                   : null;
               return DropdownButtonHideUnderline(
@@ -603,9 +602,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ];
               final selectedMic =
-                  items.any((item) => item.value == settings.selectedMicId)
-                  ? settings.selectedMicId
-                  : null;
+                  items.any((item) => item.value == settings.selectedMicId) ? settings.selectedMicId : null;
               return DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   value: selectedMic,
@@ -1137,6 +1134,51 @@ class SettingsScreen extends ConsumerWidget {
       );
     }
 
-    return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(LucideIcons.video, color: Colors.white70, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              _tr(ref.read(settingsProvider), 'Actions vidéo', 'Video actions'),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              Expanded(
+                child: buildButton(
+                  icon: LucideIcons.share_2,
+                  label: shareLabel,
+                  onPressed: pickAndShare,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: buildButton(
+                  icon: LucideIcons.trash_2,
+                  label: _tr(ref.read(settingsProvider), 'Supprimer', 'Delete'),
+                  onPressed: pickAndDelete,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }

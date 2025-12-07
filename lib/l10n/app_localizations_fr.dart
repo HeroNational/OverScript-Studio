@@ -445,8 +445,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Vitesse, polices, couleurs et bascule du mode miroir personnalisables';
 
   @override
-  String get helpFeature4 =>
-      'Expérience mobile adaptée (raccourcis clavier masqués sur téléphone)';
+  String get helpFeature4 => 'Expérience mobile adaptée';
 
   @override
   String get helpFeature5 =>

@@ -51,7 +51,9 @@ class GlasmorphicToolbox extends ConsumerWidget {
     double finalScale = isMobileSize ? 0.95 : scale.clamp(0.7, 1.0);
     double adaptiveMargin = isMobileSize ? 8.0 : 24.0;
     // Sur desktop on force une largeur plus compacte pour éviter les grands espacements.
-    final double maxWidth = isMobileSize ? MediaQuery.of(context).size.width * 0.7 : 480;
+    final double maxWidth = isMobileSize
+        ? MediaQuery.of(context).size.width * 0.7
+        : 480;
 
     final baseRadius = 24.0 * finalScale;
     final renderScale = finalScale;
@@ -74,10 +76,7 @@ class GlasmorphicToolbox extends ConsumerWidget {
                   offset: Offset(0, 10 * renderScale),
                 ),
               ],
-              border: Border.all(
-                color: palette.borderColor,
-                width: 1,
-              ),
+              border: Border.all(color: palette.borderColor, width: 1),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(baseRadius),
@@ -92,16 +91,10 @@ class GlasmorphicToolbox extends ConsumerWidget {
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        palette.surfaceStart,
-                        palette.surfaceEnd,
-                      ],
+                      colors: [palette.surfaceStart, palette.surfaceEnd],
                     ),
                     borderRadius: BorderRadius.circular(baseRadius),
-                    border: Border.all(
-                      color: palette.borderStrong,
-                      width: 1.5,
-                    ),
+                    border: Border.all(color: palette.borderStrong, width: 1.5),
                   ),
                   padding: EdgeInsets.symmetric(
                     horizontal: 10 * renderScale,
@@ -147,7 +140,7 @@ class GlasmorphicToolbox extends ConsumerWidget {
                             ),
                           ],
                         )
-                        : Row(
+                      : Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Expanded(
@@ -155,7 +148,7 @@ class GlasmorphicToolbox extends ConsumerWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
-                            children: [
+                                children: [
                                   _PlaybackPanel(
                                     playbackState: playbackState,
                                     l10n: l10n,
@@ -248,10 +241,7 @@ class _PlaybackPanel extends ConsumerWidget {
           ],
         ),
         borderRadius: BorderRadius.circular(16 * scale),
-        border: Border.all(
-          color: palette.primary.withOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: palette.primary.withOpacity(0.3), width: 1),
       ),
       child: Wrap(
         alignment: WrapAlignment.spaceEvenly,
@@ -270,23 +260,22 @@ class _PlaybackPanel extends ConsumerWidget {
         onPressed: () => ref.read(playbackProvider.notifier).reset(),
         tooltip: l10n?.reset ?? 'Réinitialiser',
         size: 24 * scale,
-        toastMessage: l10n?.reset ?? 'Revenir au début',
       ),
       _GlassButton(
         icon: playbackState.isPlaying ? LucideIcons.pause : LucideIcons.play,
         onPressed: () => ref.read(playbackProvider.notifier).togglePlayPause(),
-        tooltip: playbackState.isPlaying ? (l10n?.pause ?? 'Pause') : (l10n?.play ?? 'Lecture'),
+        tooltip: playbackState.isPlaying
+            ? (l10n?.pause ?? 'Pause')
+            : (l10n?.play ?? 'Lecture'),
         size: 24 * scale,
-        toastMessage: playbackState.isPlaying
-            ? (l10n?.pause ?? 'Lecture mise en pause')
-            : (l10n?.play ?? 'Lecture démarrée'),
       ),
       _GlassButton(
         icon: isRecording ? LucideIcons.circle_stop : LucideIcons.video,
         onPressed: onRecordPressed,
-        tooltip: isRecording ? 'Arrêter l\'enregistrement' : (l10n?.camera ?? 'Démarrer l\'enregistrement'),
+        tooltip: isRecording
+            ? 'Arrêter l\'enregistrement'
+            : (l10n?.camera ?? 'Démarrer l\'enregistrement'),
         size: 24 * scale,
-        toastMessage: isRecording ? 'Enregistrement arrêté' : 'Enregistrement démarré',
         pulse: isRecording,
       ),
     ];
@@ -294,7 +283,6 @@ class _PlaybackPanel extends ConsumerWidget {
     return buttons;
   }
 }
-
 
 class _ActionsPanel extends StatelessWidget {
   final VoidCallback onHomePressed;
@@ -345,10 +333,7 @@ class _ActionsPanel extends StatelessWidget {
           ],
         ),
         borderRadius: BorderRadius.circular(16 * scale),
-        border: Border.all(
-          color: palette.accent.withOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: palette.accent.withOpacity(0.3), width: 1),
       ),
       child: Wrap(
         alignment: WrapAlignment.center,
@@ -386,9 +371,6 @@ class _ActionsPanel extends StatelessWidget {
               ? (l10n?.exitFullscreen ?? 'Quitter le plein écran')
               : (l10n?.fullscreen ?? 'Plein écran'),
           size: 24 * scale,
-          toastMessage: isFullscreen
-              ? (l10n?.exitFullscreen ?? 'Plein écran désactivé')
-              : (l10n?.fullscreen ?? 'Plein écran activé'),
         ),
       );
     }
@@ -412,7 +394,6 @@ class _GlassButton extends StatefulWidget {
   final String tooltip;
   final double size;
   final bool primary;
-  final String? toastMessage;
   final bool pulse;
 
   const _GlassButton({
@@ -421,7 +402,6 @@ class _GlassButton extends StatefulWidget {
     required this.tooltip,
     this.size = 24,
     this.primary = false,
-    this.toastMessage,
     this.pulse = false,
   });
 
@@ -429,7 +409,8 @@ class _GlassButton extends StatefulWidget {
   State<_GlassButton> createState() => _GlassButtonState();
 }
 
-class _GlassButtonState extends State<_GlassButton> with SingleTickerProviderStateMixin {
+class _GlassButtonState extends State<_GlassButton>
+    with SingleTickerProviderStateMixin {
   bool _isHovered = false;
   AnimationController? _pulseController;
   Animation<double>? _pulse;
@@ -441,7 +422,10 @@ class _GlassButtonState extends State<_GlassButton> with SingleTickerProviderSta
       vsync: this,
       duration: const Duration(milliseconds: 900),
     );
-    _pulse = CurvedAnimation(parent: _pulseController!, curve: Curves.easeInOut);
+    _pulse = CurvedAnimation(
+      parent: _pulseController!,
+      curve: Curves.easeInOut,
+    );
     if (widget.pulse) {
       _pulseController?.repeat(reverse: true);
     }
@@ -476,15 +460,6 @@ class _GlassButtonState extends State<_GlassButton> with SingleTickerProviderSta
             // Log simple pour suivre les clics de la toolbox
             debugPrint('[UI] Toolbox click: ${widget.tooltip}');
             widget.onPressed();
-            if (widget.toastMessage != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(widget.toastMessage!),
-                  duration: const Duration(milliseconds: 1200),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            }
           },
           child: AnimatedBuilder(
             animation: _pulse ?? const AlwaysStoppedAnimation(0),
@@ -502,20 +477,24 @@ class _GlassButtonState extends State<_GlassButton> with SingleTickerProviderSta
                     color: widget.pulse
                         ? Colors.red.withOpacity(0.85)
                         : (_isHovered
-                            ? Colors.white.withOpacity(0.22)
-                            : Colors.white.withOpacity(0.12)),
-                    borderRadius: BorderRadius.circular(widget.primary ? 12 : 8),
+                              ? Colors.white.withOpacity(0.22)
+                              : Colors.white.withOpacity(0.12)),
+                    borderRadius: BorderRadius.circular(
+                      widget.primary ? 12 : 8,
+                    ),
                     border: Border.all(
                       color: widget.pulse
                           ? Colors.white.withOpacity(0.6)
                           : (_isHovered
-                              ? Colors.white.withOpacity(0.45)
-                              : Colors.white.withOpacity(0.25)),
+                                ? Colors.white.withOpacity(0.45)
+                                : Colors.white.withOpacity(0.25)),
                       width: widget.pulse ? 2 : 1,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(_isHovered ? 0.28 : 0.18),
+                        color: Colors.black.withOpacity(
+                          _isHovered ? 0.28 : 0.18,
+                        ),
                         blurRadius: _isHovered ? 14 : 10,
                         offset: const Offset(0, 10),
                       ),

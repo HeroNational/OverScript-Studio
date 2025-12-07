@@ -390,7 +390,7 @@
   "helpFeature1": "Onglet Infos enrichi (détails système et accès au dossier des enregistrements)",
   "helpFeature2": "Actions par vidéo : ouvrir dans le dossier, partager ou supprimer",
   "helpFeature3": "Vitesse, polices, couleurs et bascule du mode miroir personnalisables",
-  "helpFeature4": "Expérience mobile adaptée (raccourcis clavier masqués sur téléphone)",
+  "helpFeature4": "Expérience mobile adaptée",
   "helpFeature5": "Mode focus et plein écran pour une lecture sans distraction",
   "helpSystemRequirementsTitle": "Configuration système requise (Windows)",
   "helpSystemRequirementsDescription": "Pour les utilisateurs Windows, l'enregistrement vidéo nécessite Visual C++ Redistributable 2013 (x64). Si vous rencontrez des problèmes d'enregistrement :",
