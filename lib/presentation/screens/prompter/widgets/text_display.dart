@@ -21,7 +21,9 @@ class _TextDisplayState extends ConsumerState<TextDisplay> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(playbackProvider.notifier).setScrollController(_scrollController);
+      ref
+          .read(playbackProvider.notifier)
+          .setScrollController(_scrollController);
     });
   }
 
@@ -41,21 +43,10 @@ class _TextDisplayState extends ConsumerState<TextDisplay> {
     final playbackState = ref.watch(playbackProvider);
     final settings = ref.watch(settingsProvider);
     final backgroundColor = _parseColor(settings.backgroundColor);
+    final shouldMirror = settings.mirrorMode;
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            backgroundColor,
-            backgroundColor.withOpacity(0.92),
-          ],
-        ),
-      ),
+    final mirroredContent = Transform.scale(
+      scaleX: shouldMirror ? -1.0 : 1.0,
       child: Stack(
         children: [
           _buildContent(playbackState, settings),
@@ -104,6 +95,20 @@ class _TextDisplayState extends ConsumerState<TextDisplay> {
         ],
       ),
     );
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [backgroundColor, backgroundColor.withOpacity(0.92)],
+        ),
+      ),
+      child: mirroredContent,
+    );
   }
 
   Widget _buildContent(PlaybackState playbackState, SettingsModel settings) {
@@ -113,10 +118,15 @@ class _TextDisplayState extends ConsumerState<TextDisplay> {
     return _buildTextContent(playbackState, settings);
   }
 
-  Widget _buildTextContent(PlaybackState playbackState, SettingsModel settings) {
+  Widget _buildTextContent(
+    PlaybackState playbackState,
+    SettingsModel settings,
+  ) {
     if (playbackState.richContentJson != null) {
       try {
-        final document = quill.Document.fromJson(jsonDecode(playbackState.richContentJson!));
+        final document = quill.Document.fromJson(
+          jsonDecode(playbackState.richContentJson!),
+        );
         final controller = quill.QuillController(
           document: document,
           selection: const TextSelection.collapsed(offset: 0),
@@ -151,7 +161,9 @@ class _TextDisplayState extends ConsumerState<TextDisplay> {
             fontSize: settings.fontSize,
             color: _parseColor(settings.textColor),
             height: 1.5,
-            fontFamily: settings.fontFamily == 'System' ? null : settings.fontFamily,
+            fontFamily: settings.fontFamily == 'System'
+                ? null
+                : settings.fontFamily,
           ),
           child: Text(
             playbackState.currentText ??
@@ -173,9 +185,15 @@ class _TextDisplayState extends ConsumerState<TextDisplay> {
     );
 
     return quill.DefaultStyles(
-      h1: base.h1?.copyWith(style: textStyle.copyWith(fontSize: settings.fontSize * 1.6)),
-      h2: base.h2?.copyWith(style: textStyle.copyWith(fontSize: settings.fontSize * 1.4)),
-      h3: base.h3?.copyWith(style: textStyle.copyWith(fontSize: settings.fontSize * 1.2)),
+      h1: base.h1?.copyWith(
+        style: textStyle.copyWith(fontSize: settings.fontSize * 1.6),
+      ),
+      h2: base.h2?.copyWith(
+        style: textStyle.copyWith(fontSize: settings.fontSize * 1.4),
+      ),
+      h3: base.h3?.copyWith(
+        style: textStyle.copyWith(fontSize: settings.fontSize * 1.2),
+      ),
       h4: base.h4,
       h5: base.h5,
       h6: base.h6,
@@ -191,7 +209,9 @@ class _TextDisplayState extends ConsumerState<TextDisplay> {
       inlineCode: base.inlineCode,
       link: base.link,
       color: base.color,
-      placeHolder: base.placeHolder?.copyWith(style: textStyle.copyWith(color: Colors.white54)),
+      placeHolder: base.placeHolder?.copyWith(
+        style: textStyle.copyWith(color: Colors.white54),
+      ),
       lists: base.lists,
       quote: base.quote,
       code: base.code,
@@ -208,9 +228,7 @@ class _TextDisplayState extends ConsumerState<TextDisplay> {
   Widget _buildPdfContent(PlaybackState playbackState) {
     if (playbackState.isLoadingPdf) {
       return const Center(
-        child: CircularProgressIndicator(
-          color: Color(0xFF6366F1),
-        ),
+        child: CircularProgressIndicator(color: Color(0xFF6366F1)),
       );
     }
 
@@ -244,7 +262,10 @@ class _TextDisplayState extends ConsumerState<TextDisplay> {
       color: pdfBackgroundColor,
       child: ListView.builder(
         controller: _scrollController,
-        padding: EdgeInsets.symmetric(horizontal: isMobile ? 8 : 24, vertical: isMobile ? 16 : 24),
+        padding: EdgeInsets.symmetric(
+          horizontal: isMobile ? 8 : 24,
+          vertical: isMobile ? 16 : 24,
+        ),
         itemCount: pages.length,
         itemBuilder: (context, index) {
           return Container(

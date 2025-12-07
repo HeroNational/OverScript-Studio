@@ -41,6 +41,12 @@ class SettingsNotifier extends StateNotifier<SettingsModel> {
     await _storageService.saveSettings(state);
   }
 
+  Future<void> updateMirrorMode(bool enabled) async {
+    debugPrint('[Settings] Update mirror mode: $enabled');
+    state = state.copyWith(mirrorMode: enabled);
+    await _storageService.saveSettings(state);
+  }
+
   Future<void> updateFontFamily(String font) async {
     debugPrint('[Settings] Update font family: $font');
     state = state.copyWith(fontFamily: font);
@@ -164,7 +170,8 @@ class SettingsNotifier extends StateNotifier<SettingsModel> {
 
 final storageServiceProvider = Provider((ref) => StorageService());
 
-final settingsProvider =
-    StateNotifierProvider<SettingsNotifier, SettingsModel>((ref) {
-  return SettingsNotifier(ref.read(storageServiceProvider));
-});
+final settingsProvider = StateNotifierProvider<SettingsNotifier, SettingsModel>(
+  (ref) {
+    return SettingsNotifier(ref.read(storageServiceProvider));
+  },
+);

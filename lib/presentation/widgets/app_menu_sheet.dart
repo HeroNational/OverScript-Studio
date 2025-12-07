@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:video_player/video_player.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../data/services/video_library_service.dart';
 import '../../data/services/storage_service.dart';
 import '../../l10n/app_localizations.dart';
@@ -16,7 +17,8 @@ class AppMenuSheet extends ConsumerStatefulWidget {
   ConsumerState<AppMenuSheet> createState() => _AppMenuSheetState();
 }
 
-class _AppMenuSheetState extends ConsumerState<AppMenuSheet> with SingleTickerProviderStateMixin {
+class _AppMenuSheetState extends ConsumerState<AppMenuSheet>
+    with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   final VideoLibraryService _videoService = VideoLibraryService();
   final StorageService _storage = StorageService();
@@ -54,8 +56,8 @@ class _AppMenuSheetState extends ConsumerState<AppMenuSheet> with SingleTickerPr
             controller: _tabController,
             tabs: [
               Tab(text: l10n?.settings ?? 'Settings'),
-              Tab(text: 'Infos'),
-              Tab(text: 'Vidéos'),
+              Tab(text: l10n?.infoOverviewTitle ?? 'Infos'),
+              Tab(text: l10n?.videosTab ?? 'Vidéos'),
             ],
           ),
         ),
@@ -73,6 +75,8 @@ class _AppMenuSheetState extends ConsumerState<AppMenuSheet> with SingleTickerPr
 
   Widget _buildSystemInfo(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final l10n = AppLocalizations.of(context);
+
     return FutureBuilder<Map<String, dynamic>>(
       future: _infoFuture,
       builder: (context, snapshot) {
@@ -80,33 +84,249 @@ class _AppMenuSheetState extends ConsumerState<AppMenuSheet> with SingleTickerPr
           return const Center(child: CircularProgressIndicator());
         }
         final data = snapshot.data!;
-        final macs = (data['macs'] as List<String>);
-        return Padding(
-          padding: const EdgeInsets.all(16),
-          child: ListView(
-            children: [
-              _infoTile('OS', Platform.operatingSystem),
-              _infoTile('Version OS', Platform.operatingSystemVersion),
-              _infoTile('Architecture', Platform.version.split(' ').first),
-              _infoTile('Resolution', '${size.width.toStringAsFixed(0)} x ${size.height.toStringAsFixed(0)}'),
-              _infoTile('Locale', data['locale'] ?? 'n/a'),
-              _infoTile('Dossier vidéos', data['recordingsPath'] ?? 'n/a'),
-              _infoTile('Vidéos', '${data['videoCount'] ?? 0}'),
-              _infoTile('Trial', data['trialInfo'] ?? 'n/a'),
-              _infoTile('MAC', macs.isEmpty ? 'n/a' : macs.join('  ·  ')),
-            ],
+        final recordingsPath = data['recordingsPath'] as String?;
+        final localeCode = (data['locale'] ?? 'fr').toString();
+        final localeLabel = localeCode.toLowerCase().startsWith('en')
+            ? (l10n?.english ?? 'English')
+            : (l10n?.french ?? 'Français');
+        final infoItems = [
+          _InfoItem(
+            icon: Icons.devices_other,
+            label: l10n?.infoOs ?? 'OS',
+            value: Platform.operatingSystem,
           ),
+          _InfoItem(
+            icon: Icons.terminal,
+            label: l10n?.infoOsVersion ?? 'Version OS',
+            value: Platform.operatingSystemVersion,
+          ),
+          _InfoItem(
+            icon: Icons.memory,
+            label: l10n?.infoArchitecture ?? 'Architecture',
+            value: Platform.version.split(' ').first,
+          ),
+          _InfoItem(
+            icon: Icons.monitor,
+            label: l10n?.infoResolution ?? 'Resolution',
+            value:
+                '${size.width.toStringAsFixed(0)} x ${size.height.toStringAsFixed(0)}',
+          ),
+          _InfoItem(
+            icon: Icons.language,
+            label: l10n?.infoLocale ?? 'Locale',
+            value: localeLabel,
+          ),
+          _InfoItem(
+            icon: Icons.video_library_outlined,
+            label: l10n?.infoVideosCount ?? 'Videos',
+            value: '${data['videoCount'] ?? 0}',
+          ),
+          _InfoItem(
+            icon: Icons.verified_user_outlined,
+            label: l10n?.infoTrial ?? 'Trial',
+            value: data['trialInfo'] ?? 'n/a',
+          ),
+        ];
+
+        return ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(
+              l10n?.infoOverviewTitle ?? 'Informations système',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n?.infoOverviewSubtitle ??
+                  'Votre environnement et vos enregistrements en un coup d\'oeil.',
+              style: const TextStyle(color: Colors.white70),
+            ),
+            const SizedBox(height: 16),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide = constraints.maxWidth > 700;
+                return GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: infoItems.length,
+                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: isWide ? 300 : 360,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    mainAxisExtent: isWide ? 78 : 94,
+                  ),
+                  itemBuilder: (context, index) =>
+                      _buildInfoCard(infoItems[index]),
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+            if (recordingsPath != null)
+              _buildRecordingsCard(
+                context,
+                recordingsPath,
+                l10n?.infoRecordingsFolder ?? 'Dossier des enregistrements',
+                l10n?.infoOpenRecordingsFolder ?? 'Ouvrir le dossier',
+              ),
+          ],
         );
       },
     );
   }
 
-  Widget _infoTile(String label, String value) {
-    return ListTile(
-      title: Text(label, style: const TextStyle(color: Colors.white70)),
-      subtitle: Text(value, style: const TextStyle(color: Colors.white)),
+  Widget _buildInfoCard(_InfoItem item) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.04),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.white.withOpacity(0.08)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(item.icon, color: Colors.white70, size: 16),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  item.label,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            item.value,
+            style: const TextStyle(
+              color: Colors.white70,
+              height: 1.25,
+              fontSize: 11,
+            ),
+          ),
+        ],
+      ),
     );
   }
+
+  Widget _buildRecordingsCard(
+    BuildContext context,
+    String path,
+    String title,
+    String buttonLabel,
+  ) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.folder_open, color: Colors.white70),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () => _openRecordingsFolder(path),
+                icon: const Icon(Icons.open_in_new, color: Color(0xFF93C5FD)),
+                label: Text(
+                  buttonLabel,
+                  style: const TextStyle(
+                    color: Color(0xFF93C5FD),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          SelectableText(
+            path,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontFamily: 'monospace',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMacAddresses(String label, List<String> macs) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.white.withOpacity(0.08)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.badge_outlined, color: Colors.white70),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          if (macs.isEmpty)
+            const Text('n/a', style: TextStyle(color: Colors.white54))
+          else
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: macs
+                  .map(
+                    (m) => Chip(
+                      label: Text(m),
+                      backgroundColor: Colors.white.withOpacity(0.08),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        side: BorderSide(color: Colors.white.withOpacity(0.12)),
+                      ),
+                      labelStyle: const TextStyle(color: Colors.white),
+                    ),
+                  )
+                  .toList(),
+            ),
+        ],
+      ),
+    );
+  }
+
   Future<Map<String, dynamic>> _gatherSystemInfo() async {
     final settings = ref.read(settingsProvider);
     final videos = await _videoService.listVideos();
@@ -129,8 +349,14 @@ class _AppMenuSheetState extends ConsumerState<AppMenuSheet> with SingleTickerPr
 
   Widget _buildVideoLibrary(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return FutureBuilder(
-      future: _videosFuture,
+    final settings = ref.watch(settingsProvider);
+    final localeCode = settings.locale;
+    final dateFormat = DateFormat.yMMMd(localeCode).add_Hm();
+    final shareLabel = localeCode.toLowerCase().startsWith('en')
+        ? 'Share'
+        : 'Partager';
+    return FutureBuilder<List<dynamic>>(
+      future: Future.wait([_videosFuture, _videoService.recordingsPath()]),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -143,46 +369,100 @@ class _AppMenuSheetState extends ConsumerState<AppMenuSheet> with SingleTickerPr
             ),
           );
         }
-        final files = snapshot.data ?? [];
-        if (files.isEmpty) {
-          return Center(
-            child: Text(
-              'Aucune vidéo trouvée',
-              style: const TextStyle(color: Colors.white70),
-            ),
-          );
+        if (!snapshot.hasData || snapshot.data == null) {
+          return const SizedBox.shrink();
         }
-        final fmt = DateFormat('yyyy-MM-dd HH:mm:ss');
-        return ListView.builder(
-          itemCount: files.length,
-          itemBuilder: (context, index) {
-            final file = files[index];
-            final name = file.uri.pathSegments.last;
-            return ListTile(
-              leading: const Icon(Icons.video_library, color: Colors.white70),
-              title: Text(name, style: const TextStyle(color: Colors.white)),
-              subtitle: Text(
-                fmt.format(file.statSync().modified),
-                style: const TextStyle(color: Colors.white54, fontSize: 12),
-              ),
-              onTap: () => _openPlayer(context, file.path),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    tooltip: 'Afficher dans le dossier',
-                    icon: const Icon(Icons.folder_open, color: Colors.white70),
-                    onPressed: () => _revealFile(file),
+        final files = (snapshot.data![0] as List<FileSystemEntity>?) ?? [];
+        final recordingsPath = snapshot.data![1] as String? ?? '';
+
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  onPressed: () => _openRecordingsFolder(recordingsPath),
+                  style: TextButton.styleFrom(
+                    foregroundColor: const Color(0xFF93C5FD),
                   ),
-                  IconButton(
-                    tooltip: 'Supprimer',
-                    icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                    onPressed: () => _deleteFile(context, file),
+                  icon: const Icon(Icons.folder_open),
+                  label: Text(
+                    l10n?.infoOpenRecordingsFolder ?? 'Ouvrir le dossier',
                   ),
-                ],
+                ),
               ),
-            );
-          },
+            ),
+            Expanded(
+              child: files.isEmpty
+                  ? Center(
+                      child: Text(
+                        l10n?.videosEmpty ?? 'Aucune vidéo trouvée',
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: files.length,
+                      itemBuilder: (context, index) {
+                        final file = files[index];
+                        final name = file.uri.pathSegments.last;
+                        return ListTile(
+                          leading: const Icon(
+                            Icons.video_library,
+                            color: Colors.white70,
+                          ),
+                          title: Text(
+                            name,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          subtitle: Text(
+                            dateFormat.format(file.statSync().modified),
+                            style: const TextStyle(
+                              color: Colors.white54,
+                              fontSize: 12,
+                            ),
+                          ),
+                          onTap: () => _openPlayer(context, file.path),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                tooltip: 'Afficher dans le dossier',
+                                icon: const Icon(
+                                  Icons.folder_open,
+                                  color: Colors.white70,
+                                ),
+                                onPressed: () => _revealFile(file),
+                              ),
+                              IconButton(
+                                tooltip: shareLabel,
+                                icon: const Icon(
+                                  Icons.ios_share,
+                                  color: Colors.white70,
+                                ),
+                                onPressed: () async {
+                                  if (file is File && await file.exists()) {
+                                    await Share.shareXFiles([
+                                      XFile(file.path),
+                                    ], text: name);
+                                  }
+                                },
+                              ),
+                              IconButton(
+                                tooltip: 'Supprimer',
+                                icon: const Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.redAccent,
+                                ),
+                                onPressed: () => _deleteFile(context, file),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
         );
       },
     );
@@ -199,16 +479,16 @@ class _AppMenuSheetState extends ConsumerState<AppMenuSheet> with SingleTickerPr
       if (file is File && await file.exists()) {
         await file.delete();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Vidéo supprimée')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Vidéo supprimée')));
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Suppression impossible: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Suppression impossible: $e')));
       }
     } finally {
       await _refreshVideos();
@@ -223,6 +503,41 @@ class _AppMenuSheetState extends ConsumerState<AppMenuSheet> with SingleTickerPr
       await Process.run('explorer', ['/select,', file.path]);
     } else if (Platform.isLinux) {
       await Process.run('xdg-open', [file.parent.path]);
+    }
+  }
+
+  Future<void> _openRecordingsFolder(String path) async {
+    try {
+      if (path.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Chemin de dossier indisponible')),
+          );
+        }
+        return;
+      }
+      final dir = Directory(path);
+      if (!await dir.exists()) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Dossier introuvable')));
+        }
+        return;
+      }
+      if (Platform.isMacOS) {
+        await Process.run('open', [path]);
+      } else if (Platform.isWindows) {
+        await Process.run('explorer', [path]);
+      } else if (Platform.isLinux) {
+        await Process.run('xdg-open', [path]);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Impossible d\'ouvrir le dossier: $e')),
+        );
+      }
     }
   }
 
@@ -248,10 +563,22 @@ class _AppMenuSheetState extends ConsumerState<AppMenuSheet> with SingleTickerPr
                 Navigator.of(context).pop();
               },
               child: const Text('Fermer'),
-            )
+            ),
           ],
         );
       },
     ).then((_) => controller.dispose());
   }
+}
+
+class _InfoItem {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _InfoItem({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 }

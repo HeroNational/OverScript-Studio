@@ -69,6 +69,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get mirrorMode => 'Mode miroir';
 
   @override
+  String get mirrorModeDescription =>
+      'Inverse le prompteur horizontalement pour les miroirs';
+
+  @override
   String get focusMode => 'Mode focus';
 
   @override
@@ -345,6 +349,50 @@ class AppLocalizationsFr extends AppLocalizations {
   String get helpPageTitle => 'Aide & Support';
 
   @override
+  String get infoOverviewTitle => 'Aperçu du système';
+
+  @override
+  String get infoOverviewSubtitle =>
+      'Environnement, stockage et licence en un coup d\'œil.';
+
+  @override
+  String get infoOs => 'OS';
+
+  @override
+  String get infoOsVersion => 'Version de l\'OS';
+
+  @override
+  String get infoArchitecture => 'Architecture';
+
+  @override
+  String get infoResolution => 'Résolution';
+
+  @override
+  String get infoLocale => 'Langue';
+
+  @override
+  String get infoRecordingsFolder => 'Dossier des enregistrements';
+
+  @override
+  String get infoOpenRecordingsFolder =>
+      'Ouvrir le dossier des enregistrements';
+
+  @override
+  String get infoVideosCount => 'Vidéos';
+
+  @override
+  String get infoTrial => 'Essai';
+
+  @override
+  String get infoMac => 'MAC';
+
+  @override
+  String get videosEmpty => 'Aucune vidéo trouvée';
+
+  @override
+  String get videosTab => 'Vidéos';
+
+  @override
   String get helpWelcomeTitle => 'Bienvenue dans OverScript Studio';
 
   @override
@@ -359,21 +407,27 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get helpStep1Description =>
-      'Cliquez sur \'Ajouter une source\' pour charger un fichier texte, PDF ou des sous-titres YouTube. Vous pouvez aussi coller du texte directement.';
+      'Importez un fichier (TXT, PDF, SRT, YouTube) ou collez votre texte pour préparer le prompteur.';
+
+  @override
+  String get helpStep1Cta => 'Ajouter des sources';
 
   @override
   String get helpStep2Title => '2. Personnalisez les paramètres';
 
   @override
   String get helpStep2Description =>
-      'Ajustez la taille de police, la vitesse, les couleurs et les paramètres de caméra selon vos préférences.';
+      'Ajustez la taille, la vitesse, les couleurs, le mode miroir et la mise en page dans les paramètres.';
+
+  @override
+  String get helpStep2Cta => 'Ouvrir les paramètres';
 
   @override
   String get helpStep3Title => '3. Démarrez l\'enregistrement';
 
   @override
   String get helpStep3Description =>
-      'Appuyez sur le bouton lecture pour démarrer le téléprompteur. La caméra commencera l\'enregistrement si le démarrage automatique est activé.';
+      'Appuyez sur Lecture pour démarrer le téléprompteur et commencez à enregistrer quand vous êtes prêt.';
 
   @override
   String get helpFeaturesTitle => 'Fonctionnalités principales';
@@ -439,5 +493,5 @@ class AppLocalizationsFr extends AppLocalizations {
       'Pour obtenir de l\'aide supplémentaire ou signaler des problèmes, contactez-nous à :';
 
   @override
-  String get helpSupportEmail => 'support@overlimits-digital.com';
+  String get helpSupportEmail => 'danieluokof@gmail.com';
 }

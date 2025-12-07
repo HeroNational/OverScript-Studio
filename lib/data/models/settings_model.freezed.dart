@@ -32,6 +32,7 @@ mixin _$SettingsModel {
   bool get enableFocusMode => throw _privateConstructorUsedError;
   String get backgroundColor => throw _privateConstructorUsedError;
   String get textColor => throw _privateConstructorUsedError;
+  bool get mirrorMode => throw _privateConstructorUsedError;
   String get fontFamily => throw _privateConstructorUsedError;
   double get fontSize => throw _privateConstructorUsedError;
   ToolbarPosition get toolbarPosition => throw _privateConstructorUsedError;
@@ -75,6 +76,7 @@ abstract class $SettingsModelCopyWith<$Res> {
       bool enableFocusMode,
       String backgroundColor,
       String textColor,
+      bool mirrorMode,
       String fontFamily,
       double fontSize,
       ToolbarPosition toolbarPosition,
@@ -117,6 +119,7 @@ class _$SettingsModelCopyWithImpl<$Res, $Val extends SettingsModel>
     Object? enableFocusMode = null,
     Object? backgroundColor = null,
     Object? textColor = null,
+    Object? mirrorMode = null,
     Object? fontFamily = null,
     Object? fontSize = null,
     Object? toolbarPosition = null,
@@ -182,6 +185,10 @@ class _$SettingsModelCopyWithImpl<$Res, $Val extends SettingsModel>
           ? _value.textColor
           : textColor // ignore: cast_nullable_to_non_nullable
               as String,
+      mirrorMode: null == mirrorMode
+          ? _value.mirrorMode
+          : mirrorMode // ignore: cast_nullable_to_non_nullable
+              as bool,
       fontFamily: null == fontFamily
           ? _value.fontFamily
           : fontFamily // ignore: cast_nullable_to_non_nullable
@@ -267,6 +274,7 @@ abstract class _$$SettingsModelImplCopyWith<$Res>
       bool enableFocusMode,
       String backgroundColor,
       String textColor,
+      bool mirrorMode,
       String fontFamily,
       double fontSize,
       ToolbarPosition toolbarPosition,
@@ -307,6 +315,7 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
     Object? enableFocusMode = null,
     Object? backgroundColor = null,
     Object? textColor = null,
+    Object? mirrorMode = null,
     Object? fontFamily = null,
     Object? fontSize = null,
     Object? toolbarPosition = null,
@@ -372,6 +381,10 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
           ? _value.textColor
           : textColor // ignore: cast_nullable_to_non_nullable
               as String,
+      mirrorMode: null == mirrorMode
+          ? _value.mirrorMode
+          : mirrorMode // ignore: cast_nullable_to_non_nullable
+              as bool,
       fontFamily: null == fontFamily
           ? _value.fontFamily
           : fontFamily // ignore: cast_nullable_to_non_nullable
@@ -452,6 +465,7 @@ class _$SettingsModelImpl implements _SettingsModel {
       this.enableFocusMode = false,
       this.backgroundColor = '#1a1a1a',
       this.textColor = '#ffffff',
+      this.mirrorMode = false,
       this.fontFamily = 'System',
       this.fontSize = 48.0,
       this.toolbarPosition = ToolbarPosition.bottom,
@@ -508,6 +522,9 @@ class _$SettingsModelImpl implements _SettingsModel {
   final String textColor;
   @override
   @JsonKey()
+  final bool mirrorMode;
+  @override
+  @JsonKey()
   final String fontFamily;
   @override
   @JsonKey()
@@ -560,7 +577,7 @@ class _$SettingsModelImpl implements _SettingsModel {
 
   @override
   String toString() {
-    return 'SettingsModel(defaultSpeed: $defaultSpeed, speedUnit: $speedUnit, autoFullscreen: $autoFullscreen, autoStartCamera: $autoStartCamera, cameraAsBackground: $cameraAsBackground, promptOpacity: $promptOpacity, selectedCameraId: $selectedCameraId, selectedMicId: $selectedMicId, enableVideoSharing: $enableVideoSharing, enableFocusMode: $enableFocusMode, backgroundColor: $backgroundColor, textColor: $textColor, fontFamily: $fontFamily, fontSize: $fontSize, toolbarPosition: $toolbarPosition, toolbarScale: $toolbarScale, toolboxTheme: $toolboxTheme, toolbarOrientation: $toolbarOrientation, pauseOnMouseMove: $pauseOnMouseMove, pauseKey: $pauseKey, locale: $locale, showTimers: $showTimers, countdownDuration: $countdownDuration, themeMode: $themeMode, mockTextType: $mockTextType, showMockTextWhenEmpty: $showMockTextWhenEmpty, customShortcuts: $customShortcuts)';
+    return 'SettingsModel(defaultSpeed: $defaultSpeed, speedUnit: $speedUnit, autoFullscreen: $autoFullscreen, autoStartCamera: $autoStartCamera, cameraAsBackground: $cameraAsBackground, promptOpacity: $promptOpacity, selectedCameraId: $selectedCameraId, selectedMicId: $selectedMicId, enableVideoSharing: $enableVideoSharing, enableFocusMode: $enableFocusMode, backgroundColor: $backgroundColor, textColor: $textColor, mirrorMode: $mirrorMode, fontFamily: $fontFamily, fontSize: $fontSize, toolbarPosition: $toolbarPosition, toolbarScale: $toolbarScale, toolboxTheme: $toolboxTheme, toolbarOrientation: $toolbarOrientation, pauseOnMouseMove: $pauseOnMouseMove, pauseKey: $pauseKey, locale: $locale, showTimers: $showTimers, countdownDuration: $countdownDuration, themeMode: $themeMode, mockTextType: $mockTextType, showMockTextWhenEmpty: $showMockTextWhenEmpty, customShortcuts: $customShortcuts)';
   }
 
   @override
@@ -592,6 +609,8 @@ class _$SettingsModelImpl implements _SettingsModel {
                 other.backgroundColor == backgroundColor) &&
             (identical(other.textColor, textColor) ||
                 other.textColor == textColor) &&
+            (identical(other.mirrorMode, mirrorMode) ||
+                other.mirrorMode == mirrorMode) &&
             (identical(other.fontFamily, fontFamily) ||
                 other.fontFamily == fontFamily) &&
             (identical(other.fontSize, fontSize) ||
@@ -639,6 +658,7 @@ class _$SettingsModelImpl implements _SettingsModel {
         enableFocusMode,
         backgroundColor,
         textColor,
+        mirrorMode,
         fontFamily,
         fontSize,
         toolbarPosition,
@@ -684,6 +704,7 @@ abstract class _SettingsModel implements SettingsModel {
       final bool enableFocusMode,
       final String backgroundColor,
       final String textColor,
+      final bool mirrorMode,
       final String fontFamily,
       final double fontSize,
       final ToolbarPosition toolbarPosition,
@@ -727,6 +748,8 @@ abstract class _SettingsModel implements SettingsModel {
   String get backgroundColor;
   @override
   String get textColor;
+  @override
+  bool get mirrorMode;
   @override
   String get fontFamily;
   @override

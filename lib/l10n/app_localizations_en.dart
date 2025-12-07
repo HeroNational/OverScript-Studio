@@ -69,6 +69,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mirrorMode => 'Mirror Mode';
 
   @override
+  String get mirrorModeDescription =>
+      'Flip the prompter horizontally for mirror rigs';
+
+  @override
   String get focusMode => 'Focus Mode';
 
   @override
@@ -345,6 +349,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helpPageTitle => 'Help & Support';
 
   @override
+  String get infoOverviewTitle => 'System overview';
+
+  @override
+  String get infoOverviewSubtitle =>
+      'Environment, storage, and license details at a glance.';
+
+  @override
+  String get infoOs => 'OS';
+
+  @override
+  String get infoOsVersion => 'OS version';
+
+  @override
+  String get infoArchitecture => 'Architecture';
+
+  @override
+  String get infoResolution => 'Resolution';
+
+  @override
+  String get infoLocale => 'Locale';
+
+  @override
+  String get infoRecordingsFolder => 'Recordings folder';
+
+  @override
+  String get infoOpenRecordingsFolder => 'Open recordings folder';
+
+  @override
+  String get infoVideosCount => 'Videos';
+
+  @override
+  String get infoTrial => 'Trial';
+
+  @override
+  String get infoMac => 'MAC';
+
+  @override
+  String get videosEmpty => 'No recordings found yet';
+
+  @override
+  String get videosTab => 'Videos';
+
+  @override
   String get helpWelcomeTitle => 'Welcome to OverScript Studio';
 
   @override
@@ -359,21 +406,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpStep1Description =>
-      'Click \'Add Source\' to load a text file, PDF, or YouTube subtitles. You can also paste text directly.';
+      'Import a file (TXT, PDF, SRT, YouTube) or paste your text directly to prepare the prompter.';
+
+  @override
+  String get helpStep1Cta => 'Add sources';
 
   @override
   String get helpStep2Title => '2. Customize Settings';
 
   @override
   String get helpStep2Description =>
-      'Adjust font size, speed, colors, and camera settings to match your preferences.';
+      'Adjust font size, speed, colors, mirror mode, and layout in the settings menu.';
+
+  @override
+  String get helpStep2Cta => 'Open settings';
 
   @override
   String get helpStep3Title => '3. Start Recording';
 
   @override
   String get helpStep3Description =>
-      'Press the play button to start the teleprompter. The camera will start recording if auto-start is enabled.';
+      'Press the play button to start the teleprompter and begin recording when you are ready.';
 
   @override
   String get helpFeaturesTitle => 'Key Features';
@@ -436,5 +489,5 @@ class AppLocalizationsEn extends AppLocalizations {
       'For additional help or to report issues, contact us at:';
 
   @override
-  String get helpSupportEmail => 'support@overlimits-digital.com';
+  String get helpSupportEmail => 'danieluokof@gmail.com';
 }

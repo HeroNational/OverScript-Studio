@@ -21,6 +21,7 @@ _$SettingsModelImpl _$$SettingsModelImplFromJson(Map<String, dynamic> json) =>
       enableFocusMode: json['enableFocusMode'] as bool? ?? false,
       backgroundColor: json['backgroundColor'] as String? ?? '#1a1a1a',
       textColor: json['textColor'] as String? ?? '#ffffff',
+      mirrorMode: json['mirrorMode'] as bool? ?? false,
       fontFamily: json['fontFamily'] as String? ?? 'System',
       fontSize: (json['fontSize'] as num?)?.toDouble() ?? 48.0,
       toolbarPosition: $enumDecodeNullable(
@@ -63,6 +64,7 @@ Map<String, dynamic> _$$SettingsModelImplToJson(_$SettingsModelImpl instance) =>
       'enableFocusMode': instance.enableFocusMode,
       'backgroundColor': instance.backgroundColor,
       'textColor': instance.textColor,
+      'mirrorMode': instance.mirrorMode,
       'fontFamily': instance.fontFamily,
       'fontSize': instance.fontSize,
       'toolbarPosition': _$ToolbarPositionEnumMap[instance.toolbarPosition]!,

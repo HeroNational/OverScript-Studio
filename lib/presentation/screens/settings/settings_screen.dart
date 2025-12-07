@@ -9,7 +9,8 @@ import 'package:prompteur/l10n/app_localizations.dart';
 import '../../../data/models/settings_model.dart';
 import '../../../core/utils/speed_converter.dart';
 import '../../providers/settings_provider.dart';
-import '../../providers/capture_device_provider.dart' show videoDevicesProvider, audioDevicesProvider, translateDeviceLabel;
+import '../../providers/capture_device_provider.dart'
+    show videoDevicesProvider, audioDevicesProvider, translateDeviceLabel;
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -18,6 +19,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
     final l10n = AppLocalizations.of(context)!;
+    final isMobilePlatform = Platform.isAndroid || Platform.isIOS;
 
     return Scaffold(
       appBar: AppBar(
@@ -30,133 +32,155 @@ class SettingsScreen extends ConsumerWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF1a1a1a),
-              Color(0xFF2d2d2d),
-            ],
+            colors: [Color(0xFF1a1a1a), Color(0xFF2d2d2d)],
           ),
         ),
         child: ListView(
           padding: const EdgeInsets.all(24),
           children: [
-            _buildSection(
-              context,
-              l10n.playback,
-              [
-                _buildSpeedUnitSelector(context, ref, settings, l10n),
-                const SizedBox(height: 16),
-                _buildSpeedSlider(context, ref, settings, l10n),
-                const SizedBox(height: 16),
-                _buildCountdownSlider(context, ref, settings, l10n),
-                const SizedBox(height: 16),
-                _buildSwitchTile(
-                  context,
-                  l10n.autoFullscreenOnStart,
-                  l10n.autoFullscreenDescription,
-                  settings.autoFullscreen,
-                  (value) => ref.read(settingsProvider.notifier).updateAutoFullscreen(value),
-                  LucideIcons.maximize,
-                ),
-              ],
-            ),
+            _buildSection(context, l10n.playback, [
+              _buildSpeedUnitSelector(context, ref, settings, l10n),
+              const SizedBox(height: 16),
+              _buildSpeedSlider(context, ref, settings, l10n),
+              const SizedBox(height: 16),
+              _buildCountdownSlider(context, ref, settings, l10n),
+              const SizedBox(height: 16),
+              _buildSwitchTile(
+                context,
+                l10n.autoFullscreenOnStart,
+                l10n.autoFullscreenDescription,
+                settings.autoFullscreen,
+                (value) => ref
+                    .read(settingsProvider.notifier)
+                    .updateAutoFullscreen(value),
+                LucideIcons.maximize,
+              ),
+            ]),
             const SizedBox(height: 32),
-            _buildSection(
-              context,
-              _tr(settings, 'Apparence', 'Appearance'),
-              [
-                _buildColorPicker(
-                  context,
-                  ref,
-                  _tr(settings, 'Couleur de fond', 'Background color'),
-                  settings.backgroundColor,
-                  (color) => ref.read(settingsProvider.notifier).updateBackgroundColor(_colorToHex(color)),
-                  LucideIcons.palette,
-                ),
-                const SizedBox(height: 16),
-                _buildColorPicker(
-                  context,
-                  ref,
-                  _tr(settings, 'Couleur du texte', 'Text color'),
-                  settings.textColor,
-                  (color) => ref.read(settingsProvider.notifier).updateTextColor(_colorToHex(color)),
-                  LucideIcons.type,
-                ),
-                const SizedBox(height: 16),
-                _buildFontSizeSlider(context, ref, settings),
-                const SizedBox(height: 16),
-                _buildMockTextControls(context, ref, settings),
-                const SizedBox(height: 16),
-                _buildCameraOverlayControls(context, ref, settings),
-              ],
-            ),
+            _buildSection(context, _tr(settings, 'Apparence', 'Appearance'), [
+              _buildColorPicker(
+                context,
+                ref,
+                _tr(settings, 'Couleur de fond', 'Background color'),
+                settings.backgroundColor,
+                (color) => ref
+                    .read(settingsProvider.notifier)
+                    .updateBackgroundColor(_colorToHex(color)),
+                LucideIcons.palette,
+              ),
+              const SizedBox(height: 16),
+              _buildColorPicker(
+                context,
+                ref,
+                _tr(settings, 'Couleur du texte', 'Text color'),
+                settings.textColor,
+                (color) => ref
+                    .read(settingsProvider.notifier)
+                    .updateTextColor(_colorToHex(color)),
+                LucideIcons.type,
+              ),
+              const SizedBox(height: 16),
+              _buildSwitchTile(
+                context,
+                l10n.mirrorMode,
+                l10n.mirrorModeDescription,
+                settings.mirrorMode,
+                (value) =>
+                    ref.read(settingsProvider.notifier).updateMirrorMode(value),
+                LucideIcons.flip_horizontal,
+              ),
+              const SizedBox(height: 16),
+              _buildFontSizeSlider(context, ref, settings),
+              const SizedBox(height: 16),
+              _buildMockTextControls(context, ref, settings),
+              const SizedBox(height: 16),
+              _buildCameraOverlayControls(context, ref),
+            ]),
             const SizedBox(height: 32),
-            _buildSection(
-              context,
-              _tr(settings, 'Toolbox', 'Toolbox'),
-              [
-                _buildToolbarPositionSelector(context, ref, settings),
+            _buildSection(context, _tr(settings, 'Toolbox', 'Toolbox'), [
+              _buildToolbarPositionSelector(context, ref, settings),
+              const SizedBox(height: 16),
+              _buildToolbarOrientationSelector(context, ref, settings),
+              const SizedBox(height: 16),
+              if (Platform.isWindows ||
+                  Platform.isMacOS ||
+                  Platform.isLinux) ...[
+                _buildToolbarScaleSelector(context, ref, settings),
                 const SizedBox(height: 16),
-                _buildToolbarOrientationSelector(context, ref, settings),
-                const SizedBox(height: 16),
-                if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) ...[
-                  _buildToolbarScaleSelector(context, ref, settings),
-                  const SizedBox(height: 16),
+              ],
+              _buildToolbarThemeSelector(context, ref, settings),
+              const SizedBox(height: 16),
+              _buildSwitchTile(
+                context,
+                _tr(
+                  settings,
+                  'Afficher chrono et heure',
+                  'Show timer and clock',
+                ),
+                _tr(
+                  settings,
+                  'Affiche le chronomètre et l\'horloge dans la toolbox',
+                  'Display timer and clock in the toolbox',
+                ),
+                settings.showTimers,
+                (value) =>
+                    ref.read(settingsProvider.notifier).updateShowTimers(value),
+                LucideIcons.timer,
+              ),
+            ]),
+            const SizedBox(height: 32),
+            _buildSection(context, _tr(settings, 'Contrôles', 'Controls'), [
+              _buildSwitchTile(
+                context,
+                _tr(
+                  settings,
+                  'Bloquer les notifications (mode Focus)',
+                  'Block notifications (Focus mode)',
+                ),
+                _tr(
+                  settings,
+                  'Active le mode Ne pas déranger pendant le prompteur',
+                  'Enable Do Not Disturb while the prompter runs',
+                ),
+                settings.enableFocusMode,
+                (value) => ref
+                    .read(settingsProvider.notifier)
+                    .updateSettings(settings.copyWith(enableFocusMode: value)),
+                LucideIcons.bell_off,
+              ),
+            ]),
+            const SizedBox(height: 32),
+            if (!isMobilePlatform)
+              _buildSection(
+                context,
+                _tr(settings, 'Raccourcis clavier', 'Keyboard shortcuts'),
+                [
+                  _buildShortcutInfo(
+                    'Espace',
+                    _tr(settings, 'Play / Pause', 'Play / Pause'),
+                  ),
+                  _buildShortcutInfo(
+                    'F',
+                    _tr(settings, 'Basculer plein écran', 'Toggle fullscreen'),
+                  ),
+                  _buildShortcutInfo(
+                    'Échap',
+                    _tr(settings, 'Sortir du plein écran', 'Exit fullscreen'),
+                  ),
+                  _buildShortcutInfo(
+                    '↑',
+                    _tr(settings, 'Augmenter la vitesse', 'Increase speed'),
+                  ),
+                  _buildShortcutInfo(
+                    '↓',
+                    _tr(settings, 'Diminuer la vitesse', 'Decrease speed'),
+                  ),
+                  _buildShortcutInfo(
+                    'R',
+                    _tr(settings, 'Réinitialiser', 'Reset'),
+                  ),
                 ],
-                _buildToolbarThemeSelector(context, ref, settings),
-                const SizedBox(height: 16),
-                _buildSwitchTile(
-                  context,
-                  _tr(settings, 'Afficher chrono et heure', 'Show timer and clock'),
-                  _tr(settings, 'Affiche le chronomètre et l\'horloge dans la toolbox', 'Display timer and clock in the toolbox'),
-                  settings.showTimers,
-                  (value) => ref.read(settingsProvider.notifier).updateShowTimers(value),
-                  LucideIcons.timer,
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            _buildSection(
-              context,
-              _tr(settings, 'Contrôles', 'Controls'),
-              [
-                _buildSwitchTile(
-                  context,
-                  _tr(settings, 'Pause sur mouvement de souris', 'Pause on mouse move'),
-                  _tr(settings, 'Le défilement se met en pause quand vous bougez la souris',
-                      'Scrolling pauses when you move the mouse'),
-                  settings.pauseOnMouseMove,
-                  (value) => ref.read(settingsProvider.notifier).updateSettings(
-                        settings.copyWith(pauseOnMouseMove: value),
-                      ),
-                  LucideIcons.mouse,
-                ),
-                const SizedBox(height: 16),
-                _buildSwitchTile(
-                  context,
-                  _tr(settings, 'Bloquer les notifications (mode Focus)', 'Block notifications (Focus mode)'),
-                  _tr(settings, 'Active le mode Ne pas déranger pendant le prompteur',
-                      'Enable Do Not Disturb while the prompter runs'),
-                  settings.enableFocusMode,
-                  (value) => ref.read(settingsProvider.notifier).updateSettings(
-                        settings.copyWith(enableFocusMode: value),
-                      ),
-                  LucideIcons.bell_off,
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            _buildSection(
-              context,
-              _tr(settings, 'Raccourcis clavier', 'Keyboard shortcuts'),
-              [
-                _buildShortcutInfo('Espace', _tr(settings, 'Play / Pause', 'Play / Pause')),
-                _buildShortcutInfo('F', _tr(settings, 'Basculer plein écran', 'Toggle fullscreen')),
-                _buildShortcutInfo('Échap', _tr(settings, 'Sortir du plein écran', 'Exit fullscreen')),
-                _buildShortcutInfo('↑', _tr(settings, 'Augmenter la vitesse', 'Increase speed')),
-                _buildShortcutInfo('↓', _tr(settings, 'Diminuer la vitesse', 'Decrease speed')),
-                _buildShortcutInfo('R', _tr(settings, 'Réinitialiser', 'Reset')),
-              ],
-            ),
+              ),
           ],
         ),
       ),
@@ -178,7 +202,11 @@ class SettingsScreen extends ConsumerWidget {
             const SizedBox(width: 8),
             Text(
               l10n.countdownSeconds,
-              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
             ),
             const Spacer(),
             Text(
@@ -193,7 +221,9 @@ class SettingsScreen extends ConsumerWidget {
           max: 10,
           divisions: 10,
           label: '${settings.countdownDuration}s',
-          onChanged: (v) => ref.read(settingsProvider.notifier).updateCountdownDuration(v.round()),
+          onChanged: (v) => ref
+              .read(settingsProvider.notifier)
+              .updateCountdownDuration(v.round()),
         ),
       ],
     );
@@ -203,14 +233,16 @@ class SettingsScreen extends ConsumerWidget {
     return settings.locale.toLowerCase().startsWith('en') ? en : fr;
   }
 
-  Widget _buildSection(BuildContext context, String title, List<Widget> children) {
+  Widget _buildSection(
+    BuildContext context,
+    String title,
+    List<Widget> children,
+  ) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.1),
-        ),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -219,9 +251,9 @@ class SettingsScreen extends ConsumerWidget {
           Text(
             title,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 24),
           ...children,
@@ -335,7 +367,11 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFontSizeSlider(BuildContext context, WidgetRef ref, SettingsModel settings) {
+  Widget _buildFontSizeSlider(
+    BuildContext context,
+    WidgetRef ref,
+    SettingsModel settings,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -367,7 +403,11 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMockTextControls(BuildContext context, WidgetRef ref, SettingsModel settings) {
+  Widget _buildMockTextControls(
+    BuildContext context,
+    WidgetRef ref,
+    SettingsModel settings,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -386,7 +426,8 @@ class SettingsScreen extends ConsumerWidget {
             const Spacer(),
             Switch(
               value: settings.showMockTextWhenEmpty,
-              onChanged: (v) => ref.read(settingsProvider.notifier).updateShowMockText(v),
+              onChanged: (v) =>
+                  ref.read(settingsProvider.notifier).updateShowMockText(v),
               activeThumbColor: const Color(0xFF6366F1),
             ),
           ],
@@ -410,13 +451,15 @@ class SettingsScreen extends ConsumerWidget {
                     value: MockTextType.random,
                     child: Text(_tr(settings, 'Aléatoire', 'Random')),
                   ),
-                    DropdownMenuItem(
+                  DropdownMenuItem(
                     value: MockTextType.poem,
                     child: Text(_tr(settings, 'Poème', 'Poem')),
                   ),
                   DropdownMenuItem(
                     value: MockTextType.song,
-                    child: Text(_tr(settings, 'Paroles de chanson', 'Song lyrics')),
+                    child: Text(
+                      _tr(settings, 'Paroles de chanson', 'Song lyrics'),
+                    ),
                   ),
                   DropdownMenuItem(
                     value: MockTextType.inspiring,
@@ -429,7 +472,9 @@ class SettingsScreen extends ConsumerWidget {
                 ],
                 onChanged: (value) {
                   if (value != null) {
-                    ref.read(settingsProvider.notifier).updateMockTextType(value);
+                    ref
+                        .read(settingsProvider.notifier)
+                        .updateMockTextType(value);
                   }
                 },
               ),
@@ -439,8 +484,9 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildCameraOverlayControls(BuildContext context, WidgetRef ref, SettingsModel settings) {
+  Widget _buildCameraOverlayControls(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final settings = ref.watch(settingsProvider);
     final videosAsync = ref.watch(videoDevicesProvider);
     final audiosAsync = ref.watch(audioDevicesProvider);
 
@@ -462,57 +508,12 @@ class SettingsScreen extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 12),
-        _buildSwitchTile(
-          context,
-          l10n.autoStartCamera,
-          l10n.autoStartCameraDescription,
-          settings.autoStartCamera,
-          (v) => ref.read(settingsProvider.notifier).updateAutoStartCamera(v),
-          LucideIcons.play,
-        ),
-        const SizedBox(height: 12),
-        _buildSwitchTile(
-          context,
-          l10n.cameraAsBackground,
-          l10n.cameraAsBackgroundDescription,
-          settings.cameraAsBackground,
-          (v) => ref.read(settingsProvider.notifier).updateCameraAsBackground(v),
-          LucideIcons.layers,
-        ),
-        const SizedBox(height: 12),
-        if (settings.cameraAsBackground)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(LucideIcons.droplet, color: Colors.white70, size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    l10n.promptOpacity,
-                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '${(settings.promptOpacity * 100).toInt()}%',
-                    style: const TextStyle(color: Colors.white70, fontSize: 14),
-                  ),
-                ],
-              ),
-              Slider(
-                value: settings.promptOpacity.clamp(0.2, 1.0),
-                min: 0.2,
-                max: 1.0,
-                divisions: 8,
-                activeColor: const Color(0xFF6366F1),
-                onChanged: (v) => ref.read(settingsProvider.notifier).updatePromptOpacity(v),
-              ),
-            ],
-          ),
-        const SizedBox(height: 12),
         Text(
           l10n.camera,
-          style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w600),
+          style: const TextStyle(
+            color: Colors.white70,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: 6),
         Container(
@@ -525,23 +526,34 @@ class SettingsScreen extends ConsumerWidget {
             data: (devices) {
               debugPrint('[Settings] Video devices loaded: ${devices.length}');
               final items = [
-                DropdownMenuItem<String>(value: null, child: Text(l10n.systemDefault)),
+                DropdownMenuItem<String>(
+                  value: null,
+                  child: Text(l10n.systemDefault),
+                ),
                 ...devices.map((d) {
                   debugPrint('[Settings] Device: id=${d.id}, label=${d.label}');
                   return DropdownMenuItem<String>(
                     value: d.id,
-                    child: Text(translateDeviceLabel(d.label.isNotEmpty ? d.label : d.id)),
+                    child: Text(
+                      translateDeviceLabel(d.label.isNotEmpty ? d.label : d.id),
+                    ),
                   );
                 }),
               ];
+              final selectedCamera =
+                  items.any((item) => item.value == settings.selectedCameraId)
+                  ? settings.selectedCameraId
+                  : null;
               return DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                  value: settings.selectedCameraId,
+                  value: selectedCamera,
                   isExpanded: true,
                   dropdownColor: const Color(0xFF2d2d2d),
                   style: const TextStyle(color: Colors.white, fontSize: 16),
                   items: items,
-                  onChanged: (v) => ref.read(settingsProvider.notifier).updateSelectedCamera(v),
+                  onChanged: (v) => ref
+                      .read(settingsProvider.notifier)
+                      .updateSelectedCamera(v),
                 ),
               );
             },
@@ -562,11 +574,12 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 12),
-        _buildVideoActions(context, ref),
-        const SizedBox(height: 12),
         Text(
           l10n.microphone,
-          style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w600),
+          style: const TextStyle(
+            color: Colors.white70,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: 6),
         Container(
@@ -578,20 +591,30 @@ class SettingsScreen extends ConsumerWidget {
           child: audiosAsync.when(
             data: (devices) {
               final items = [
-                DropdownMenuItem<String>(value: null, child: Text(l10n.systemDefault)),
-                ...devices.map((d) => DropdownMenuItem<String>(
-                  value: d.id,
-                  child: Text(d.label.isNotEmpty ? d.label : d.id),
-                )),
+                DropdownMenuItem<String>(
+                  value: null,
+                  child: Text(l10n.systemDefault),
+                ),
+                ...devices.map(
+                  (d) => DropdownMenuItem<String>(
+                    value: d.id,
+                    child: Text(d.label.isNotEmpty ? d.label : d.id),
+                  ),
+                ),
               ];
+              final selectedMic =
+                  items.any((item) => item.value == settings.selectedMicId)
+                  ? settings.selectedMicId
+                  : null;
               return DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                  value: settings.selectedMicId,
+                  value: selectedMic,
                   isExpanded: true,
                   dropdownColor: const Color(0xFF2d2d2d),
                   style: const TextStyle(color: Colors.white, fontSize: 16),
                   items: items,
-                  onChanged: (v) => ref.read(settingsProvider.notifier).updateSelectedMic(v),
+                  onChanged: (v) =>
+                      ref.read(settingsProvider.notifier).updateSelectedMic(v),
                 ),
               );
             },
@@ -680,7 +703,11 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildToolbarPositionSelector(BuildContext context, WidgetRef ref, SettingsModel settings) {
+  Widget _buildToolbarPositionSelector(
+    BuildContext context,
+    WidgetRef ref,
+    SettingsModel settings,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -712,20 +739,52 @@ class SettingsScreen extends ConsumerWidget {
               dropdownColor: const Color(0xFF2d2d2d),
               style: const TextStyle(color: Colors.white, fontSize: 16),
               items: const [
-                DropdownMenuItem(value: ToolbarPosition.top, child: Text('Haut')),
-                DropdownMenuItem(value: ToolbarPosition.topCenter, child: Text('Haut (centre)')),
-                DropdownMenuItem(value: ToolbarPosition.bottom, child: Text('Bas')),
-                DropdownMenuItem(value: ToolbarPosition.bottomCenter, child: Text('Bas (centre)')),
-                DropdownMenuItem(value: ToolbarPosition.left, child: Text('Gauche')),
-                DropdownMenuItem(value: ToolbarPosition.right, child: Text('Droite')),
-                DropdownMenuItem(value: ToolbarPosition.topLeft, child: Text('Coin haut gauche')),
-                DropdownMenuItem(value: ToolbarPosition.topRight, child: Text('Coin haut droit')),
-                DropdownMenuItem(value: ToolbarPosition.bottomLeft, child: Text('Coin bas gauche')),
-                DropdownMenuItem(value: ToolbarPosition.bottomRight, child: Text('Coin bas droit')),
+                DropdownMenuItem(
+                  value: ToolbarPosition.top,
+                  child: Text('Haut'),
+                ),
+                DropdownMenuItem(
+                  value: ToolbarPosition.topCenter,
+                  child: Text('Haut (centre)'),
+                ),
+                DropdownMenuItem(
+                  value: ToolbarPosition.bottom,
+                  child: Text('Bas'),
+                ),
+                DropdownMenuItem(
+                  value: ToolbarPosition.bottomCenter,
+                  child: Text('Bas (centre)'),
+                ),
+                DropdownMenuItem(
+                  value: ToolbarPosition.left,
+                  child: Text('Gauche'),
+                ),
+                DropdownMenuItem(
+                  value: ToolbarPosition.right,
+                  child: Text('Droite'),
+                ),
+                DropdownMenuItem(
+                  value: ToolbarPosition.topLeft,
+                  child: Text('Coin haut gauche'),
+                ),
+                DropdownMenuItem(
+                  value: ToolbarPosition.topRight,
+                  child: Text('Coin haut droit'),
+                ),
+                DropdownMenuItem(
+                  value: ToolbarPosition.bottomLeft,
+                  child: Text('Coin bas gauche'),
+                ),
+                DropdownMenuItem(
+                  value: ToolbarPosition.bottomRight,
+                  child: Text('Coin bas droit'),
+                ),
               ],
               onChanged: (value) {
                 if (value != null) {
-                  ref.read(settingsProvider.notifier).updateToolbarPosition(value);
+                  ref
+                      .read(settingsProvider.notifier)
+                      .updateToolbarPosition(value);
                 }
               },
             ),
@@ -735,7 +794,11 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildToolbarThemeSelector(BuildContext context, WidgetRef ref, SettingsModel settings) {
+  Widget _buildToolbarThemeSelector(
+    BuildContext context,
+    WidgetRef ref,
+    SettingsModel settings,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -767,10 +830,18 @@ class SettingsScreen extends ConsumerWidget {
               dropdownColor: const Color(0xFF2d2d2d),
               style: const TextStyle(color: Colors.white, fontSize: 16),
               items: [
-                DropdownMenuItem(value: ToolboxTheme.modern, child: Text(_tr(settings, 'Moderne', 'Modern'))),
-                DropdownMenuItem(value: ToolboxTheme.glass, child: Text(_tr(settings, 'Verre brillant', 'Glass'))),
                 DropdownMenuItem(
-                    value: ToolboxTheme.contrast, child: Text(_tr(settings, 'Contraste fort', 'High contrast'))),
+                  value: ToolboxTheme.modern,
+                  child: Text(_tr(settings, 'Moderne', 'Modern')),
+                ),
+                DropdownMenuItem(
+                  value: ToolboxTheme.glass,
+                  child: Text(_tr(settings, 'Verre brillant', 'Glass')),
+                ),
+                DropdownMenuItem(
+                  value: ToolboxTheme.contrast,
+                  child: Text(_tr(settings, 'Contraste fort', 'High contrast')),
+                ),
               ],
               onChanged: (value) {
                 if (value != null) {
@@ -784,7 +855,11 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildToolbarScaleSelector(BuildContext context, WidgetRef ref, SettingsModel settings) {
+  Widget _buildToolbarScaleSelector(
+    BuildContext context,
+    WidgetRef ref,
+    SettingsModel settings,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -793,8 +868,11 @@ class SettingsScreen extends ConsumerWidget {
             Icon(LucideIcons.maximize_2, color: Colors.white70, size: 20),
             const SizedBox(width: 8),
             Text(
-              _tr(settings, 'Taille de la toolbox: ${(settings.toolbarScale * 100).toInt()}%',
-                  'Toolbox size: ${(settings.toolbarScale * 100).toInt()}%'),
+              _tr(
+                settings,
+                'Taille de la toolbox: ${(settings.toolbarScale * 100).toInt()}%',
+                'Toolbox size: ${(settings.toolbarScale * 100).toInt()}%',
+              ),
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
@@ -817,7 +895,11 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildToolbarOrientationSelector(BuildContext context, WidgetRef ref, SettingsModel settings) {
+  Widget _buildToolbarOrientationSelector(
+    BuildContext context,
+    WidgetRef ref,
+    SettingsModel settings,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -864,7 +946,9 @@ class SettingsScreen extends ConsumerWidget {
               ],
               onChanged: (value) {
                 if (value != null) {
-                  ref.read(settingsProvider.notifier).updateToolbarOrientation(value);
+                  ref
+                      .read(settingsProvider.notifier)
+                      .updateToolbarOrientation(value);
                 }
               },
             ),
@@ -1001,7 +1085,11 @@ class SettingsScreen extends ConsumerWidget {
       final path = result.files.single.path!;
       await Share.shareXFiles([XFile(path)], text: shareLabel);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_tr(ref.read(settingsProvider), 'Vidéo partagée', 'Shared'))),
+        SnackBar(
+          content: Text(
+            _tr(ref.read(settingsProvider), 'Vidéo partagée', 'Shared'),
+          ),
+        ),
       );
     }
 
@@ -1014,12 +1102,20 @@ class SettingsScreen extends ConsumerWidget {
       if (await file.exists()) {
         await file.delete();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(_tr(ref.read(settingsProvider), 'Vidéo supprimée', 'Deleted'))),
+          SnackBar(
+            content: Text(
+              _tr(ref.read(settingsProvider), 'Vidéo supprimée', 'Deleted'),
+            ),
+          ),
         );
       }
     }
 
-    Widget buildButton({required IconData icon, required String label, required VoidCallback onPressed}) {
+    Widget buildButton({
+      required IconData icon,
+      required String label,
+      required VoidCallback onPressed,
+    }) {
       return SizedBox(
         height: 48,
         child: ElevatedButton.icon(
@@ -1027,54 +1123,20 @@ class SettingsScreen extends ConsumerWidget {
             backgroundColor: Colors.white.withOpacity(0.08),
             foregroundColor: Colors.white,
             elevation: 0,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
           onPressed: onPressed,
           icon: Icon(icon, size: 20),
-          label: Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
+          label: Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
         ),
       );
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(LucideIcons.video, color: Colors.white70, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              _tr(ref.read(settingsProvider), 'Actions vidéo', 'Video actions'),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              Expanded(child: buildButton(icon: LucideIcons.share_2, label: shareLabel, onPressed: pickAndShare)),
-              const SizedBox(width: 12),
-              Expanded(
-                child: buildButton(
-                  icon: LucideIcons.trash_2,
-                  label: _tr(ref.read(settingsProvider), 'Supprimer', 'Delete'),
-                  onPressed: pickAndDelete,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
+    return const SizedBox.shrink();
   }
 }

@@ -218,6 +218,12 @@ abstract class AppLocalizations {
   /// **'Mirror Mode'**
   String get mirrorMode;
 
+  /// No description provided for @mirrorModeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Flip the prompter horizontally for mirror rigs'**
+  String get mirrorModeDescription;
+
   /// No description provided for @focusMode.
   ///
   /// In en, this message translates to:
@@ -746,6 +752,90 @@ abstract class AppLocalizations {
   /// **'Help & Support'**
   String get helpPageTitle;
 
+  /// No description provided for @infoOverviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'System overview'**
+  String get infoOverviewTitle;
+
+  /// No description provided for @infoOverviewSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Environment, storage, and license details at a glance.'**
+  String get infoOverviewSubtitle;
+
+  /// No description provided for @infoOs.
+  ///
+  /// In en, this message translates to:
+  /// **'OS'**
+  String get infoOs;
+
+  /// No description provided for @infoOsVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'OS version'**
+  String get infoOsVersion;
+
+  /// No description provided for @infoArchitecture.
+  ///
+  /// In en, this message translates to:
+  /// **'Architecture'**
+  String get infoArchitecture;
+
+  /// No description provided for @infoResolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution'**
+  String get infoResolution;
+
+  /// No description provided for @infoLocale.
+  ///
+  /// In en, this message translates to:
+  /// **'Locale'**
+  String get infoLocale;
+
+  /// No description provided for @infoRecordingsFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Recordings folder'**
+  String get infoRecordingsFolder;
+
+  /// No description provided for @infoOpenRecordingsFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Open recordings folder'**
+  String get infoOpenRecordingsFolder;
+
+  /// No description provided for @infoVideosCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Videos'**
+  String get infoVideosCount;
+
+  /// No description provided for @infoTrial.
+  ///
+  /// In en, this message translates to:
+  /// **'Trial'**
+  String get infoTrial;
+
+  /// No description provided for @infoMac.
+  ///
+  /// In en, this message translates to:
+  /// **'MAC'**
+  String get infoMac;
+
+  /// No description provided for @videosEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No recordings found yet'**
+  String get videosEmpty;
+
+  /// No description provided for @videosTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Videos'**
+  String get videosTab;
+
   /// No description provided for @helpWelcomeTitle.
   ///
   /// In en, this message translates to:
@@ -773,8 +863,14 @@ abstract class AppLocalizations {
   /// No description provided for @helpStep1Description.
   ///
   /// In en, this message translates to:
-  /// **'Click \'Add Source\' to load a text file, PDF, or YouTube subtitles. You can also paste text directly.'**
+  /// **'Import a file (TXT, PDF, SRT, YouTube) or paste your text directly to prepare the prompter.'**
   String get helpStep1Description;
+
+  /// No description provided for @helpStep1Cta.
+  ///
+  /// In en, this message translates to:
+  /// **'Add sources'**
+  String get helpStep1Cta;
 
   /// No description provided for @helpStep2Title.
   ///
@@ -785,8 +881,14 @@ abstract class AppLocalizations {
   /// No description provided for @helpStep2Description.
   ///
   /// In en, this message translates to:
-  /// **'Adjust font size, speed, colors, and camera settings to match your preferences.'**
+  /// **'Adjust font size, speed, colors, mirror mode, and layout in the settings menu.'**
   String get helpStep2Description;
+
+  /// No description provided for @helpStep2Cta.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get helpStep2Cta;
 
   /// No description provided for @helpStep3Title.
   ///
@@ -797,7 +899,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpStep3Description.
   ///
   /// In en, this message translates to:
-  /// **'Press the play button to start the teleprompter. The camera will start recording if auto-start is enabled.'**
+  /// **'Press the play button to start the teleprompter and begin recording when you are ready.'**
   String get helpStep3Description;
 
   /// No description provided for @helpFeaturesTitle.
@@ -911,7 +1013,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpSupportEmail.
   ///
   /// In en, this message translates to:
-  /// **'support@overlimits-digital.com'**
+  /// **'danieluokof@gmail.com'**
   String get helpSupportEmail;
 }
 

@@ -80,6 +80,10 @@
   "@mirrorMode": {
     "description": "Mode miroir pour téléprompteur"
   },
+  "mirrorModeDescription": "Inverse le prompteur horizontalement pour les miroirs",
+  "@mirrorModeDescription": {
+    "description": "Description du mode miroir"
+  },
   "focusMode": "Mode focus",
   "@focusMode": {
     "description": "Mode focus"
@@ -357,15 +361,31 @@
   },
   "help": "Aide",
   "helpPageTitle": "Aide & Support",
+  "infoOverviewTitle": "Aperçu du système",
+  "infoOverviewSubtitle": "Environnement, stockage et licence en un coup d'œil.",
+  "infoOs": "OS",
+  "infoOsVersion": "Version de l'OS",
+  "infoArchitecture": "Architecture",
+  "infoResolution": "Résolution",
+  "infoLocale": "Langue",
+  "infoRecordingsFolder": "Dossier des enregistrements",
+  "infoOpenRecordingsFolder": "Ouvrir le dossier des enregistrements",
+  "infoVideosCount": "Vidéos",
+  "infoTrial": "Essai",
+  "infoMac": "MAC",
+  "videosEmpty": "Aucune vidéo trouvée",
+  "videosTab": "Vidéos",
   "helpWelcomeTitle": "Bienvenue dans OverScript Studio",
   "helpWelcomeDescription": "OverScript Studio est un téléprompteur professionnel conçu pour les créateurs de contenu, les orateurs et les producteurs vidéo. Ce guide vous aidera à démarrer.",
   "helpGettingStarted": "Premiers pas",
   "helpStep1Title": "1. Ajoutez votre contenu",
-  "helpStep1Description": "Cliquez sur 'Ajouter une source' pour charger un fichier texte, PDF ou des sous-titres YouTube. Vous pouvez aussi coller du texte directement.",
+  "helpStep1Description": "Importez un fichier (TXT, PDF, SRT, YouTube) ou collez votre texte pour préparer le prompteur.",
+  "helpStep1Cta": "Ajouter des sources",
   "helpStep2Title": "2. Personnalisez les paramètres",
-  "helpStep2Description": "Ajustez la taille de police, la vitesse, les couleurs et les paramètres de caméra selon vos préférences.",
+  "helpStep2Description": "Ajustez la taille, la vitesse, les couleurs, le mode miroir et la mise en page dans les paramètres.",
+  "helpStep2Cta": "Ouvrir les paramètres",
   "helpStep3Title": "3. Démarrez l'enregistrement",
-  "helpStep3Description": "Appuyez sur le bouton lecture pour démarrer le téléprompteur. La caméra commencera l'enregistrement si le démarrage automatique est activé.",
+  "helpStep3Description": "Appuyez sur Lecture pour démarrer le téléprompteur et commencez à enregistrer quand vous êtes prêt.",
   "helpFeaturesTitle": "Fonctionnalités principales",
   "helpFeature1": "Formats d'import multiples (TXT, PDF, VTT, SRT, YouTube)",
   "helpFeature2": "Enregistrement vidéo avec caméra et microphone",
@@ -384,5 +404,5 @@
   "helpTroubleshoot3Description": "Assurez-vous que votre fichier est dans un format supporté (TXT, VTT, SRT, PDF).",
   "helpSupportTitle": "Support & Contact",
   "helpSupportDescription": "Pour obtenir de l'aide supplémentaire ou signaler des problèmes, contactez-nous à :",
-  "helpSupportEmail": "support@overlimits-digital.com"
+  "helpSupportEmail": "danieluokof@gmail.com"
 }
