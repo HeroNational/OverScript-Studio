@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter build:*)",
+      "Bash(where:*)",
+      "Bash(cmd.exe /c \"where flutter 2>nul && flutter --version || echo Flutter not found in cmd\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

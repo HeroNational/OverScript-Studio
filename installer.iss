@@ -18,7 +18,7 @@ SetupIconFile=windows\assets\app_icon.ico
 DisableProgramGroupPage=no
 AllowNoIcons=no
 UninstallDisplayName=OverScript Studio
-UninstallDisplayIcon={app}\prompteur.exe
+UninstallDisplayIcon={app}\overscript_studio.exe
 WizardImageFile=windows\assets\wizard_image.bmp
 WizardSmallImageFile=windows\assets\wizard_small_image.bmp
 
