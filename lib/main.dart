@@ -679,33 +679,6 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerPr
               ),
             ),
           ),
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.04),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.white.withOpacity(0.08)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                _buildCamControlButton(
-                  tooltip: _previewing ? 'Pause preview' : 'Lecture preview',
-                  onPressed: _togglePreviewPlayPause,
-                  icon: _previewing ? Icons.pause : Icons.play_arrow,
-                ),
-                const SizedBox(width: 8),
-                _buildCamControlButton(
-                  tooltip: _captureService.isRecording ? 'Stop' : 'Rec',
-                  onPressed: _toggleRecording,
-                  icon: _captureService.isRecording ? Icons.stop : Icons.fiber_manual_record,
-                  color: _captureService.isRecording ? Colors.redAccent : Colors.red,
-                  isRecording: _captureService.isRecording,
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -772,73 +745,6 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerPr
     );
   }
 
-  Future<void> _togglePreviewPlayPause() async {
-    if (_previewing) {
-      await _pausePreview();
-    } else {
-      await _startHomePreview(auto: false);
-    }
-  }
-
-  Widget _buildCamControlButton({
-    required IconData icon,
-    required String tooltip,
-    required VoidCallback onPressed,
-    Color color = Colors.white,
-    bool isRecording = false,
-  }) {
-    final baseDecoration = BoxDecoration(
-      color: Colors.white.withOpacity(0.06),
-      borderRadius: BorderRadius.circular(10),
-      border: Border.all(color: Colors.white24, width: 1),
-    );
-
-    if (!isRecording) {
-      return Container(
-        decoration: baseDecoration,
-        child: IconButton(
-          tooltip: tooltip,
-          onPressed: onPressed,
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints.tightFor(width: 44, height: 44),
-          icon: Icon(icon, color: color, size: 20),
-        ),
-      );
-    }
-
-    return AnimatedBuilder(
-      animation: _recordPulseController,
-      builder: (context, child) {
-        final pulse = 0.5 + 0.5 * math.sin(_recordPulseController.value * 2 * math.pi);
-        final color1 = Color.lerp(const Color(0xFFFF4D4F), const Color(0xFFFF7A45), pulse)!;
-        final color2 = Color.lerp(const Color(0xFFFF7A45), const Color(0xFFFF4D4F), pulse)!;
-        return Container(
-          decoration: baseDecoration.copyWith(
-            gradient: LinearGradient(
-              colors: [color1, color2],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.redAccent.withOpacity(0.35 + 0.15 * pulse),
-                blurRadius: 14 + 6 * pulse,
-                spreadRadius: 1,
-              ),
-            ],
-          ),
-          child: IconButton(
-            tooltip: tooltip,
-            onPressed: onPressed,
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints.tightFor(width: 44, height: 44),
-            icon: Icon(icon, color: Colors.white, size: 20),
-          ),
-        );
-      },
-    );
-  }
-
   void _toggleHomePreview() async {
     if (_previewing) return;
     await _startHomePreview(auto: false);
@@ -861,12 +767,6 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerPr
     _fakeAudioLevel = 0.2;
   }
 
-  Future<void> _pausePreview() async {
-    await _captureService.stopPreview();
-    _previewing = false;
-    _stopAudioMeter();
-    if (mounted) setState(() {});
-  }
 
   Future<void> _refreshRecordings() async {
     final list = await _captureService.listRecordings();
@@ -895,36 +795,6 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerPr
     }
   }
 
-  Future<void> _toggleRecording() async {
-    if (_captureService.isRecording) {
-      final path = await _captureService.stopCapture();
-      if (path != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Enregistrement sauvegardé : $path')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Aucun fichier enregistré (desktop non supporté ?)')),
-        );
-      }
-      await _refreshRecordings();
-      setState(() {});
-      return;
-    }
-    try {
-      await _captureService.startCapture(cameraId: _selectedCam, micId: _selectedMic);
-      setState(() {});
-    } catch (e) {
-      debugPrint('[Record] start failed: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Enregistrement impossible : $e\nVérifiez les autorisations caméra/micro dans Réglages Système > Confidentialité.',
-          ),
-        ),
-      );
-    }
-  }
 
   Future<void> _confirmDelete(File file) async {
     final res = await showDialog<bool>(

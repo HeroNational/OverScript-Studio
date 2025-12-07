@@ -30,7 +30,6 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> with SingleTick
   int? _countdown;
   bool _focusModeEnabled = false;
   int _countdownStart = 0;
-  bool _recording = false;
   List<CaptureDeviceInfo> _camDevices = const [];
   int _camIndex = 0;
   late final AnimationController _recordPulseController;
@@ -257,6 +256,17 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> with SingleTick
                     ),
                   ),
 
+                // Timer d'enregistrement élégant
+                if (_captureService.isRecording)
+                  Positioned(
+                    top: 24,
+                    left: 0,
+                    right: 0,
+                    child: Center(
+                      child: _buildElegantRecordingIndicator(),
+                    ),
+                  ),
+
                 _buildPositionedToolbars(playbackState.isFullscreen),
               ],
             ),
@@ -342,7 +352,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> with SingleTick
         print('[UI] Toggle record (toolbar)');
         _toggleRecord();
       },
-      isRecording: _recording,
+      isRecording: _captureService.isRecording,
       recordSeconds: _recordElapsedSeconds,
       recordPulse: _recordPulseController,
       isVertical: isVertical,
@@ -477,16 +487,17 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> with SingleTick
   }
 
   Future<void> _toggleRecord() async {
-    if (_recording) {
+    if (_captureService.isRecording) {
       debugPrint('[Recording] Stopping recording...');
-      await _captureService.stopCapture();
+      final path = await _captureService.stopCapture();
       _recordTimer?.cancel();
-      setState(() {
-        _recording = false;
-        _recordElapsedSeconds = 0;
-      });
       await _stopPreview();
-      debugPrint('[Recording] Recording stopped, _recording=$_recording');
+      debugPrint('[Recording] Recording stopped, isRecording=${_captureService.isRecording}, path=$path');
+      if (mounted) {
+        setState(() {
+          _recordElapsedSeconds = 0;
+        });
+      }
       return;
     }
     try {
@@ -495,6 +506,8 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> with SingleTick
         await _startPreview();
       }
       await _captureService.startCapture(cameraId: _currentCam?.id);
+      debugPrint('[Recording] Recording started successfully, isRecording=${_captureService.isRecording}');
+
       _recordTimer?.cancel();
       _recordTimer = Timer.periodic(const Duration(seconds: 1), (_) {
         if (mounted) {
@@ -503,14 +516,13 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> with SingleTick
       });
       if (mounted) {
         setState(() {
-          _recording = true;
           _recordElapsedSeconds = 0;
         });
       }
-      debugPrint('[Recording] Recording started, _recording=$_recording');
     } catch (e) {
       debugPrint('[Recording] Error starting recording: $e');
       if (mounted) {
+        setState(() {}); // Force rebuild pour mettre à jour l'UI
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erreur: ${e.toString()}')),
         );
@@ -518,8 +530,58 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> with SingleTick
     }
   }
 
+  Widget _buildElegantRecordingIndicator() {
+    String two(int v) => v.toString().padLeft(2, '0');
+    final hours = _recordElapsedSeconds ~/ 3600;
+    final minutes = (_recordElapsedSeconds % 3600) ~/ 60;
+    final seconds = _recordElapsedSeconds % 60;
+    final time = hours > 0 ? '${two(hours)}:${two(minutes)}:${two(seconds)}' : '${two(minutes)}:${two(seconds)}';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.red.withOpacity(0.25),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.15),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Dot pulsant
+          ScaleTransition(
+            scale: Tween(begin: 0.8, end: 1.2).animate(
+              CurvedAnimation(parent: _recordPulseController, curve: Curves.easeInOut),
+            ),
+            child: Container(
+              width: 8,
+              height: 8,
+              decoration: const BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          // Timer
+          Text(
+            time,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              fontFamily: 'monospace',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildRecordIndicator() {
-    if (!_recording) return const SizedBox.shrink();
+    if (!_captureService.isRecording) return const SizedBox.shrink();
     String two(int v) => v.toString().padLeft(2, '0');
     final hours = _recordElapsedSeconds ~/ 3600;
     final minutes = (_recordElapsedSeconds % 3600) ~/ 60;

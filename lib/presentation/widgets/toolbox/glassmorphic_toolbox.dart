@@ -203,53 +203,6 @@ class GlasmorphicToolbox extends ConsumerWidget {
   }
 }
 
-class _RecordStatusChip extends StatelessWidget {
-  final int seconds;
-  final Animation<double> pulse;
-  final double scale;
-
-  const _RecordStatusChip({
-    required this.seconds,
-    required this.pulse,
-    required this.scale,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    String two(int v) => v.toString().padLeft(2, '0');
-    final h = seconds ~/ 3600;
-    final m = (seconds % 3600) ~/ 60;
-    final s = seconds % 60;
-    final time = h > 0 ? '${two(h)}:${two(m)}:${two(s)}' : '${two(m)}:${two(s)}';
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ScaleTransition(
-          scale: Tween(begin: 0.85, end: 1.2).animate(
-            CurvedAnimation(parent: pulse, curve: Curves.easeInOut),
-          ),
-          child: Container(
-            width: 12 * scale,
-            height: 12 * scale,
-            decoration: BoxDecoration(
-              color: Colors.redAccent,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(color: Colors.redAccent.withOpacity(0.5), blurRadius: 12),
-              ],
-            ),
-          ),
-        ),
-        SizedBox(width: 8 * scale),
-        Text(
-          time,
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14 * scale),
-        ),
-      ],
-    );
-  }
-}
 class _PlaybackPanel extends ConsumerWidget {
   final PlaybackState playbackState;
   final _ToolboxPalette palette;
@@ -300,22 +253,12 @@ class _PlaybackPanel extends ConsumerWidget {
           width: 1,
         ),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (isRecording)
-            Padding(
-              padding: EdgeInsets.only(bottom: 8 * scale),
-              child: _RecordStatusChip(seconds: recordSeconds, pulse: recordPulse, scale: scale * 0.9),
-            ),
-          Wrap(
-            alignment: WrapAlignment.spaceEvenly,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: 14 * scale,
-            runSpacing: 12 * scale,
-            children: buttons,
-          ),
-        ],
+      child: Wrap(
+        alignment: WrapAlignment.spaceEvenly,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 14 * scale,
+        runSpacing: 12 * scale,
+        children: buttons,
       ),
     );
   }
@@ -555,15 +498,20 @@ class _GlassButtonState extends State<_GlassButton> with SingleTickerProviderSta
                   duration: const Duration(milliseconds: 200),
                   padding: EdgeInsets.all(widget.primary ? 12 : 8),
                   decoration: BoxDecoration(
-                    color: _isHovered
-                        ? Colors.white.withOpacity(0.22)
-                        : Colors.white.withOpacity(0.12),
+                    // Fond rouge vif quand en mode enregistrement (pulse)
+                    color: widget.pulse
+                        ? Colors.red.withOpacity(0.85)
+                        : (_isHovered
+                            ? Colors.white.withOpacity(0.22)
+                            : Colors.white.withOpacity(0.12)),
                     borderRadius: BorderRadius.circular(widget.primary ? 12 : 8),
                     border: Border.all(
-                      color: _isHovered
-                          ? Colors.white.withOpacity(0.45)
-                          : Colors.white.withOpacity(0.25),
-                      width: 1,
+                      color: widget.pulse
+                          ? Colors.white.withOpacity(0.6)
+                          : (_isHovered
+                              ? Colors.white.withOpacity(0.45)
+                              : Colors.white.withOpacity(0.25)),
+                      width: widget.pulse ? 2 : 1,
                     ),
                     boxShadow: [
                       BoxShadow(
@@ -573,9 +521,9 @@ class _GlassButtonState extends State<_GlassButton> with SingleTickerProviderSta
                       ),
                       if (widget.pulse)
                         BoxShadow(
-                          color: Colors.redAccent.withOpacity(0.35 + 0.35 * pulseValue),
-                          blurRadius: 12 + 6 * pulseValue,
-                          spreadRadius: 1.2 + 0.6 * pulseValue,
+                          color: Colors.red.withOpacity(0.5 + 0.3 * pulseValue),
+                          blurRadius: 18 + 8 * pulseValue,
+                          spreadRadius: 2 + 1.5 * pulseValue,
                         ),
                     ],
                   ),

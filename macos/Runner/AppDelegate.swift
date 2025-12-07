@@ -225,29 +225,42 @@ class DesktopRecorder: NSObject, AVCaptureFileOutputRecordingDelegate {
       session.startRunning()
     }
 
-    currentResult = result
     let url = URL(fileURLWithPath: path)
+    NSLog("[DesktopRecorder] Starting recording to path: \(path)")
     movieOutput.startRecording(to: url, recordingDelegate: self)
+    NSLog("[DesktopRecorder] Recording started, isRecording: \(movieOutput.isRecording)")
+    // Return immediately to Flutter, don't wait for the recording to finish
+    result(path)
   }
 
   func stop(result: @escaping FlutterResult) {
+    NSLog("[DesktopRecorder] Stop requested, isRecording: \(movieOutput.isRecording)")
     guard movieOutput.isRecording else {
+      NSLog("[DesktopRecorder] Not recording, returning nil")
       result(nil)
       return
     }
+    NSLog("[DesktopRecorder] Stopping recording...")
+    // Store the result to return when recording finishes
     currentResult = result
     movieOutput.stopRecording()
     session.stopRunning()
   }
 
   func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
+    NSLog("[DesktopRecorder] Recording finished, path: \(outputFileURL.path), error: \(error?.localizedDescription ?? "none")")
+    // Only return result if stop() was called (currentResult will be set)
     if let result = currentResult {
       if let error = error {
+        NSLog("[DesktopRecorder] Returning error to Flutter: \(error.localizedDescription)")
         result(FlutterError(code: "RECORD_ERROR", message: error.localizedDescription, details: nil))
       } else {
+        NSLog("[DesktopRecorder] Returning path to Flutter: \(outputFileURL.path)")
         result(outputFileURL.path)
       }
+      currentResult = nil
+    } else {
+      NSLog("[DesktopRecorder] Recording finished but no result callback waiting")
     }
-    currentResult = nil
   }
 }
