@@ -337,4 +337,104 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get menu => 'Menu';
+
+  @override
+  String get help => 'Help';
+
+  @override
+  String get helpPageTitle => 'Help & Support';
+
+  @override
+  String get helpWelcomeTitle => 'Welcome to OverScript Studio';
+
+  @override
+  String get helpWelcomeDescription =>
+      'OverScript Studio is a professional teleprompter designed for content creators, speakers, and video producers. This guide will help you get started.';
+
+  @override
+  String get helpGettingStarted => 'Getting Started';
+
+  @override
+  String get helpStep1Title => '1. Add Your Content';
+
+  @override
+  String get helpStep1Description =>
+      'Click \'Add Source\' to load a text file, PDF, or YouTube subtitles. You can also paste text directly.';
+
+  @override
+  String get helpStep2Title => '2. Customize Settings';
+
+  @override
+  String get helpStep2Description =>
+      'Adjust font size, speed, colors, and camera settings to match your preferences.';
+
+  @override
+  String get helpStep3Title => '3. Start Recording';
+
+  @override
+  String get helpStep3Description =>
+      'Press the play button to start the teleprompter. The camera will start recording if auto-start is enabled.';
+
+  @override
+  String get helpFeaturesTitle => 'Key Features';
+
+  @override
+  String get helpFeature1 =>
+      'Multiple import formats (TXT, PDF, VTT, SRT, YouTube)';
+
+  @override
+  String get helpFeature2 => 'Video recording with camera and microphone';
+
+  @override
+  String get helpFeature3 => 'Customizable speed, fonts, and colors';
+
+  @override
+  String get helpFeature4 => 'Mirror mode for physical teleprompter rigs';
+
+  @override
+  String get helpFeature5 => 'Focus mode for distraction-free reading';
+
+  @override
+  String get helpSystemRequirementsTitle => 'System Requirements (Windows)';
+
+  @override
+  String get helpSystemRequirementsDescription =>
+      'For Windows users, video recording requires Visual C++ Redistributable 2013 (x64). If you experience issues with recording:';
+
+  @override
+  String get helpDownloadVCRedist => 'Download VC++ Redistributable 2013 x64';
+
+  @override
+  String get helpTroubleshootingTitle => 'Troubleshooting';
+
+  @override
+  String get helpTroubleshoot1Title => 'Camera not working?';
+
+  @override
+  String get helpTroubleshoot1Description =>
+      'Check that camera permissions are enabled and no other app is using the camera.';
+
+  @override
+  String get helpTroubleshoot2Title => 'Recording not starting?';
+
+  @override
+  String get helpTroubleshoot2Description =>
+      'On Windows, install VC++ Redistributable 2013 x64 (link above).';
+
+  @override
+  String get helpTroubleshoot3Title => 'Text not loading?';
+
+  @override
+  String get helpTroubleshoot3Description =>
+      'Ensure your file is in a supported format (TXT, VTT, SRT, PDF).';
+
+  @override
+  String get helpSupportTitle => 'Support & Contact';
+
+  @override
+  String get helpSupportDescription =>
+      'For additional help or to report issues, contact us at:';
+
+  @override
+  String get helpSupportEmail => 'support@overlimits-digital.com';
 }

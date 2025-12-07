@@ -733,6 +733,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Menu'**
   String get menu;
+
+  /// No description provided for @help.
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get help;
+
+  /// No description provided for @helpPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get helpPageTitle;
+
+  /// No description provided for @helpWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to OverScript Studio'**
+  String get helpWelcomeTitle;
+
+  /// No description provided for @helpWelcomeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'OverScript Studio is a professional teleprompter designed for content creators, speakers, and video producers. This guide will help you get started.'**
+  String get helpWelcomeDescription;
+
+  /// No description provided for @helpGettingStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting Started'**
+  String get helpGettingStarted;
+
+  /// No description provided for @helpStep1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Add Your Content'**
+  String get helpStep1Title;
+
+  /// No description provided for @helpStep1Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Click \'Add Source\' to load a text file, PDF, or YouTube subtitles. You can also paste text directly.'**
+  String get helpStep1Description;
+
+  /// No description provided for @helpStep2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'2. Customize Settings'**
+  String get helpStep2Title;
+
+  /// No description provided for @helpStep2Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust font size, speed, colors, and camera settings to match your preferences.'**
+  String get helpStep2Description;
+
+  /// No description provided for @helpStep3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'3. Start Recording'**
+  String get helpStep3Title;
+
+  /// No description provided for @helpStep3Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Press the play button to start the teleprompter. The camera will start recording if auto-start is enabled.'**
+  String get helpStep3Description;
+
+  /// No description provided for @helpFeaturesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Key Features'**
+  String get helpFeaturesTitle;
+
+  /// No description provided for @helpFeature1.
+  ///
+  /// In en, this message translates to:
+  /// **'Multiple import formats (TXT, PDF, VTT, SRT, YouTube)'**
+  String get helpFeature1;
+
+  /// No description provided for @helpFeature2.
+  ///
+  /// In en, this message translates to:
+  /// **'Video recording with camera and microphone'**
+  String get helpFeature2;
+
+  /// No description provided for @helpFeature3.
+  ///
+  /// In en, this message translates to:
+  /// **'Customizable speed, fonts, and colors'**
+  String get helpFeature3;
+
+  /// No description provided for @helpFeature4.
+  ///
+  /// In en, this message translates to:
+  /// **'Mirror mode for physical teleprompter rigs'**
+  String get helpFeature4;
+
+  /// No description provided for @helpFeature5.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus mode for distraction-free reading'**
+  String get helpFeature5;
+
+  /// No description provided for @helpSystemRequirementsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'System Requirements (Windows)'**
+  String get helpSystemRequirementsTitle;
+
+  /// No description provided for @helpSystemRequirementsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'For Windows users, video recording requires Visual C++ Redistributable 2013 (x64). If you experience issues with recording:'**
+  String get helpSystemRequirementsDescription;
+
+  /// No description provided for @helpDownloadVCRedist.
+  ///
+  /// In en, this message translates to:
+  /// **'Download VC++ Redistributable 2013 x64'**
+  String get helpDownloadVCRedist;
+
+  /// No description provided for @helpTroubleshootingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Troubleshooting'**
+  String get helpTroubleshootingTitle;
+
+  /// No description provided for @helpTroubleshoot1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera not working?'**
+  String get helpTroubleshoot1Title;
+
+  /// No description provided for @helpTroubleshoot1Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Check that camera permissions are enabled and no other app is using the camera.'**
+  String get helpTroubleshoot1Description;
+
+  /// No description provided for @helpTroubleshoot2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording not starting?'**
+  String get helpTroubleshoot2Title;
+
+  /// No description provided for @helpTroubleshoot2Description.
+  ///
+  /// In en, this message translates to:
+  /// **'On Windows, install VC++ Redistributable 2013 x64 (link above).'**
+  String get helpTroubleshoot2Description;
+
+  /// No description provided for @helpTroubleshoot3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Text not loading?'**
+  String get helpTroubleshoot3Title;
+
+  /// No description provided for @helpTroubleshoot3Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Ensure your file is in a supported format (TXT, VTT, SRT, PDF).'**
+  String get helpTroubleshoot3Description;
+
+  /// No description provided for @helpSupportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Support & Contact'**
+  String get helpSupportTitle;
+
+  /// No description provided for @helpSupportDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'For additional help or to report issues, contact us at:'**
+  String get helpSupportDescription;
+
+  /// No description provided for @helpSupportEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'support@overlimits-digital.com'**
+  String get helpSupportEmail;
 }
 
 class _AppLocalizationsDelegate

@@ -337,4 +337,107 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get menu => 'Menu';
+
+  @override
+  String get help => 'Aide';
+
+  @override
+  String get helpPageTitle => 'Aide & Support';
+
+  @override
+  String get helpWelcomeTitle => 'Bienvenue dans OverScript Studio';
+
+  @override
+  String get helpWelcomeDescription =>
+      'OverScript Studio est un téléprompteur professionnel conçu pour les créateurs de contenu, les orateurs et les producteurs vidéo. Ce guide vous aidera à démarrer.';
+
+  @override
+  String get helpGettingStarted => 'Premiers pas';
+
+  @override
+  String get helpStep1Title => '1. Ajoutez votre contenu';
+
+  @override
+  String get helpStep1Description =>
+      'Cliquez sur \'Ajouter une source\' pour charger un fichier texte, PDF ou des sous-titres YouTube. Vous pouvez aussi coller du texte directement.';
+
+  @override
+  String get helpStep2Title => '2. Personnalisez les paramètres';
+
+  @override
+  String get helpStep2Description =>
+      'Ajustez la taille de police, la vitesse, les couleurs et les paramètres de caméra selon vos préférences.';
+
+  @override
+  String get helpStep3Title => '3. Démarrez l\'enregistrement';
+
+  @override
+  String get helpStep3Description =>
+      'Appuyez sur le bouton lecture pour démarrer le téléprompteur. La caméra commencera l\'enregistrement si le démarrage automatique est activé.';
+
+  @override
+  String get helpFeaturesTitle => 'Fonctionnalités principales';
+
+  @override
+  String get helpFeature1 =>
+      'Formats d\'import multiples (TXT, PDF, VTT, SRT, YouTube)';
+
+  @override
+  String get helpFeature2 => 'Enregistrement vidéo avec caméra et microphone';
+
+  @override
+  String get helpFeature3 => 'Vitesse, polices et couleurs personnalisables';
+
+  @override
+  String get helpFeature4 =>
+      'Mode miroir pour installation de téléprompteur physique';
+
+  @override
+  String get helpFeature5 => 'Mode focus pour une lecture sans distraction';
+
+  @override
+  String get helpSystemRequirementsTitle =>
+      'Configuration système requise (Windows)';
+
+  @override
+  String get helpSystemRequirementsDescription =>
+      'Pour les utilisateurs Windows, l\'enregistrement vidéo nécessite Visual C++ Redistributable 2013 (x64). Si vous rencontrez des problèmes d\'enregistrement :';
+
+  @override
+  String get helpDownloadVCRedist =>
+      'Télécharger VC++ Redistributable 2013 x64';
+
+  @override
+  String get helpTroubleshootingTitle => 'Dépannage';
+
+  @override
+  String get helpTroubleshoot1Title => 'La caméra ne fonctionne pas ?';
+
+  @override
+  String get helpTroubleshoot1Description =>
+      'Vérifiez que les permissions de caméra sont activées et qu\'aucune autre application n\'utilise la caméra.';
+
+  @override
+  String get helpTroubleshoot2Title => 'L\'enregistrement ne démarre pas ?';
+
+  @override
+  String get helpTroubleshoot2Description =>
+      'Sur Windows, installez VC++ Redistributable 2013 x64 (lien ci-dessus).';
+
+  @override
+  String get helpTroubleshoot3Title => 'Le texte ne se charge pas ?';
+
+  @override
+  String get helpTroubleshoot3Description =>
+      'Assurez-vous que votre fichier est dans un format supporté (TXT, VTT, SRT, PDF).';
+
+  @override
+  String get helpSupportTitle => 'Support & Contact';
+
+  @override
+  String get helpSupportDescription =>
+      'Pour obtenir de l\'aide supplémentaire ou signaler des problèmes, contactez-nous à :';
+
+  @override
+  String get helpSupportEmail => 'support@overlimits-digital.com';
 }

@@ -24,6 +24,7 @@ import 'presentation/screens/sources/sources_dialog.dart';
 import 'presentation/screens/settings/settings_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'presentation/widgets/app_menu_sheet.dart';
+import 'presentation/screens/help/help_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -551,6 +552,19 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerPr
                           icon: const Icon(Icons.add),
                           label: Text(AppLocalizations.of(context)!.addSource),
                         ),
+                      ),
+                      IconButton(
+                        tooltip: AppLocalizations.of(context)!.help,
+                        onPressed: () {
+                          print('[UI] Open help');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const HelpScreen(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.help_outline, color: Colors.white),
                       ),
                       IconButton(
                         tooltip: AppLocalizations.of(context)!.settings,
