@@ -120,10 +120,11 @@ class PrompterHome extends ConsumerStatefulWidget {
   ConsumerState<PrompterHome> createState() => _PrompterHomeState();
 }
 
-class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerProviderStateMixin {
+class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerProviderStateMixin, WidgetsBindingObserver, WindowListener {
   final TextEditingController _textController = TextEditingController();
   final quill.QuillController _quillController = quill.QuillController.basic();
   final CaptureService _captureService = CaptureService();
+  final StorageService _storage = StorageService();
   final List<String> _bannerAssets = const [
     'assets/banner_texture.jpg',
     'assets/banner_texture_2.jpg',
@@ -135,6 +136,7 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerPr
   bool _trialExpired = false;
   int _trialDaysLeft = 0;
   DateTime? _trialExpiry;
+  DateTime? _trialStart;
   List<CaptureDeviceInfo> _cams = const [];
   List<CaptureDeviceInfo> _mics = const [];
   String? _selectedCam;
@@ -150,7 +152,6 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerPr
     super.initState();
     _recordPulseController = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat();
     _bannerAsset = _bannerAssets[math.Random().nextInt(_bannerAssets.length)];
-    _computeTrialStatus();
     if (Platform.isAndroid || Platform.isIOS) {
       _requestMobilePermissions().then((granted) {
         if (granted && mounted) {
@@ -165,26 +166,61 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerPr
     _refreshRecordings();
     // Démarrer une preview par défaut
     _startHomePreview(auto: true);
+    WidgetsBinding.instance.addObserver(this);
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      windowManager.addListener(this);
+      windowManager.setPreventClose(true);
+    }
+    _initTrialStatus();
+    _captureMacAddresses();
   }
 
-  void _computeTrialStatus() {
+  Future<void> _initTrialStatus() async {
     const bool enableTrial = bool.fromEnvironment('TRIAL_ENABLED', defaultValue: true);
-    const String startIso = String.fromEnvironment('TRIAL_START', defaultValue: '');
-    const int durationDays = int.fromEnvironment('TRIAL_DAYS', defaultValue: 90);
+    const int durationDays = bool.hasEnvironment("TRIAL_DAYS") ? int.fromEnvironment("TRIAL_DAYS") : 90;
 
     _trialEnabled = enableTrial;
     if (!enableTrial) return;
 
-    DateTime startDate;
-    if (startIso.isNotEmpty) {
-      startDate = DateTime.tryParse(startIso) ?? DateTime.now();
-    } else {
-      startDate = DateTime.now();
-    }
+    DateTime startDate = await _storage.loadTrialStart() ?? DateTime.now();
+    // Si pas encore stocké, on le persiste
+    _trialStart = startDate;
+    await _storage.saveTrialStart(startDate);
+
     _trialExpiry = startDate.add(Duration(days: durationDays));
     final now = DateTime.now();
     _trialExpired = now.isAfter(_trialExpiry!);
     _trialDaysLeft = _trialExpired ? 0 : _trialExpiry!.difference(now).inDays + 1;
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _captureMacAddresses() async {
+    try {
+      final existing = await _storage.loadMacAddresses();
+      if (existing.isNotEmpty) return;
+
+      final macs = <String>{};
+      if (Platform.isMacOS || Platform.isLinux) {
+        final res = await Process.run('ifconfig', []);
+        final out = res.stdout?.toString() ?? '';
+        final regex = RegExp(r'([0-9A-Fa-f]{2}(?::[0-9A-Fa-f]{2}){5})');
+        for (final match in regex.allMatches(out)) {
+          macs.add(match.group(0)!.toLowerCase());
+        }
+      } else if (Platform.isWindows) {
+        final res = await Process.run('getmac', []);
+        final out = res.stdout?.toString() ?? '';
+        final regex = RegExp(r'([0-9A-Fa-f]{2}(?:-[0-9A-Fa-f]{2}){5})');
+        for (final match in regex.allMatches(out)) {
+          macs.add(match.group(0)!.toLowerCase());
+        }
+      }
+      if (macs.isNotEmpty) {
+        await _storage.saveMacAddresses(macs.toList());
+      }
+    } catch (e) {
+      debugPrint('[Licensing] Unable to capture MAC addresses: $e');
+    }
   }
 
   Future<void> _loadDevices() async {
@@ -232,7 +268,56 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerPr
     _quillController.dispose();
     _audioMeterTimer?.cancel();
     _captureService.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      windowManager.removeListener(this);
+    }
     super.dispose();
+  }
+
+  @override
+  Future<bool> didPopRoute() async {
+    if ((Platform.isMacOS || Platform.isWindows || Platform.isLinux) && _captureService.isRecording) {
+      final shouldClose = await _confirmExitWhileRecording();
+      if (!shouldClose) {
+        return true; // consume pop
+      }
+      await _captureService.stopCapture();
+    }
+    return super.didPopRoute();
+  }
+
+  @override
+  void onWindowClose() async {
+    if ((Platform.isMacOS || Platform.isWindows || Platform.isLinux) && _captureService.isRecording) {
+      final shouldClose = await _confirmExitWhileRecording();
+      if (!shouldClose) {
+        return;
+      }
+      await _captureService.stopCapture();
+    }
+    windowManager.destroy();
+  }
+
+  Future<bool> _confirmExitWhileRecording() async {
+    final res = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Enregistrement en cours'),
+        content: const Text('Un enregistrement est actif. Voulez-vous vraiment quitter l’application ?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Quitter'),
+          ),
+        ],
+      ),
+    );
+    return res ?? false;
   }
 
   void _promptSourceDialog({bool force = false}) {

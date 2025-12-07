@@ -6,6 +6,8 @@ class StorageService {
   static const String _settingsBox = 'settings';
   static const String _settingsKey = 'app_settings';
   static const String _lastTextKey = 'last_text';
+  static const String _trialStartKey = 'trial_start';
+  static const String _macAddressesKey = 'mac_addresses';
 
   /// Initialise Hive
   static Future<void> init() async {
@@ -44,6 +46,34 @@ class StorageService {
   Future<void> clearAll() async {
     final box = await _openBoxWithRetry();
     await box.clear();
+  }
+
+  Future<void> saveTrialStart(DateTime date) async {
+    final box = await _openBoxWithRetry();
+    await box.put(_trialStartKey, date.toIso8601String());
+  }
+
+  Future<DateTime?> loadTrialStart() async {
+    final box = await _openBoxWithRetry();
+    final value = box.get(_trialStartKey);
+    if (value is String) {
+      return DateTime.tryParse(value);
+    }
+    return null;
+  }
+
+  Future<void> saveMacAddresses(List<String> macs) async {
+    final box = await _openBoxWithRetry();
+    await box.put(_macAddressesKey, macs);
+  }
+
+  Future<List<String>> loadMacAddresses() async {
+    final box = await _openBoxWithRetry();
+    final value = box.get(_macAddressesKey);
+    if (value is List) {
+      return value.whereType<String>().toList();
+    }
+    return [];
   }
 
   Future<Box> _openBoxWithRetry({int retries = 5}) async {

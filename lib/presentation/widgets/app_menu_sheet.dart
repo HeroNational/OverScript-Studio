@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:video_player/video_player.dart';
 import '../../data/services/video_library_service.dart';
+import '../../data/services/storage_service.dart';
 import '../../l10n/app_localizations.dart';
 import '../screens/settings/settings_screen.dart';
+import '../providers/settings_provider.dart';
 
 class AppMenuSheet extends ConsumerStatefulWidget {
   const AppMenuSheet({super.key});
@@ -18,6 +20,8 @@ class _AppMenuSheetState extends ConsumerState<AppMenuSheet> with SingleTickerPr
   late final TabController _tabController;
   final VideoLibraryService _videoService = VideoLibraryService();
   late Future<List<FileSystemEntity>> _videosFuture;
+  final StorageService _storage = StorageService();
+  late Future<Map<String, dynamic>> _infoFuture;
 
   @override
   void initState() {
@@ -28,6 +32,7 @@ class _AppMenuSheetState extends ConsumerState<AppMenuSheet> with SingleTickerPr
       debugPrint('[UI] Menu tab changed to index: ${_tabController.index}');
     });
     _videosFuture = _videoService.listVideos();
+    _infoFuture = _gatherSystemInfo();
   }
 
   @override
@@ -68,16 +73,31 @@ class _AppMenuSheetState extends ConsumerState<AppMenuSheet> with SingleTickerPr
 
   Widget _buildSystemInfo(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: ListView(
-        children: [
-          _infoTile('OS', Platform.operatingSystem),
-          _infoTile('Version OS', Platform.operatingSystemVersion),
-          _infoTile('Resolution', '${size.width.toStringAsFixed(0)} x ${size.height.toStringAsFixed(0)}'),
-          _infoTile('Dart', Platform.version),
-        ],
-      ),
+    return FutureBuilder<Map<String, dynamic>>(
+      future: _infoFuture,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final data = snapshot.data!;
+        final macs = (data['macs'] as List<String>);
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: ListView(
+            children: [
+              _infoTile('OS', Platform.operatingSystem),
+              _infoTile('Version OS', Platform.operatingSystemVersion),
+              _infoTile('Architecture', Platform.version.split(' ').first),
+              _infoTile('Resolution', '${size.width.toStringAsFixed(0)} x ${size.height.toStringAsFixed(0)}'),
+              _infoTile('Locale', data['locale'] ?? 'n/a'),
+              _infoTile('Dossier vidéos', data['recordingsPath'] ?? 'n/a'),
+              _infoTile('Vidéos', '${data['videoCount'] ?? 0}'),
+              _infoTile('Trial', data['trialInfo'] ?? 'n/a'),
+              _infoTile('MAC', macs.isEmpty ? 'n/a' : macs.join('  ·  ')),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -86,6 +106,25 @@ class _AppMenuSheetState extends ConsumerState<AppMenuSheet> with SingleTickerPr
       title: Text(label, style: const TextStyle(color: Colors.white70)),
       subtitle: Text(value, style: const TextStyle(color: Colors.white)),
     );
+  }
+  Future<Map<String, dynamic>> _gatherSystemInfo() async {
+    final settings = ref.read(settingsProvider);
+    final videos = await _videoService.listVideos();
+    final recordingsPath = await _videoService.recordingsPath();
+    final macs = await _storage.loadMacAddresses();
+    final trialStart = await _storage.loadTrialStart();
+    final fmt = DateFormat('yyyy-MM-dd');
+    final trialInfo = trialStart == null
+        ? 'Trial non initialisé'
+        : 'Début: ${fmt.format(trialStart)} | Durée: ${bool.hasEnvironment("TRIAL_DAYS") ? int.fromEnvironment("TRIAL_DAYS") : 90} jours';
+
+    return {
+      'videoCount': videos.length,
+      'recordingsPath': recordingsPath,
+      'macs': macs,
+      'trialInfo': trialInfo,
+      'locale': settings.locale,
+    };
   }
 
   Widget _buildVideoLibrary(BuildContext context) {

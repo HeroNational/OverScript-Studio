@@ -24,4 +24,10 @@ class VideoLibraryService {
     }).toList()
       ..sort((a, b) => b.statSync().modified.compareTo(a.statSync().modified));
   }
+
+  /// Retourne le chemin du dossier des enregistrements.
+  Future<String> recordingsPath() async {
+    final dir = await _getVideosDir();
+    return dir.path;
+  }
 }
