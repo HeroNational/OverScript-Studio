@@ -35,4 +35,4 @@ OverLimits Digital Enterprise may modify these Terms at any time. Modifications 
 In case of violation of these Terms, access to the application may be suspended or terminated without notice.
 
 ## 11. Contact
-For any questions, contact: support@overlimits.digital
+For any questions, contact: danieluokof@gmail.com

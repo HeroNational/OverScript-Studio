@@ -434,20 +434,23 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get helpFeature1 =>
-      'Formats d\'import multiples (TXT, PDF, VTT, SRT, YouTube)';
+      'Onglet Infos enrichi (détails système et accès au dossier des enregistrements)';
 
   @override
-  String get helpFeature2 => 'Enregistrement vidéo avec caméra et microphone';
+  String get helpFeature2 =>
+      'Actions par vidéo : ouvrir dans le dossier, partager ou supprimer';
 
   @override
-  String get helpFeature3 => 'Vitesse, polices et couleurs personnalisables';
+  String get helpFeature3 =>
+      'Vitesse, polices, couleurs et bascule du mode miroir personnalisables';
 
   @override
   String get helpFeature4 =>
-      'Mode miroir pour installation de téléprompteur physique';
+      'Expérience mobile adaptée (raccourcis clavier masqués sur téléphone)';
 
   @override
-  String get helpFeature5 => 'Mode focus pour une lecture sans distraction';
+  String get helpFeature5 =>
+      'Mode focus et plein écran pour une lecture sans distraction';
 
   @override
   String get helpSystemRequirementsTitle =>

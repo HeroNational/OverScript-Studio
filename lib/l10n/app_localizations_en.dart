@@ -433,19 +433,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpFeature1 =>
-      'Multiple import formats (TXT, PDF, VTT, SRT, YouTube)';
+      'System overview tab with locale-aware details and recording folder shortcut';
 
   @override
-  String get helpFeature2 => 'Video recording with camera and microphone';
+  String get helpFeature2 =>
+      'Per-video actions: open in folder, share, or delete recordings';
 
   @override
-  String get helpFeature3 => 'Customizable speed, fonts, and colors';
+  String get helpFeature3 =>
+      'Customizable speed, fonts, colors, and mirror mode toggle';
 
   @override
-  String get helpFeature4 => 'Mirror mode for physical teleprompter rigs';
+  String get helpFeature4 =>
+      'Mobile-friendly experience (keyboard shortcuts hidden on phones)';
 
   @override
-  String get helpFeature5 => 'Focus mode for distraction-free reading';
+  String get helpFeature5 =>
+      'Focus mode and fullscreen controls for distraction-free reading';
 
   @override
   String get helpSystemRequirementsTitle => 'System Requirements (Windows)';

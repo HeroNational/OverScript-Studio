@@ -35,4 +35,4 @@ OverLimits Digital Enterprise peut modifier les CGU à tout moment. Les modifica
 En cas de violation des CGU, l'accès à l'application peut être suspendu ou résilié sans préavis.
 
 ## 11. Contact
-Pour toute question, contactez : support@overlimits.digital
+Pour toute question, contactez : danieluokof@gmail.com

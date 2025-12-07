@@ -911,31 +911,31 @@ abstract class AppLocalizations {
   /// No description provided for @helpFeature1.
   ///
   /// In en, this message translates to:
-  /// **'Multiple import formats (TXT, PDF, VTT, SRT, YouTube)'**
+  /// **'System overview tab with locale-aware details and recording folder shortcut'**
   String get helpFeature1;
 
   /// No description provided for @helpFeature2.
   ///
   /// In en, this message translates to:
-  /// **'Video recording with camera and microphone'**
+  /// **'Per-video actions: open in folder, share, or delete recordings'**
   String get helpFeature2;
 
   /// No description provided for @helpFeature3.
   ///
   /// In en, this message translates to:
-  /// **'Customizable speed, fonts, and colors'**
+  /// **'Customizable speed, fonts, colors, and mirror mode toggle'**
   String get helpFeature3;
 
   /// No description provided for @helpFeature4.
   ///
   /// In en, this message translates to:
-  /// **'Mirror mode for physical teleprompter rigs'**
+  /// **'Mobile-friendly experience (keyboard shortcuts hidden on phones)'**
   String get helpFeature4;
 
   /// No description provided for @helpFeature5.
   ///
   /// In en, this message translates to:
-  /// **'Focus mode for distraction-free reading'**
+  /// **'Focus mode and fullscreen controls for distraction-free reading'**
   String get helpFeature5;
 
   /// No description provided for @helpSystemRequirementsTitle.
