@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:video_player/video_player.dart';
 import '../../data/services/video_library_service.dart';
 import '../../l10n/app_localizations.dart';
@@ -16,11 +17,17 @@ class AppMenuSheet extends ConsumerStatefulWidget {
 class _AppMenuSheetState extends ConsumerState<AppMenuSheet> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   final VideoLibraryService _videoService = VideoLibraryService();
+  late Future<List<FileSystemEntity>> _videosFuture;
 
   @override
   void initState() {
     super.initState();
+    debugPrint('[UI] AppMenuSheet opened');
     _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(() {
+      debugPrint('[UI] Menu tab changed to index: ${_tabController.index}');
+    });
+    _videosFuture = _videoService.listVideos();
   }
 
   @override
@@ -84,7 +91,7 @@ class _AppMenuSheetState extends ConsumerState<AppMenuSheet> with SingleTickerPr
   Widget _buildVideoLibrary(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return FutureBuilder(
-      future: _videoService.listVideos(),
+      future: _videosFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -106,6 +113,7 @@ class _AppMenuSheetState extends ConsumerState<AppMenuSheet> with SingleTickerPr
             ),
           );
         }
+        final fmt = DateFormat('yyyy-MM-dd HH:mm:ss');
         return ListView.builder(
           itemCount: files.length,
           itemBuilder: (context, index) {
@@ -114,9 +122,26 @@ class _AppMenuSheetState extends ConsumerState<AppMenuSheet> with SingleTickerPr
             return ListTile(
               leading: const Icon(Icons.video_library, color: Colors.white70),
               title: Text(name, style: const TextStyle(color: Colors.white)),
-              subtitle: Text(file.statSync().modified.toIso8601String(),
-                  style: const TextStyle(color: Colors.white54, fontSize: 12)),
+              subtitle: Text(
+                fmt.format(file.statSync().modified),
+                style: const TextStyle(color: Colors.white54, fontSize: 12),
+              ),
               onTap: () => _openPlayer(context, file.path),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    tooltip: 'Afficher dans le dossier',
+                    icon: const Icon(Icons.folder_open, color: Colors.white70),
+                    onPressed: () => _revealFile(file),
+                  ),
+                  IconButton(
+                    tooltip: 'Supprimer',
+                    icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                    onPressed: () => _deleteFile(context, file),
+                  ),
+                ],
+              ),
             );
           },
         );
@@ -124,7 +149,46 @@ class _AppMenuSheetState extends ConsumerState<AppMenuSheet> with SingleTickerPr
     );
   }
 
+  Future<void> _refreshVideos() async {
+    setState(() {
+      _videosFuture = _videoService.listVideos();
+    });
+  }
+
+  Future<void> _deleteFile(BuildContext context, FileSystemEntity file) async {
+    try {
+      if (file is File && await file.exists()) {
+        await file.delete();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Vidéo supprimée')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Suppression impossible: $e')),
+        );
+      }
+    } finally {
+      await _refreshVideos();
+    }
+  }
+
+  Future<void> _revealFile(FileSystemEntity file) async {
+    if (file is! File || !await file.exists()) return;
+    if (Platform.isMacOS) {
+      await Process.run('open', ['-R', file.path]);
+    } else if (Platform.isWindows) {
+      await Process.run('explorer', ['/select,', file.path]);
+    } else if (Platform.isLinux) {
+      await Process.run('xdg-open', [file.parent.path]);
+    }
+  }
+
   Future<void> _openPlayer(BuildContext context, String path) async {
+    debugPrint('[UI] Opening video player for: $path');
     final controller = VideoPlayerController.file(File(path));
     await controller.initialize();
     controller.play();

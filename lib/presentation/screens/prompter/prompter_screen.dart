@@ -478,6 +478,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> with SingleTick
 
   Future<void> _toggleRecord() async {
     if (_recording) {
+      debugPrint('[Recording] Stopping recording...');
       await _captureService.stopCapture();
       _recordTimer?.cancel();
       setState(() {
@@ -485,25 +486,35 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> with SingleTick
         _recordElapsedSeconds = 0;
       });
       await _stopPreview();
+      debugPrint('[Recording] Recording stopped, _recording=$_recording');
       return;
     }
     try {
+      debugPrint('[Recording] Starting recording...');
       if (!_previewing) {
         await _startPreview();
       }
       await _captureService.startCapture(cameraId: _currentCam?.id);
       _recordTimer?.cancel();
       _recordTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-        setState(() => _recordElapsedSeconds += 1);
+        if (mounted) {
+          setState(() => _recordElapsedSeconds += 1);
+        }
       });
-      setState(() {
-        _recording = true;
-        _recordElapsedSeconds = 0;
-      });
+      if (mounted) {
+        setState(() {
+          _recording = true;
+          _recordElapsedSeconds = 0;
+        });
+      }
+      debugPrint('[Recording] Recording started, _recording=$_recording');
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enregistrement non disponible sur cet appareil.')),
-      );
+      debugPrint('[Recording] Error starting recording: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erreur: ${e.toString()}')),
+        );
+      }
     }
   }
 

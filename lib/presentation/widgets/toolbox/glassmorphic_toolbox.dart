@@ -112,10 +112,6 @@ class GlasmorphicToolbox extends ConsumerWidget {
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            if (isRecording) ...[
-                              _RecordStatusChip(seconds: recordSeconds, pulse: recordPulse, scale: renderScale),
-                              SizedBox(height: 8 * renderScale),
-                            ],
                             SizedBox(
                               width: double.infinity,
                               child: _PlaybackPanel(
@@ -127,6 +123,8 @@ class GlasmorphicToolbox extends ConsumerWidget {
                                 showTimers: false,
                                 onRecordPressed: onRecordPressed,
                                 isRecording: isRecording,
+                                recordSeconds: recordSeconds,
+                                recordPulse: recordPulse,
                               ),
                             ),
                             SizedBox(height: 8 * renderScale),
@@ -157,11 +155,7 @@ class GlasmorphicToolbox extends ConsumerWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (isRecording) ...[
-                                    _RecordStatusChip(seconds: recordSeconds, pulse: recordPulse, scale: renderScale),
-                                    SizedBox(height: 8 * renderScale),
-                                  ],
+                            children: [
                                   _PlaybackPanel(
                                     playbackState: playbackState,
                                     l10n: l10n,
@@ -172,6 +166,8 @@ class GlasmorphicToolbox extends ConsumerWidget {
                                     onRecordPressed: onRecordPressed,
                                     isRecording: isRecording,
                                     compact: true,
+                                    recordSeconds: recordSeconds,
+                                    recordPulse: recordPulse,
                                   ),
                                 ],
                               ),
@@ -264,6 +260,8 @@ class _PlaybackPanel extends ConsumerWidget {
   final VoidCallback onRecordPressed;
   final bool isRecording;
   final bool compact;
+  final int recordSeconds;
+  final Animation<double> recordPulse;
 
   const _PlaybackPanel({
     required this.playbackState,
@@ -275,6 +273,8 @@ class _PlaybackPanel extends ConsumerWidget {
     required this.onRecordPressed,
     required this.isRecording,
     this.compact = false,
+    required this.recordSeconds,
+    required this.recordPulse,
   });
 
   @override
@@ -303,6 +303,11 @@ class _PlaybackPanel extends ConsumerWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          if (isRecording)
+            Padding(
+              padding: EdgeInsets.only(bottom: 8 * scale),
+              child: _RecordStatusChip(seconds: recordSeconds, pulse: recordPulse, scale: scale * 0.9),
+            ),
           Wrap(
             alignment: WrapAlignment.spaceEvenly,
             crossAxisAlignment: WrapCrossAlignment.center,
@@ -339,6 +344,7 @@ class _PlaybackPanel extends ConsumerWidget {
         tooltip: isRecording ? 'Arrêter l\'enregistrement' : (l10n?.camera ?? 'Démarrer l\'enregistrement'),
         size: 24 * scale,
         toastMessage: isRecording ? 'Enregistrement arrêté' : 'Enregistrement démarré',
+        pulse: isRecording,
       ),
     ];
 
@@ -464,6 +470,7 @@ class _GlassButton extends StatefulWidget {
   final double size;
   final bool primary;
   final String? toastMessage;
+  final bool pulse;
 
   const _GlassButton({
     required this.icon,
@@ -472,17 +479,50 @@ class _GlassButton extends StatefulWidget {
     this.size = 24,
     this.primary = false,
     this.toastMessage,
+    this.pulse = false,
   });
 
   @override
   State<_GlassButton> createState() => _GlassButtonState();
 }
 
-class _GlassButtonState extends State<_GlassButton> {
+class _GlassButtonState extends State<_GlassButton> with SingleTickerProviderStateMixin {
   bool _isHovered = false;
+  AnimationController? _pulseController;
+  Animation<double>? _pulse;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+    _pulse = CurvedAnimation(parent: _pulseController!, curve: Curves.easeInOut);
+    if (widget.pulse) {
+      _pulseController?.repeat(reverse: true);
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _GlassButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.pulse && (_pulseController?.isAnimating != true)) {
+      _pulseController?.repeat(reverse: true);
+    } else if (!widget.pulse && (_pulseController?.isAnimating == true)) {
+      _pulseController?.stop();
+    }
+  }
+
+  @override
+  void dispose() {
+    _pulseController?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final baseScale = _isHovered ? 1.05 : 1.0;
     return Tooltip(
       message: widget.tooltip,
       child: MouseRegion(
@@ -490,6 +530,8 @@ class _GlassButtonState extends State<_GlassButton> {
         onExit: (_) => setState(() => _isHovered = false),
         child: GestureDetector(
           onTap: () {
+            // Log simple pour suivre les clics de la toolbox
+            debugPrint('[UI] Toolbox click: ${widget.tooltip}');
             widget.onPressed();
             if (widget.toastMessage != null) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -501,37 +543,50 @@ class _GlassButtonState extends State<_GlassButton> {
               );
             }
           },
-          child: AnimatedScale(
-            duration: const Duration(milliseconds: 160),
-            scale: _isHovered ? 1.05 : 1.0,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: EdgeInsets.all(widget.primary ? 12 : 8),
-              decoration: BoxDecoration(
-                color: _isHovered
-                    ? Colors.white.withOpacity(0.22)
-                    : Colors.white.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(widget.primary ? 12 : 8),
-                border: Border.all(
-                  color: _isHovered
-                      ? Colors.white.withOpacity(0.45)
-                      : Colors.white.withOpacity(0.25),
-                  width: 1,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(_isHovered ? 0.28 : 0.18),
-                    blurRadius: _isHovered ? 14 : 10,
-                    offset: const Offset(0, 10),
+          child: AnimatedBuilder(
+            animation: _pulse ?? const AlwaysStoppedAnimation(0),
+            builder: (context, _) {
+              final pulseValue = _pulse?.value ?? 0;
+              final pulseScale = widget.pulse ? (1.0 + 0.05 * pulseValue) : 1.0;
+              return AnimatedScale(
+                duration: const Duration(milliseconds: 160),
+                scale: baseScale * pulseScale,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: EdgeInsets.all(widget.primary ? 12 : 8),
+                  decoration: BoxDecoration(
+                    color: _isHovered
+                        ? Colors.white.withOpacity(0.22)
+                        : Colors.white.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(widget.primary ? 12 : 8),
+                    border: Border.all(
+                      color: _isHovered
+                          ? Colors.white.withOpacity(0.45)
+                          : Colors.white.withOpacity(0.25),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(_isHovered ? 0.28 : 0.18),
+                        blurRadius: _isHovered ? 14 : 10,
+                        offset: const Offset(0, 10),
+                      ),
+                      if (widget.pulse)
+                        BoxShadow(
+                          color: Colors.redAccent.withOpacity(0.35 + 0.35 * pulseValue),
+                          blurRadius: 12 + 6 * pulseValue,
+                          spreadRadius: 1.2 + 0.6 * pulseValue,
+                        ),
+                    ],
                   ),
-                ],
-              ),
-              child: Icon(
-                widget.icon,
-                size: widget.size,
-                color: Colors.white,
-              ),
-            ),
+                  child: Icon(
+                    widget.icon,
+                    size: widget.size,
+                    color: Colors.white,
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ),

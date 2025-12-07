@@ -7,7 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'dart:io' show Platform, File;
+import 'dart:io' show Platform, File, Process;
 import 'dart:convert';
 import 'dart:math' as math;
 import 'package:intl/intl.dart';
@@ -487,52 +487,6 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerPr
                 const SizedBox(height: 12),
                 _buildCameraPreviewCard(context),
                 const SizedBox(height: 24),
-                if (_recordings.isNotEmpty)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Enregistrements',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),
-                      ),
-                      const SizedBox(height: 12),
-                      ..._recordings.map(
-                        (file) => Container(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.04),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.white.withOpacity(0.08)),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.play_circle_outline, color: Colors.white70),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  file.path.split('/').last,
-                                  style: const TextStyle(color: Colors.white),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.insert_drive_file, color: Colors.white70),
-                                tooltip: 'Ouvrir dans Fichiers',
-                                onPressed: () => _openRecording(file),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.delete, color: Colors.redAccent),
-                                onPressed: () => _confirmDelete(file),
-                                tooltip: 'Supprimer',
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                    ],
-                  ),
                 const Divider(color: Colors.white24, height: 32),
                 Padding(
                   padding: const EdgeInsets.only(top: 12),
@@ -694,61 +648,37 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerPr
             },
           ),
           const SizedBox(height: 12),
-          SizedBox(
-            height: 140,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white24, width: 1),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Stack(
-                    children: [
-                      if (!isDesktop && _captureService.hasActiveController && _captureService.controller!.value.isInitialized)
-                        CameraPreview(_captureService.controller!)
-                      else if (isDesktop && _captureService.desktopRenderer != null)
-                        RTCVideoView(
-                          _captureService.desktopRenderer!,
-                          objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-                        )
-                      else
-                        Center(
-                          child: Text(
-                            'Preview inactive',
-                            style: const TextStyle(color: Colors.white54),
-                          ),
-                        ),
-                      Positioned(
-                        left: 8,
-                        bottom: 8,
-                        right: 8,
-                        child: Wrap(
-                          alignment: WrapAlignment.center,
-                          spacing: 8,
-                          runSpacing: 6,
-                          children: [
-                            _buildCamControlButton(
-                              tooltip: _previewing ? 'Pause preview' : 'Lecture preview',
-                              onPressed: _togglePreviewPlayPause,
-                              icon: _previewing ? Icons.pause : Icons.play_arrow,
-                            ),
-                            _buildCamControlButton(
-                              tooltip: _captureService.isRecording ? 'Stop' : 'Rec',
-                              onPressed: _toggleRecording,
-                              icon: _captureService.isRecording ? Icons.stop : Icons.fiber_manual_record,
-                              color: _captureService.isRecording ? Colors.redAccent : Colors.red,
-                              isRecording: _captureService.isRecording,
-                            ),
-                          ],
+          AspectRatio(
+            aspectRatio: 16 / 10,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white24, width: 1),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Stack(
+                  children: [
+                    if (!isDesktop && _captureService.hasActiveController && _captureService.controller!.value.isInitialized)
+                      CameraPreview(_captureService.controller!)
+                    else if (isDesktop && _captureService.desktopRenderer != null)
+                      RTCVideoView(
+                        _captureService.desktopRenderer!,
+                        objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+                      )
+                    else
+                      Center(
+                        child: Text(
+                          'Preview inactive',
+                          style: const TextStyle(color: Colors.white54),
                         ),
                       ),
-                    ],
-                  ),
+                  ],
                 ),
               ),
             ),
+          ),
           const SizedBox(height: 10),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
@@ -951,6 +881,17 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerPr
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Impossible d\'ouvrir le fichier: ${result.message}')),
       );
+    }
+  }
+
+  Future<void> _revealRecording(File file) async {
+    if (!file.existsSync()) return;
+    if (Platform.isMacOS) {
+      await Process.run('open', ['-R', file.path]);
+    } else if (Platform.isWindows) {
+      await Process.run('explorer', ['/select,', file.path]);
+    } else if (Platform.isLinux) {
+      await Process.run('xdg-open', [file.parent.path]);
     }
   }
 

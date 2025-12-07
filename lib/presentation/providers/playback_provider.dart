@@ -35,6 +35,7 @@ class PlaybackNotifier extends StateNotifier<PlaybackState> {
   }
 
   void setText(String text) {
+    debugPrint('[Playback] Set text content (${text.length} chars)');
     if (_scrollController != null && _scrollController!.hasClients) {
       _scrollController!.jumpTo(0);
     }
@@ -51,6 +52,7 @@ class PlaybackNotifier extends StateNotifier<PlaybackState> {
   }
 
   void setRichText(String deltaJson) {
+    debugPrint('[Playback] Set rich text content (${deltaJson.length} chars JSON)');
     if (_scrollController != null && _scrollController!.hasClients) {
       _scrollController!.jumpTo(0);
     }
@@ -67,6 +69,7 @@ class PlaybackNotifier extends StateNotifier<PlaybackState> {
   }
 
   Future<void> loadPdf(String path) async {
+    debugPrint('[Playback] Loading PDF: $path');
     if (_scrollController != null && _scrollController!.hasClients) {
       _scrollController!.jumpTo(0);
     }
@@ -105,6 +108,7 @@ class PlaybackNotifier extends StateNotifier<PlaybackState> {
 
   void play() {
     if (state.isPlaying) return;
+    debugPrint('[Playback] Play');
     state = state.copyWith(isPlaying: true);
     _startScrolling();
     _startElapsed();
@@ -112,12 +116,14 @@ class PlaybackNotifier extends StateNotifier<PlaybackState> {
 
   void pause() {
     if (!state.isPlaying) return;
+    debugPrint('[Playback] Pause');
     state = state.copyWith(isPlaying: false);
     _stopScrolling();
     _stopElapsed();
   }
 
   void togglePlayPause() {
+    debugPrint('[Playback] Toggle play/pause (current: ${state.isPlaying})');
     if (state.isPlaying) {
       pause();
     } else {
@@ -126,6 +132,7 @@ class PlaybackNotifier extends StateNotifier<PlaybackState> {
   }
 
   void updateSpeed(double speed) {
+    debugPrint('[Playback] Update speed: $speed');
     state = state.copyWith(speed: speed);
     if (state.isPlaying) {
       _stopScrolling();
@@ -134,6 +141,7 @@ class PlaybackNotifier extends StateNotifier<PlaybackState> {
   }
 
   void reset() {
+    debugPrint('[Playback] Reset to beginning');
     pause();
     if (_scrollController != null && _scrollController!.hasClients) {
       _scrollController!.jumpTo(0);
@@ -186,6 +194,7 @@ class PlaybackNotifier extends StateNotifier<PlaybackState> {
   }
 
   void toggleFullscreen() {
+    debugPrint('[Playback] Toggle fullscreen (current: ${state.isFullscreen})');
     state = state.copyWith(isFullscreen: !state.isFullscreen);
   }
 
