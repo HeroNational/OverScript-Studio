@@ -1,0 +1,15 @@
+# Target labels
+ nuget-populate
+# Source files and their labels
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/nuget-populate
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/d864894d4e9ad1ce11c425c7efb56717/nuget-populate.rule
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/0d1a8c05e8f85509baba7ea5913fb21b/nuget-populate-complete.rule
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/b512309e6411dcdbc12e99bd03aac39f/nuget-populate-build.rule
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/b512309e6411dcdbc12e99bd03aac39f/nuget-populate-configure.rule
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/b512309e6411dcdbc12e99bd03aac39f/nuget-populate-copyfile.rule
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/b512309e6411dcdbc12e99bd03aac39f/nuget-populate-download.rule
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/b512309e6411dcdbc12e99bd03aac39f/nuget-populate-install.rule
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/b512309e6411dcdbc12e99bd03aac39f/nuget-populate-mkdir.rule
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/b512309e6411dcdbc12e99bd03aac39f/nuget-populate-patch.rule
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/b512309e6411dcdbc12e99bd03aac39f/nuget-populate-test.rule
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/b512309e6411dcdbc12e99bd03aac39f/nuget-populate-update.rule

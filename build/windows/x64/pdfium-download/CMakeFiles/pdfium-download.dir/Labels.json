@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/pdfium-download"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/21612526d25fe1f6a3215acac015da02/pdfium-download.rule"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/24260921491c694335c2fd81219fbbca/pdfium-download-complete.rule"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/f558dd2be2b5f963f9fe2e57c9a5e14d/pdfium-download-build.rule"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/f558dd2be2b5f963f9fe2e57c9a5e14d/pdfium-download-configure.rule"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/f558dd2be2b5f963f9fe2e57c9a5e14d/pdfium-download-download.rule"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/f558dd2be2b5f963f9fe2e57c9a5e14d/pdfium-download-install.rule"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/f558dd2be2b5f963f9fe2e57c9a5e14d/pdfium-download-mkdir.rule"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/f558dd2be2b5f963f9fe2e57c9a5e14d/pdfium-download-patch.rule"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/f558dd2be2b5f963f9fe2e57c9a5e14d/pdfium-download-test.rule"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/f558dd2be2b5f963f9fe2e57c9a5e14d/pdfium-download-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"pdfium-download"
+		],
+		"name" : "pdfium-download"
+	}
+}

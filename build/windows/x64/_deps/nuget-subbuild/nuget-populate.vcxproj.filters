@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\Shortcuts\Downloads\OverScript-Studio\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\b512309e6411dcdbc12e99bd03aac39f\nuget-populate-mkdir.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Shortcuts\Downloads\OverScript-Studio\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\b512309e6411dcdbc12e99bd03aac39f\nuget-populate-download.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Shortcuts\Downloads\OverScript-Studio\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\b512309e6411dcdbc12e99bd03aac39f\nuget-populate-update.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Shortcuts\Downloads\OverScript-Studio\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\b512309e6411dcdbc12e99bd03aac39f\nuget-populate-patch.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Shortcuts\Downloads\OverScript-Studio\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\b512309e6411dcdbc12e99bd03aac39f\nuget-populate-copyfile.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Shortcuts\Downloads\OverScript-Studio\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\b512309e6411dcdbc12e99bd03aac39f\nuget-populate-configure.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Shortcuts\Downloads\OverScript-Studio\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\b512309e6411dcdbc12e99bd03aac39f\nuget-populate-build.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Shortcuts\Downloads\OverScript-Studio\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\b512309e6411dcdbc12e99bd03aac39f\nuget-populate-install.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Shortcuts\Downloads\OverScript-Studio\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\b512309e6411dcdbc12e99bd03aac39f\nuget-populate-test.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Shortcuts\Downloads\OverScript-Studio\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\0d1a8c05e8f85509baba7ea5913fb21b\nuget-populate-complete.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Shortcuts\Downloads\OverScript-Studio\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\d864894d4e9ad1ce11c425c7efb56717\nuget-populate.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Shortcuts\Downloads\OverScript-Studio\build\windows\x64\_deps\nuget-subbuild\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\Shortcuts\Downloads\OverScript-Studio\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\nuget-populate" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{FF7793FC-1FCA-302F-9F55-BCEA8175D432}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,28 @@
+^D:\SHORTCUTS\DOWNLOADS\OVERSCRIPT-STUDIO\BUILD\WINDOWS\X64\CMAKEFILES\C271C0AE2F4FD12BCF27433415D4C758\FLUTTER_WINDOWS.DLL.RULE
+setlocal
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E env FLUTTER_ROOT=D:\Programmes\Installed\flutter_windows_3.10.5-stable PROJECT_DIR=D:\Shortcuts\Downloads\OverScript-Studio FLUTTER_ROOT=D:\Programmes\Installed\flutter_windows_3.10.5-stable FLUTTER_EPHEMERAL_DIR=D:\Shortcuts\Downloads\OverScript-Studio\windows\flutter\ephemeral PROJECT_DIR=D:\Shortcuts\Downloads\OverScript-Studio FLUTTER_TARGET=D:\Shortcuts\Downloads\OverScript-Studio\lib\main.dart DART_DEFINES=RkxVVFRFUl9WRVJTSU9OPTMuMzUuNg==,RkxVVFRFUl9DSEFOTkVMPXN0YWJsZQ==,RkxVVFRFUl9HSVRfVVJMPWh0dHBzOi8vZ2l0aHViLmNvbS9mbHV0dGVyL2ZsdXR0ZXIuZ2l0,RkxVVFRFUl9GUkFNRVdPUktfUkVWSVNJT049OWY0NTVkMjQ4Ng==,RkxVVFRFUl9FTkdJTkVfUkVWSVNJT049ZDI5MTM2MzJhNA==,RkxVVFRFUl9EQVJUX1ZFUlNJT049My45LjI= DART_OBFUSCATION=false TRACK_WIDGET_CREATION=true TREE_SHAKE_ICONS=false PACKAGE_CONFIG=D:\Shortcuts\Downloads\OverScript-Studio\.dart_tool\package_config.json D:/Programmes/Installed/flutter_windows_3.10.5-stable/packages/flutter_tools/bin/tool_backend.bat windows-x64 Debug
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^D:\SHORTCUTS\DOWNLOADS\OVERSCRIPT-STUDIO\BUILD\WINDOWS\X64\CMAKEFILES\9C2FE00FDD6232BD1FA398DA23C925BF\FLUTTER_ASSEMBLE.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^D:\SHORTCUTS\DOWNLOADS\OVERSCRIPT-STUDIO\WINDOWS\FLUTTER\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SD:/Shortcuts/Downloads/OverScript-Studio/windows -BD:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64 --check-stamp-file D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/flutter/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

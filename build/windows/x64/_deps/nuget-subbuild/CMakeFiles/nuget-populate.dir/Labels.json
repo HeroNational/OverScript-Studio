@@ -1,0 +1,49 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/nuget-populate"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/d864894d4e9ad1ce11c425c7efb56717/nuget-populate.rule"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/0d1a8c05e8f85509baba7ea5913fb21b/nuget-populate-complete.rule"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/b512309e6411dcdbc12e99bd03aac39f/nuget-populate-build.rule"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/b512309e6411dcdbc12e99bd03aac39f/nuget-populate-configure.rule"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/b512309e6411dcdbc12e99bd03aac39f/nuget-populate-copyfile.rule"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/b512309e6411dcdbc12e99bd03aac39f/nuget-populate-download.rule"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/b512309e6411dcdbc12e99bd03aac39f/nuget-populate-install.rule"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/b512309e6411dcdbc12e99bd03aac39f/nuget-populate-mkdir.rule"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/b512309e6411dcdbc12e99bd03aac39f/nuget-populate-patch.rule"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/b512309e6411dcdbc12e99bd03aac39f/nuget-populate-test.rule"
+		},
+		{
+			"file" : "D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/b512309e6411dcdbc12e99bd03aac39f/nuget-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"nuget-populate"
+		],
+		"name" : "nuget-populate"
+	}
+}

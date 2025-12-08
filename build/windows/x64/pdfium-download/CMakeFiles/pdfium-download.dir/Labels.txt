@@ -1,0 +1,14 @@
+# Target labels
+ pdfium-download
+# Source files and their labels
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/pdfium-download
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/21612526d25fe1f6a3215acac015da02/pdfium-download.rule
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/24260921491c694335c2fd81219fbbca/pdfium-download-complete.rule
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/f558dd2be2b5f963f9fe2e57c9a5e14d/pdfium-download-build.rule
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/f558dd2be2b5f963f9fe2e57c9a5e14d/pdfium-download-configure.rule
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/f558dd2be2b5f963f9fe2e57c9a5e14d/pdfium-download-download.rule
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/f558dd2be2b5f963f9fe2e57c9a5e14d/pdfium-download-install.rule
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/f558dd2be2b5f963f9fe2e57c9a5e14d/pdfium-download-mkdir.rule
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/f558dd2be2b5f963f9fe2e57c9a5e14d/pdfium-download-patch.rule
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/f558dd2be2b5f963f9fe2e57c9a5e14d/pdfium-download-test.rule
+D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/CMakeFiles/f558dd2be2b5f963f9fe2e57c9a5e14d/pdfium-download-update.rule

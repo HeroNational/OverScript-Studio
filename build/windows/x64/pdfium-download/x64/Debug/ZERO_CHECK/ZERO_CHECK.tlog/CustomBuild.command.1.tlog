@@ -1,0 +1,10 @@
+^D:\SHORTCUTS\DOWNLOADS\OVERSCRIPT-STUDIO\BUILD\WINDOWS\X64\PDFIUM-DOWNLOAD\CMAKEFILES\21612526D25FE1F6A3215ACAC015DA02\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SD:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download -BD:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file D:/Shortcuts/Downloads/OverScript-Studio/build/windows/x64/pdfium-download/pdfium-download.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
