@@ -3,7 +3,10 @@
     "allow": [
       "Bash(flutter build:*)",
       "Bash(where:*)",
-      "Bash(cmd.exe /c \"where flutter 2>nul && flutter --version || echo Flutter not found in cmd\")"
+      "Bash(cmd.exe /c \"where flutter 2>nul && flutter --version || echo Flutter not found in cmd\")",
+      "Bash(cmd.exe /c \"cd /d d:\\Shortcuts\\Downloads\\OverScript-Studio && flutter build windows --debug 2>&1 | head -100\")",
+      "Bash(cmd.exe /c \"where flutter && flutter --version\")",
+      "Bash(cmd.exe /c \"cmake --build build --config Debug --target ALL_BUILD\")"
     ],
     "deny": [],
     "ask": []

@@ -436,6 +436,8 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerPr
       _showTrialExpiredMessage();
       return;
     }
+    // Libère la preview home pour ne pas monopoliser la caméra/micro sur l'écran prompteur
+    _stopHomePreview();
     if (!mounted) return;
     print('[UI] Navigation vers PrompterScreen');
     Navigator.push(
@@ -866,6 +868,13 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerPr
     _fakeAudioLevel = 0.2;
   }
 
+  Future<void> _stopHomePreview() async {
+    _previewing = false;
+    _stopAudioMeter();
+    await _captureService.stopPreview();
+    if (mounted) setState(() {});
+  }
+
 
   Future<void> _refreshRecordings() async {
     final list = await _captureService.listRecordings();
@@ -915,7 +924,8 @@ class _PrompterHomeState extends ConsumerState<PrompterHome> with SingleTickerPr
 
   Future<void> _startHomePreview({required bool auto}) async {
     try {
-      await _captureService.startPreview(cameraId: _selectedCam, micId: _selectedMic);
+      final settings = ref.read(settingsProvider);
+      await _captureService.startPreview(cameraId: _selectedCam, micId: _selectedMic, fps: settings.desktopFps);
       _previewing = true;
       _startAudioMeter();
       if (mounted) setState(() {});

@@ -8,6 +8,7 @@ part of 'settings_model.dart';
 
 _$SettingsModelImpl _$$SettingsModelImplFromJson(Map<String, dynamic> json) =>
     _$SettingsModelImpl(
+      desktopFps: (json['desktopFps'] as num?)?.toInt() ?? 30,
       defaultSpeed: (json['defaultSpeed'] as num?)?.toDouble() ?? 120.0,
       speedUnit: $enumDecodeNullable(_$SpeedUnitEnumMap, json['speedUnit']) ??
           SpeedUnit.pixelsPerSecond,
@@ -52,6 +53,7 @@ _$SettingsModelImpl _$$SettingsModelImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$SettingsModelImplToJson(_$SettingsModelImpl instance) =>
     <String, dynamic>{
+      'desktopFps': instance.desktopFps,
       'defaultSpeed': instance.defaultSpeed,
       'speedUnit': _$SpeedUnitEnumMap[instance.speedUnit]!,
       'autoFullscreen': instance.autoFullscreen,

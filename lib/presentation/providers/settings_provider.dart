@@ -89,6 +89,12 @@ class SettingsNotifier extends StateNotifier<SettingsModel> {
     await _storageService.saveSettings(state);
   }
 
+  Future<void> updateDesktopFps(int fps) async {
+    debugPrint('[Settings] Update desktop FPS: $fps');
+    state = state.copyWith(desktopFps: fps.clamp(10, 120));
+    await _storageService.saveSettings(state);
+  }
+
   Future<void> updateAutoStartCamera(bool value) async {
     debugPrint('[Settings] Update auto start camera: $value');
     state = state.copyWith(autoStartCamera: value);

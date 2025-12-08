@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:video_player/video_player.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../data/services/video_library_service.dart';
 import '../../data/services/storage_service.dart';
@@ -500,7 +501,9 @@ class _AppMenuSheetState extends ConsumerState<AppMenuSheet>
     if (Platform.isMacOS) {
       await Process.run('open', ['-R', file.path]);
     } else if (Platform.isWindows) {
-      await Process.run('explorer', ['/select,', file.path]);
+      // Convertir les slashes pour Windows
+      final windowsPath = file.path.replaceAll('/', '\\');
+      await Process.run('explorer', ['/select,', windowsPath]);
     } else if (Platform.isLinux) {
       await Process.run('xdg-open', [file.parent.path]);
     }
@@ -528,7 +531,9 @@ class _AppMenuSheetState extends ConsumerState<AppMenuSheet>
       if (Platform.isMacOS) {
         await Process.run('open', [path]);
       } else if (Platform.isWindows) {
-        await Process.run('explorer', [path]);
+        // Convertir les slashes pour Windows et ouvrir le dossier
+        final windowsPath = path.replaceAll('/', '\\');
+        await Process.run('explorer', [windowsPath]);
       } else if (Platform.isLinux) {
         await Process.run('xdg-open', [path]);
       }
@@ -543,31 +548,46 @@ class _AppMenuSheetState extends ConsumerState<AppMenuSheet>
 
   Future<void> _openPlayer(BuildContext context, String path) async {
     debugPrint('[UI] Opening video player for: $path');
-    final controller = VideoPlayerController.file(File(path));
-    await controller.initialize();
-    controller.play();
-    // ignore: use_build_context_synchronously
-    showDialog(
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFF0f172a),
-          content: AspectRatio(
-            aspectRatio: controller.value.aspectRatio,
-            child: VideoPlayer(controller),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                controller.pause();
-                Navigator.of(context).pop();
-              },
-              child: const Text('Fermer'),
+    VideoPlayerController? controller;
+    try {
+      controller = VideoPlayerController.file(File(path));
+      await controller.initialize();
+      controller.play();
+      if (!context.mounted) return;
+      await showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            backgroundColor: const Color(0xFF0f172a),
+            content: AspectRatio(
+              aspectRatio: controller!.value.aspectRatio,
+              child: VideoPlayer(controller!),
             ),
-          ],
+            actions: [
+              TextButton(
+                onPressed: () {
+                  controller!.pause();
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Fermer'),
+              ),
+            ],
+          );
+        },
+      );
+    } on UnimplementedError catch (e) {
+      debugPrint('[UI] Video player not available on this platform: $e');
+      await OpenFilex.open(path);
+    } catch (e) {
+      debugPrint('[UI] Error opening video player: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Impossible de lire la vidéo: $e')),
         );
-      },
-    ).then((_) => controller.dispose());
+      }
+    } finally {
+      await controller?.dispose();
+    }
   }
 }
 

@@ -4,6 +4,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 
 class CaptureDeviceInfo {
   final String id;
@@ -21,7 +22,6 @@ class CaptureService {
   bool _recording = false;
   MediaStream? _desktopStream;
   RTCVideoRenderer? _desktopRenderer;
-  MediaRecorder? _desktopRecorder;
   String? _desktopRecordingPath;
   bool get _isMac => Platform.isMacOS;
 
@@ -77,12 +77,12 @@ class CaptureService {
   }
 
   /// Démarre la preview (sans enregistrement).
-  Future<void> startPreview({String? cameraId, String? micId}) async {
+  Future<void> startPreview({String? cameraId, String? micId, int? fps}) async {
     if (!await _ensurePermissions()) {
       throw Exception('Permissions camera/micro refusées');
     }
     if (_isDesktop) {
-      await _startPreviewDesktop(cameraId: cameraId, micId: micId);
+      await _startPreviewDesktop(cameraId: cameraId, micId: micId, fps: fps);
     } else {
       await _startPreviewMobile(cameraId: cameraId);
     }
@@ -103,12 +103,12 @@ class CaptureService {
   }
 
   /// Démarre l’enregistrement (init preview si besoin).
-  Future<void> startCapture({String? cameraId, String? micId}) async {
+  Future<void> startCapture({String? cameraId, String? micId, int? fps}) async {
     if (!await _ensurePermissions()) {
       throw Exception('Permissions camera/micro refusées');
     }
     if (_isMac) {
-      await _startPreviewDesktop(cameraId: cameraId, micId: micId);
+      await _startPreviewDesktop(cameraId: cameraId, micId: micId, fps: fps);
       try {
         final path = await _desktopRecordPath();
         _desktopRecordingPath = path;
@@ -116,6 +116,7 @@ class CaptureService {
           'path': path,
           'videoDeviceId': cameraId,
           'audioDeviceId': micId,
+          'fps': fps,
         });
         _recording = true;
       } catch (e) {
@@ -125,30 +126,35 @@ class CaptureService {
       }
       return;
     }
-    if (_isDesktop) {
-      await _startPreviewDesktop(cameraId: cameraId, micId: micId);
-      // Tentative d’enregistrement desktop via MediaRecorder (si supporté par le runtime)
+    if (Platform.isWindows || Platform.isLinux) {
+      // Sur Windows/Linux: utilise le MethodChannel comme sur Mac
+      await _startPreviewDesktop(cameraId: cameraId, micId: micId, fps: fps);
       try {
-        _desktopRecorder = MediaRecorder();
-        final track = _desktopStream?.getVideoTracks().isNotEmpty == true
-            ? _desktopStream!.getVideoTracks().first
-            : null;
         final path = await _desktopRecordPath();
         _desktopRecordingPath = path;
-        await _desktopRecorder!.start(path, videoTrack: track, audioChannel: RecorderAudioChannel.INPUT);
+        await _desktopRecorderChannel.invokeMethod('startRecording', {
+          'path': path,
+          'videoDeviceId': cameraId,
+          'audioDeviceId': micId,
+          'fps': fps,
+        });
         _recording = true;
+        debugPrint('[CaptureService] Windows/Linux: Recording started to $path');
       } catch (e) {
         _recording = false;
         _desktopRecordingPath = null;
+        debugPrint('[CaptureService] Desktop recording failed: $e');
         throw Exception('Desktop recording failed: $e');
       }
+      return;
     } else {
       await _startCaptureMobile(cameraId: cameraId);
     }
   }
 
   Future<String?> stopCapture() async {
-    if (_isMac) {
+    // Windows, Linux et macOS utilisent tous le MethodChannel natif
+    if (_isMac || Platform.isWindows || Platform.isLinux) {
       try {
         final path = await _desktopRecorderChannel.invokeMethod<String>('stopRecording');
         _recording = false;
@@ -158,27 +164,13 @@ class CaptureService {
           return path;
         }
         return null;
-      } catch (_) {
+      } catch (e) {
+        debugPrint('[CaptureService] Stop recording failed: $e');
         _recording = false;
         _desktopRecordingPath = null;
         await _stopPreviewDesktop();
         return null;
       }
-    }
-    if (_isDesktop) {
-      try {
-        if (_desktopRecorder != null && _recording) {
-          await _desktopRecorder!.stop();
-        }
-      } catch (_) {}
-      await _stopPreviewDesktop();
-      final path = _desktopRecordingPath;
-      _desktopRecordingPath = null;
-      _recording = false;
-      if (path != null && File(path).existsSync()) {
-        return path;
-      }
-      return null;
     }
     if (_controller == null || !_recording) return null;
     try {
@@ -201,7 +193,6 @@ class CaptureService {
       }
       await _controller?.dispose();
       await _stopPreviewDesktop();
-      _desktopRecorder = null;
       _desktopRecordingPath = null;
     } finally {
       _controller = null;
@@ -250,7 +241,7 @@ class CaptureService {
   }
 
   // Desktop preview helpers (WebRTC)
-  Future<void> _startPreviewDesktop({String? cameraId, String? micId}) async {
+  Future<void> _startPreviewDesktop({String? cameraId, String? micId, int? fps}) async {
     // dispose previous
     await _stopPreviewDesktop();
     _desktopRenderer = RTCVideoRenderer();
@@ -275,6 +266,12 @@ class CaptureService {
               'height': 720,
             },
     };
+    if (fps != null && fps > 0) {
+      final videoConstraints = constraints['video'];
+      if (videoConstraints is Map) {
+        videoConstraints['frameRate'] = fps;
+      }
+    }
 
     try {
       _desktopStream = await navigator.mediaDevices.getUserMedia(constraints);

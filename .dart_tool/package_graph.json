@@ -249,12 +249,14 @@
     },
     {
       "name": "flutter_webrtc",
-      "version": "0.9.48+hotfix.1",
+      "version": "1.2.1",
       "dependencies": [
         "collection",
         "dart_webrtc",
         "flutter",
+        "logger",
         "path_provider",
+        "web",
         "webrtc_interface"
       ]
     },
@@ -1151,6 +1153,18 @@
       "dependencies": []
     },
     {
+      "name": "web",
+      "version": "1.1.1",
+      "dependencies": []
+    },
+    {
+      "name": "logger",
+      "version": "2.6.2",
+      "dependencies": [
+        "meta"
+      ]
+    },
+    {
       "name": "dart_webrtc",
       "version": "1.6.0",
       "dependencies": [
@@ -1325,11 +1339,6 @@
         "flutter",
         "shared_preferences_platform_interface"
       ]
-    },
-    {
-      "name": "web",
-      "version": "1.1.1",
-      "dependencies": []
     },
     {
       "name": "photo_view",

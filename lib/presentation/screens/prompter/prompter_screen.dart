@@ -108,7 +108,8 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> with SingleTick
   Future<void> _startPreview() async {
     final cam = _currentCam;
     try {
-      await _captureService.startPreview(cameraId: cam?.id);
+      final settings = ref.read(settingsProvider);
+      await _captureService.startPreview(cameraId: cam?.id, fps: settings.desktopFps);
       setState(() => _previewing = true);
     } catch (_) {
       setState(() => _previewing = false);
@@ -279,6 +280,7 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> with SingleTick
   void _startCountdown() {
     final settings = ref.read(settingsProvider);
     _countdown = settings.countdownDuration;
+    debugPrint('[Countdown] Starting countdown: $_countdown seconds');
     if (_countdown != null && _countdown! <= 0) {
       _countdown = null;
       ref.read(playbackProvider.notifier).play();
@@ -286,13 +288,20 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> with SingleTick
     }
     _countdownTimer?.cancel();
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (!mounted) return;
+      debugPrint('[Countdown] Timer tick, mounted=$mounted, countdown=$_countdown');
+      if (!mounted) {
+        debugPrint('[Countdown] Not mounted, cancelling timer');
+        timer.cancel();
+        return;
+      }
       setState(() {
         if (_countdown != null && _countdown! > 1) {
           _countdown = _countdown! - 1;
+          debugPrint('[Countdown] Decreased to: $_countdown');
         } else {
           _countdown = null;
           _countdownTimer?.cancel();
+          debugPrint('[Countdown] Finished, starting playback');
           ref.read(playbackProvider.notifier).play();
         }
       });
@@ -505,7 +514,8 @@ class _PrompterScreenState extends ConsumerState<PrompterScreen> with SingleTick
       if (!_previewing) {
         await _startPreview();
       }
-      await _captureService.startCapture(cameraId: _currentCam?.id);
+      final settings = ref.read(settingsProvider);
+      await _captureService.startCapture(cameraId: _currentCam?.id, fps: settings.desktopFps);
       debugPrint('[Recording] Recording started successfully, isRecording=${_captureService.isRecording}');
 
       _recordTimer?.cancel();

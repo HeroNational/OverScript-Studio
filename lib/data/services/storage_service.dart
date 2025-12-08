@@ -77,14 +77,41 @@ class StorageService {
   }
 
   Future<Box> _openBoxWithRetry({int retries = 5}) async {
+    // Vérifier si la box est déjà ouverte
+    if (Hive.isBoxOpen(_settingsBox)) {
+      return Hive.box(_settingsBox);
+    }
+
     for (var attempt = 0; attempt < retries; attempt++) {
       try {
         return await Hive.openBox(_settingsBox);
+      } on PathAccessException catch (e) {
+        // Gestion spécifique pour les erreurs de verrouillage de fichier
+        if (attempt < retries - 1) {
+          // Délai progressif : 200ms, 400ms, 800ms, 1600ms
+          final delayMs = 200 * (1 << attempt);
+          await Future.delayed(Duration(milliseconds: delayMs));
+          continue;
+        }
+        // Dernière tentative échouée
+        throw Exception(
+          'Impossible d\'ouvrir la base de données après $retries tentatives. '
+          'Veuillez fermer toutes les instances de l\'application et réessayer. '
+          'Erreur: ${e.message}'
+        );
       } on FileSystemException catch (e) {
         final message = e.osError?.message ?? e.message;
         final isLock = message.contains('lock') || message.contains('temporarily unavailable');
         if (isLock && attempt < retries - 1) {
-          await Future.delayed(const Duration(milliseconds: 400));
+          final delayMs = 200 * (1 << attempt);
+          await Future.delayed(Duration(milliseconds: delayMs));
+          continue;
+        }
+        rethrow;
+      } catch (e) {
+        // Autres erreurs
+        if (attempt < retries - 1) {
+          await Future.delayed(Duration(milliseconds: 200));
           continue;
         }
         rethrow;

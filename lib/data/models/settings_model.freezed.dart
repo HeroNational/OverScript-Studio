@@ -20,6 +20,7 @@ SettingsModel _$SettingsModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$SettingsModel {
+  int get desktopFps => throw _privateConstructorUsedError;
   double get defaultSpeed => throw _privateConstructorUsedError;
   SpeedUnit get speedUnit => throw _privateConstructorUsedError;
   bool get autoFullscreen => throw _privateConstructorUsedError;
@@ -64,7 +65,8 @@ abstract class $SettingsModelCopyWith<$Res> {
       _$SettingsModelCopyWithImpl<$Res, SettingsModel>;
   @useResult
   $Res call(
-      {double defaultSpeed,
+      {int desktopFps,
+      double defaultSpeed,
       SpeedUnit speedUnit,
       bool autoFullscreen,
       bool autoStartCamera,
@@ -107,6 +109,7 @@ class _$SettingsModelCopyWithImpl<$Res, $Val extends SettingsModel>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? desktopFps = null,
     Object? defaultSpeed = null,
     Object? speedUnit = null,
     Object? autoFullscreen = null,
@@ -137,6 +140,10 @@ class _$SettingsModelCopyWithImpl<$Res, $Val extends SettingsModel>
     Object? customShortcuts = freezed,
   }) {
     return _then(_value.copyWith(
+      desktopFps: null == desktopFps
+          ? _value.desktopFps
+          : desktopFps // ignore: cast_nullable_to_non_nullable
+              as int,
       defaultSpeed: null == defaultSpeed
           ? _value.defaultSpeed
           : defaultSpeed // ignore: cast_nullable_to_non_nullable
@@ -262,7 +269,8 @@ abstract class _$$SettingsModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {double defaultSpeed,
+      {int desktopFps,
+      double defaultSpeed,
       SpeedUnit speedUnit,
       bool autoFullscreen,
       bool autoStartCamera,
@@ -303,6 +311,7 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? desktopFps = null,
     Object? defaultSpeed = null,
     Object? speedUnit = null,
     Object? autoFullscreen = null,
@@ -333,6 +342,10 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
     Object? customShortcuts = freezed,
   }) {
     return _then(_$SettingsModelImpl(
+      desktopFps: null == desktopFps
+          ? _value.desktopFps
+          : desktopFps // ignore: cast_nullable_to_non_nullable
+              as int,
       defaultSpeed: null == defaultSpeed
           ? _value.defaultSpeed
           : defaultSpeed // ignore: cast_nullable_to_non_nullable
@@ -453,7 +466,8 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$SettingsModelImpl implements _SettingsModel {
   const _$SettingsModelImpl(
-      {this.defaultSpeed = 120.0,
+      {this.desktopFps = 30,
+      this.defaultSpeed = 120.0,
       this.speedUnit = SpeedUnit.pixelsPerSecond,
       this.autoFullscreen = true,
       this.autoStartCamera = false,
@@ -486,6 +500,9 @@ class _$SettingsModelImpl implements _SettingsModel {
   factory _$SettingsModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$SettingsModelImplFromJson(json);
 
+  @override
+  @JsonKey()
+  final int desktopFps;
   @override
   @JsonKey()
   final double defaultSpeed;
@@ -577,7 +594,7 @@ class _$SettingsModelImpl implements _SettingsModel {
 
   @override
   String toString() {
-    return 'SettingsModel(defaultSpeed: $defaultSpeed, speedUnit: $speedUnit, autoFullscreen: $autoFullscreen, autoStartCamera: $autoStartCamera, cameraAsBackground: $cameraAsBackground, promptOpacity: $promptOpacity, selectedCameraId: $selectedCameraId, selectedMicId: $selectedMicId, enableVideoSharing: $enableVideoSharing, enableFocusMode: $enableFocusMode, backgroundColor: $backgroundColor, textColor: $textColor, mirrorMode: $mirrorMode, fontFamily: $fontFamily, fontSize: $fontSize, toolbarPosition: $toolbarPosition, toolbarScale: $toolbarScale, toolboxTheme: $toolboxTheme, toolbarOrientation: $toolbarOrientation, pauseOnMouseMove: $pauseOnMouseMove, pauseKey: $pauseKey, locale: $locale, showTimers: $showTimers, countdownDuration: $countdownDuration, themeMode: $themeMode, mockTextType: $mockTextType, showMockTextWhenEmpty: $showMockTextWhenEmpty, customShortcuts: $customShortcuts)';
+    return 'SettingsModel(desktopFps: $desktopFps, defaultSpeed: $defaultSpeed, speedUnit: $speedUnit, autoFullscreen: $autoFullscreen, autoStartCamera: $autoStartCamera, cameraAsBackground: $cameraAsBackground, promptOpacity: $promptOpacity, selectedCameraId: $selectedCameraId, selectedMicId: $selectedMicId, enableVideoSharing: $enableVideoSharing, enableFocusMode: $enableFocusMode, backgroundColor: $backgroundColor, textColor: $textColor, mirrorMode: $mirrorMode, fontFamily: $fontFamily, fontSize: $fontSize, toolbarPosition: $toolbarPosition, toolbarScale: $toolbarScale, toolboxTheme: $toolboxTheme, toolbarOrientation: $toolbarOrientation, pauseOnMouseMove: $pauseOnMouseMove, pauseKey: $pauseKey, locale: $locale, showTimers: $showTimers, countdownDuration: $countdownDuration, themeMode: $themeMode, mockTextType: $mockTextType, showMockTextWhenEmpty: $showMockTextWhenEmpty, customShortcuts: $customShortcuts)';
   }
 
   @override
@@ -585,6 +602,8 @@ class _$SettingsModelImpl implements _SettingsModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SettingsModelImpl &&
+            (identical(other.desktopFps, desktopFps) ||
+                other.desktopFps == desktopFps) &&
             (identical(other.defaultSpeed, defaultSpeed) ||
                 other.defaultSpeed == defaultSpeed) &&
             (identical(other.speedUnit, speedUnit) ||
@@ -646,6 +665,7 @@ class _$SettingsModelImpl implements _SettingsModel {
   @override
   int get hashCode => Object.hashAll([
         runtimeType,
+        desktopFps,
         defaultSpeed,
         speedUnit,
         autoFullscreen,
@@ -692,7 +712,8 @@ class _$SettingsModelImpl implements _SettingsModel {
 
 abstract class _SettingsModel implements SettingsModel {
   const factory _SettingsModel(
-      {final double defaultSpeed,
+      {final int desktopFps,
+      final double defaultSpeed,
       final SpeedUnit speedUnit,
       final bool autoFullscreen,
       final bool autoStartCamera,
@@ -724,6 +745,8 @@ abstract class _SettingsModel implements SettingsModel {
   factory _SettingsModel.fromJson(Map<String, dynamic> json) =
       _$SettingsModelImpl.fromJson;
 
+  @override
+  int get desktopFps;
   @override
   double get defaultSpeed;
   @override

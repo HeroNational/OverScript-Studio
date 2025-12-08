@@ -630,6 +630,45 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
         ),
+        if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) ...[
+          const SizedBox(height: 12),
+          Text(
+            _tr(settings, 'Framerate (FPS)', 'Frame rate (FPS)'),
+            style: const TextStyle(
+              color: Colors.white70,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<int>(
+                value: const [24, 30, 60, 120].contains(settings.desktopFps)
+                    ? settings.desktopFps
+                    : 30,
+                isExpanded: true,
+                dropdownColor: const Color(0xFF2d2d2d),
+                style: const TextStyle(color: Colors.white, fontSize: 16),
+                items: const [
+                  DropdownMenuItem(value: 24, child: Text('24 fps')),
+                  DropdownMenuItem(value: 30, child: Text('30 fps')),
+                  DropdownMenuItem(value: 60, child: Text('60 fps')),
+                  DropdownMenuItem(value: 120, child: Text('120 fps')),
+                ],
+                onChanged: (v) {
+                  if (v != null) {
+                    ref.read(settingsProvider.notifier).updateDesktopFps(v);
+                  }
+                },
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }

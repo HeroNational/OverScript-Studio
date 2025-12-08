@@ -29,6 +29,8 @@ enum MockTextType { none, poem, song, inspiring, random }
 @freezed
 class SettingsModel with _$SettingsModel {
   const factory SettingsModel({
+    /// Nombre d'images par seconde pour l'enregistrement desktop (Windows/macOS/Linux)
+    @Default(30) int desktopFps,
     @Default(120.0) double defaultSpeed,
     @Default(SpeedUnit.pixelsPerSecond) SpeedUnit speedUnit,
     @Default(true) bool autoFullscreen,
